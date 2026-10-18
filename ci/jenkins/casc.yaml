@@ -1,0 +1,56 @@
+# Jenkins Configuration as Code for the project's local controller (design.md, "CI design").
+# The admin password comes from ATH_JENKINS_ADMIN_PASSWORD (~/.config/ath/jenkins.env, written by
+# scripts/jenkins_up.sh); it is never stored in the repository. Anonymous users can read, not change.
+jenkins:
+  systemMessage: "Autonomy Test Harness CI (local). Configured from ci/jenkins/casc.yaml."
+  numExecutors: 1
+  mode: NORMAL
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "${ATH_JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: true
+unclassified:
+  location:
+    url: "http://127.0.0.1:8090/"
+jobs:
+  - script: |
+      pipelineJob('autonomy-test-harness') {
+        description('Builds ath-sim:<commit>, runs the unit tests and the Smoke_Suite on every change, and the Full_Suite nightly. Defined in ci/jenkins/casc.yaml; the pipeline is ci/Jenkinsfile.')
+        properties {
+          pipelineTriggers {
+            triggers {
+              pollSCM {
+                scmpoll_spec('H/5 * * * *')
+              }
+              cron {
+                spec('H 2 * * *')
+              }
+            }
+          }
+        }
+        definition {
+          cpsScm {
+            lightweight(false)
+            scriptPath('ci/Jenkinsfile')
+            scm {
+              git {
+                remote {
+                  url('file:///repo')
+                }
+                branch('*/main')
+                extensions {
+                  pathRestriction {
+                    includedRegions('')
+                    excludedRegions(['results/.*', 'docs/.*', 'ci/jenkins_run_log/.*', 'README\\.md', '\\.kiro/.*'].join('\n'))
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
