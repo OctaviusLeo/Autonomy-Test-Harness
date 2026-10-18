@@ -353,7 +353,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Write `scripts/run_experiment.sh`: under the simulation lock, it runs the experiment in one container from `ath-sim:<commit>` with output under `~/ath-shared/runs/experiment-<commit>/`, then copies the JSON, JUnit files, and summary into `results/experiment/` and the summary to `results/summary.md`.
   - _Requirements: 10.1, 10.2, 10.3, 10.4_
 
-- [ ] 6.5 Write property and unit tests for the experiment
+- [x] 6.5 Write property and unit tests for the experiment
   - **Property 17: Paired experiment uses identical scenarios across conditions** and **Property 18: Confidence interval is a valid 95% interval** — one Hypothesis test each.
   - Unit tests: `wilson_interval(27, 30)` is [0.744, 0.965] and `wilson_interval(15, 30)` is [0.332, 0.668] within 1e-3; resumption skips completed runs and keeps the total run time as the sum of run durations; an errored run is retried once.
   - **Validates: Requirements 10.1, 10.2, 10.3**
