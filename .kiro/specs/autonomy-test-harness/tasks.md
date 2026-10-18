@@ -169,7 +169,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Add `dump_scenario(scenario) -> str`, deterministic YAML (fixed key order, floats rounded to 4 decimals), and make `load_scenario` report every error with the offending field path or the unsupported version.
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [ ] 2.2 Write property and unit tests for schema validation
+- [x] 2.2 Write property and unit tests for schema validation
   - **Property 4: Schema validation enforces bounds and version** — drive each field out of bounds, give it the wrong type, leave it missing, or use an unsupported version or world; the loader rejects it and the error names the field or version.
   - Unit tests: the example in design.md loads; `dump_scenario` then `load_scenario` round-trips; `odom_drift` is rejected naming `type`.
   - **Validates: Requirements 2.3, 2.4**
