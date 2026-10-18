@@ -16,7 +16,7 @@ This repository is private: no public license, no packaging, no public releases.
 | Name | Version | License |
 | --- | --- | --- |
 | `ros:jazzy-ros-base-noble` (Docker Official Image, Ubuntu 24.04 base) | `sha256:103b6c417973394659af6804d4917cd489b91e5ed22eb7bef263025a3bed2410` | Apache-2.0 (image definition and ROS 2 base); Ubuntu packages under their own licenses |
-| `ghcr.io/astral-sh/uv` (build stage; only the `uv` binary is copied) | 0.13.1, `sha256:4a1f3666816dafadd20ceb71eac9a7d56d7ef30279f7d64048519ab901ada336` | Apache-2.0 OR MIT |
+| `ghcr.io/astral-sh/uv:0.13.1` (build stage; only the `uv` binary is copied) | 0.13.1, `sha256:4a1f3666816dafadd20ceb71eac9a7d56d7ef30279f7d64048519ab901ada336` | Apache-2.0 OR MIT |
 
 ## ROS 2, Nav2, and Gazebo packages (in the `ath-sim` image)
 

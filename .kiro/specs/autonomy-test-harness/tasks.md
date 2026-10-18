@@ -347,7 +347,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Save, under `ci/jenkins_run_log/`: the console log of the last green build (`/job/autonomy-test-harness/<n>/consoleText`), its JSON summary, `verification.json` (build numbers, commits, and results for the green, red, and revert builds), and the job's trigger configuration read with the admin credentials from `config.xml` (showing the poll and nightly timer specs). Commit them (the path restriction keeps this commit from starting a build).
   - _Requirements: 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 6.4 Implement the paired experiment and its statistics
+- [x] 6.4 Implement the paired experiment and its statistics
   - `harness/experiment/stats.py`: `wilson_interval(passes, n, z=1.959964)` with design.md's formula.
   - `harness/experiment/paired.py`: `run_paired` builds each condition's Scenarios from the 30 base Scenarios and `config/experiment.yaml` (base plus one Fault), runs conditions in design.md's order through the suite runner, retries an errored run once and records both attempts, keeps completed runs when restarted on the same output directory and skips them, and writes a stamped `experiment.json` (per condition: n, passes, pass rate, Wilson interval, errored after retry; total run time and segments), per-condition JUnit files, and the generated `summary.md`.
   - Write `scripts/run_experiment.sh`: under the simulation lock, it runs the experiment in one container from `ath-sim:<commit>` with output under `~/ath-shared/runs/experiment-<commit>/`, then copies the JSON, JUnit files, and summary into `results/experiment/` and the summary to `results/summary.md`.
