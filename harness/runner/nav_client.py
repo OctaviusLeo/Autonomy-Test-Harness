@@ -122,6 +122,16 @@ class HarnessClient(Node):
         return self.spin_until(
             lambda: self.last_scan is not None and finite_count(self.last_scan.ranges) >= min_finite, timeout_s)
 
+    def wait_for_subscribers(self, topic: str, count: int, timeout_s: float) -> bool:
+        """Wait until ``topic`` has at least ``count`` subscribers (this node's own included)."""
+        return self.spin_until(lambda: self.count_subscribers(topic) >= count, timeout_s)
+
+    def subscriptions_info(self, topic: str) -> list[dict]:
+        """Who subscribes to ``topic``: node name and namespace, type, reliability (graph API, no daemon)."""
+        return [{"node": f"{i.node_namespace.rstrip('/')}/{i.node_name}", "type": i.topic_type,
+                 "reliability": i.qos_profile.reliability.name}
+                for i in self.get_subscriptions_info_by_topic(topic)]
+
     def lifecycle_active(self, manager: str, timeout_s: float = 2.0) -> bool:
         client = self.create_client(Trigger, f"/{manager}/is_active")
         try:

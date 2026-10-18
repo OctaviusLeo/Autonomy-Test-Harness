@@ -225,7 +225,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Unit tests with known answers: clearance exactly at the threshold, goal reached exactly at each tolerance, goal reached exactly at the time limit, a wall collision, and a run where Nav2 reports `SUCCEEDED` but the true pose is outside tolerance (fails with reason `"timeout"`, detail shows `SUCCEEDED`). A `ros`-marked test reads a small bag written in the test.
   - **Validates: Requirements 6.1, 6.2, 6.3, 6.4, 6.5, 6.7**
 
-- [ ] 3.4 Implement the per-Scenario lifecycle
+- [x] 3.4 Implement the per-Scenario lifecycle
   - `harness/runner/run_scenario.py` implements `run_scenario` exactly as design.md's "Runner design" steps 1–9 describe: isolation variables, the stock launch with the arena world and map and `config/nav2_params_ath.yaml`, readiness check, obstacle spawning with `ros_gz_sim create`, the Ground_Truth reader, the injector, `ros2 bag record --use-sim-time` (MCAP, `zstd_fast`) named by `scenario_id`, initial pose, goal, dispatch-time publication, the simulation-time limit, teardown with the leftover-process check, and the Oracle call. It writes `run_record.json` and `verdict.json`, and marks failures `errored` with the failing step (`launch`, `spawn`, `nav2_activate`, `goal`, `ground_truth`).
   - _Requirements: 5.1, 5.2, 5.4, 5.5, 5.7, 0.10_
 
