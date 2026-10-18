@@ -362,7 +362,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Commit, build `ath-sim:<commit>`, then run `bash scripts/bg.sh experiment bash scripts/run_experiment.sh` and poll it (210 runs; this is the longest job in the plan). If the job is `LOST`, start it again with the same command once; it resumes. Report the real rates even when a Fault lowers them; never change a threshold, time limit, or Fault setting to alter an outcome.
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 0.1, 0.4_
 
-- [ ] 6.7 Generate the README
+- [x] 6.7 Generate the README
   - Write `docs/README.template.md` and `scripts/build_docs.py`, which fills every number from `results/` and generates `README.md` with: the architecture diagram, the Scenario format, how to run locally (`bash scripts/test_unit.sh`, `bash scripts/run_suite.sh smoke`, `bash scripts/run_experiment.sh`) and in Jenkins (`bash scripts/jenkins_up.sh`, the job, the triggers), the exact unit-test and Smoke_Suite commands matching the pipeline, the Paired_Experiment table (pass rate per condition with 95% Wilson intervals and the total run time) with its command, seed, and commit, the Smoke_Suite selection if one was recorded, the private-repository statement, and design.md's known limitations, stating that the faults are models rather than field data.
   - Write `scripts/check_traceability.py` (with unit tests): it fails if any number in `README.md` or `results/summary.md` (URLs and version strings excluded) does not appear in a generated file under `results/`. Run `scripts/build_docs.py`, then the check, which must pass.
   - _Requirements: 11.1, 11.2, 11.3, 9.6, 0.1, 0.9_
