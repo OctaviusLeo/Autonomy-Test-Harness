@@ -213,7 +213,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Tests (`ros` marker for the node): with no Faults, every output equals its input; the schedule's boundaries behave as stated.
   - _Requirements: 4.1, 4.2_
 
-- [ ] 3.2 Implement the Oracle
+- [x] 3.2 Implement the Oracle
   - `harness/oracle/geometry.py`: distance from a point to an oriented rectangle and to a circle, and clearance (distance minus `footprint_radius_m`).
   - `harness/oracle/judge.py`: `judge(...)` exactly as design.md's "Oracle design" describes, from Ground_Truth samples only, returning a `Verdict` with `passed`, `reason` (`"collision"` before `"timeout"`), `detail`, `time_to_goal_s`, and `min_clearance_m`, with walls included.
   - `harness/oracle/bag_reader.py`: reads `/ath/ground_truth/robot_pose` and `/ath/goal_dispatch` from an MCAP bag with `rosbag2_py`.
