@@ -127,7 +127,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Unit test: load both files and assert the only differences are those four values.
   - _Requirements: 0.10, 4.1_
 
-- [ ] 1.3 Implement the Ground_Truth reader and the process helpers
+- [x] 1.3 Implement the Ground_Truth reader and the process helpers
   - `harness/runner/gt_bridge.py` is the ROS 2 node design.md describes: it runs `gz topic -e -t /world/<world>/dynamic_pose/info --json-output`, parses each line (64-bit integers as strings, missing fields as zero), and publishes `geometry_msgs/PoseStamped` on `/ath/ground_truth/robot_pose` for the model `nav2_turtlebot4`, stamped with simulation time, frame `map`.
   - `harness/runner/processes.py` starts a command in its own process group with a log file, stops a group (SIGINT, then SIGKILL after 10 s), and lists leftover processes by the names design.md gives; the process layer is injectable so tests use fakes.
   - Tests (`ros` marker where `rclpy` is needed): a recorded or synthetic JSON stream produces the expected poses and stamps; lines for other models are ignored; a malformed line is skipped and counted; the process helper kills a sleeping child group and reports leftovers.
