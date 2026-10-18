@@ -97,7 +97,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - From PowerShell: if the folder is not a Git repository, run `git init -b main`; otherwise keep its current branch. Set `origin` to `https://github.com/OctaviusLeo/Autonomy-Test-Harness.git` (the owner made it private and it is empty), commit, and `git push -u origin HEAD`.
   - _Requirements: 0.5, 0.7, 0.8, 11.1_
 
-- [ ] 0.2 Build the `ath-sim` image and the image-based test command
+- [x] 0.2 Build the `ath-sim` image and the image-based test command
   - Write `scripts/resolve_apt_pins.sh`: it resolves the current digest of `ros:jazzy-ros-base-noble`, then runs `apt-cache policy` inside that pinned image for each package design.md lists ("Docker image and headless rendering") and writes `docker/apt-pins.txt` (one `name=version` per line) and `docker/base-image.txt` (the digest).
   - Write `docker/Dockerfile`, `docker/entrypoint.sh`, and `.dockerignore` as design.md describes: digest-pinned base, exact apt versions from `docker/apt-pins.txt`, `uv` copied from `ghcr.io/astral-sh/uv:<the host's uv version>`, `/opt/venv` with system site packages and `uv sync --frozen`, the harness installed editable at `/opt/ath`, `git config --system --add safe.directory '*'`, and the entrypoint that sources ROS and applies `ATH_RENDER_MODE` (default `egl`).
   - Write `scripts/build_image.sh [--tag <tag>]`: under the simulation lock, it builds `ath-sim:dev` by default; with `--tag ath-sim:<commit>` it first runs `scripts/require_clean.sh` and refuses if the tree is dirty. It records the built image's ID and size in its log.
