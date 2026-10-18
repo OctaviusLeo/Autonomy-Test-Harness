@@ -1,0 +1,44 @@
+# Secrets: never commit. Every secret is read from an environment variable
+# (Requirement 0.8); the Jenkins admin password lives in ~/.config/ath/jenkins.env,
+# outside the repository.
+.env
+.env.*
+*.env
+secrets.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.token
+*.secret
+credentials.json
+credentials.yaml
+.netrc
+
+# Local run output: bags, logs, coverage data, scratch regeneration
+runs/
+*.mcap
+*.db3
+*.bag
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+build/
+dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/

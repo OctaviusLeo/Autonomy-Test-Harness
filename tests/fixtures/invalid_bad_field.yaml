@@ -1,0 +1,14 @@
+# INVALID: time_limit_s is out of bound (must be > 0). Loading this must fail
+# with an error naming the field `time_limit_s` (Req 2.4).
+schema_version: 1
+scenario_id: gen-000042
+seed: 42
+world: empty_10x10
+time_limit_s: -1.0                # out of bound: must be > 0
+start: {x: -4.0, y: -4.0, yaw: 0.0}
+goal: {x: 4.0, y: 4.0, yaw: 1.57}
+obstacles:
+  - {shape: box, size: {x: 0.5, y: 0.5, z: 0.5}, pose: {x: 0.0, y: 0.0, yaw: 0.0}}
+  - {shape: cylinder, size: {radius: 0.3, height: 0.6}, pose: {x: 1.5, y: -1.0, yaw: 0.0}}
+faults:
+  - {type: range_noise, window: {start_s: 10.0, end_s: 40.0}, params: {sigma_m: 0.05}}

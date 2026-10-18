@@ -1,0 +1,12 @@
+.git
+runs/
+.kiro/
+results/
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+.hypothesis/
+.coverage
+htmlcov/
+.venv/
+*.egg-info/

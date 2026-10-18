@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Private portfolio project: no public license, no packaging, no public releases.
+name = "autonomy-test-harness"
+version = "0.1.0"
+description = "Scenario-based test harness that drives Nav2 under scheduled sensor faults."
+# The ath-sim image runs Ubuntu 24.04's Python 3.12, where ROS 2 Jazzy's Python packages live.
+requires-python = ">=3.12,<3.13"
+
+# One dependency set, every version exact. The image installs these from uv.lock
+# (uv sync --frozen); docs/ENVIRONMENT.md records them. numpy matches the
+# python3-numpy that Ubuntu 24.04's ROS packages are built against.
+dependencies = [
+    "pydantic==2.14.1",
+    "numpy==1.26.4",
+    "PyYAML==6.0.3",
+    "hypothesis==6.170.1",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["harness*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "ros: needs rclpy (runs in the ath-sim image) but not the simulator",
+    "sim: needs the running simulator",
+]
+
+[tool.coverage.run]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_also = [
+    "if __name__ == .__main__.:",
+]

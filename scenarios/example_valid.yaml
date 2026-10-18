@@ -1,0 +1,16 @@
+# A valid example scenario mirroring design.md > "Scenario schema and example".
+# All poses are in the map frame (REP 105 map): meters for x/y, radians for yaw.
+schema_version: 1                 # unsupported versions are rejected by name (Req 2.3)
+scenario_id: gen-000042
+seed: 42                          # written in so this scenario re-runs alone (Req 3.5)
+world: empty_10x10                # world identifier (Req 2.1)
+time_limit_s: 120.0               # hard per-run limit (Req 5.3, 6.5)
+start: {x: -4.0, y: -4.0, yaw: 0.0}
+goal: {x: 4.0, y: 4.0, yaw: 1.57}
+obstacles:                        # each: shape, size, pose (Req 2.2)
+  - {shape: box, size: {x: 0.5, y: 0.5, z: 0.5}, pose: {x: 0.0, y: 0.0, yaw: 0.0}}
+  - {shape: cylinder, size: {radius: 0.3, height: 0.6}, pose: {x: 1.5, y: -1.0, yaw: 0.0}}
+faults:                           # each fault has a type, a window, and params
+  - {type: range_noise, window: {start_s: 10.0, end_s: 40.0}, params: {sigma_m: 0.05}}
+  - {type: scan_dropout, window: {start_s: 50.0, end_s: 55.0}, params: {}}
+  - {type: sector_blackout, window: {start_s: 60.0, end_s: 90.0}, params: {center_deg: 0.0, width_deg: 60.0}}

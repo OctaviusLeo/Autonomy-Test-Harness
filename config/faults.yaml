@@ -1,0 +1,15 @@
+# Fault parameter default placeholders, keyed by fault type.
+# These are starting defaults; a scenario's own fault params override them.
+# Bounds enforced by the schema: sigma_m >= 0; prob in [0,1];
+# latency_ms in [0,1000]; sector width_deg in (0,360].
+range_noise:
+  sigma_m: 0.05
+ray_dropout:
+  prob: 0.1
+scan_dropout: {}
+latency:
+  latency_ms: 100
+freeze: {}
+sector_blackout:
+  center_deg: 0.0
+  width_deg: 60.0

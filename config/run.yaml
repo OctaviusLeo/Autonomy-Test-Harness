@@ -1,0 +1,8 @@
+# RunConfig (see design.md > Data Models > RunConfig).
+time_limit_s: 120.0           # default hard per-run timeout (Req 5.3)
+goal_position_tol_m: 0.25     # goal-reached position tolerance (Req 6.3)
+goal_orientation_tol_rad: 0.26  # goal-reached orientation tolerance (Req 6.3)
+collision_threshold_m: 0.05   # footprint-to-obstacle collision threshold (Req 6.2)
+sensor_topic_in: /scan_raw    # injector subscribe topic
+sensor_topic_out: /scan       # injector republish topic (consumed by Nav2)
+output_dir: results           # where bags, JUnit, and summary are written

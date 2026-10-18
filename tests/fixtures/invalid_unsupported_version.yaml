@@ -1,0 +1,13 @@
+# INVALID: schema_version 999 is not supported. Loading this must fail with an
+# error naming the unsupported version (Req 2.3).
+schema_version: 999               # unsupported version
+scenario_id: gen-000042
+seed: 42
+world: empty_10x10
+time_limit_s: 120.0
+start: {x: -4.0, y: -4.0, yaw: 0.0}
+goal: {x: 4.0, y: 4.0, yaw: 1.57}
+obstacles:
+  - {shape: box, size: {x: 0.5, y: 0.5, z: 0.5}, pose: {x: 0.0, y: 0.0, yaw: 0.0}}
+faults:
+  - {type: scan_dropout, window: {start_s: 50.0, end_s: 55.0}, params: {}}
