@@ -190,7 +190,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - `python -m harness.generator.cli regenerate --config <yaml> --seed <scenario seed> --id <scenario id>` writes that one Scenario; it is the generation half of `scripts/rerun_one.sh` (task 3.5).
   - _Requirements: 3.2, 3.4, 3.5, 5.6_
 
-- [ ] 2.6 Write property tests for determinism and regeneration
+- [x] 2.6 Write property tests for determinism and regeneration
   - **Property 1: Generator determinism under fixed seed** — two runs with the same seed and config give byte-identical YAML.
   - **Property 19: Scenario re-run from seed reproduces the scenario** — `generate_one` on a Scenario's stored seed gives an equal Scenario.
   - **Validates: Requirements 3.2, 3.5, 5.6, 0.3**
