@@ -185,7 +185,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - **Property 3: Infeasible scenarios are rejected by reason** — constructed start-in-obstacle, off-map, and disconnected-goal cases are rejected with the matching reason.
   - **Validates: Requirements 3.1, 3.3, 3.4, 3.6**
 
-- [ ] 2.5 Implement the scenario-set CLI and the regenerate command
+- [x] 2.5 Implement the scenario-set CLI and the regenerate command
   - `python -m harness.generator.cli generate --config <yaml> --out <dir> --prefix <id prefix>` writes one YAML file per Scenario plus a stamped `generation.json` (command, set seed, commit, N, rejection counts by reason).
   - `python -m harness.generator.cli regenerate --config <yaml> --seed <scenario seed> --id <scenario id>` writes that one Scenario; it is the generation half of `scripts/rerun_one.sh` (task 3.5).
   - _Requirements: 3.2, 3.4, 3.5, 5.6_
