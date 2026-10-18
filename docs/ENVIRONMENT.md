@@ -125,6 +125,11 @@ shows `EGL_MESA_device_software` and `GL_RENDERER = llvmpipe (LLVM 20.1.2, 256 b
 (`render.attempts[0].finite_ranges` in `results/m0_baseline.json`). The Xvfb fallback was
 not needed. The image's default `ATH_RENDER_MODE` is `egl`.
 
+Check from a known scene (Requirement 8.3): `bash scripts/check_headless_render.sh` (seed 0, commit
+`eab421795f3efad6cf9e0ef2269c98b714bc47ed`) starts the arena with no display attached, places a 1.0 m box with
+its near face 2.0 m ahead of the lidar, and reads one `/scan`: the forward beam measured 2.0009 m (expected
+2.0 m within 0.05 m) and 360 of 360 ranges were finite. Result: PASS (`results/headless_render_check.txt`).
+
 ## M0 outcome
 
 From `results/m0_baseline.json`, written by `bash scripts/run_m0.sh` (seed 0, commit

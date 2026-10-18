@@ -457,9 +457,9 @@ Missing or unparsable input stops generation without writing a partial file (out
 **Headless rendering (Requirements 8.2, 8.3, 8.5):** the method chosen at M0 (EGL or Xvfb, both CPU software rendering) is stated in `docs/ENVIRONMENT.md`. `scripts/check_headless_render.sh` runs in the container with no display attached: it starts the arena world with one 1.0 m box placed 2.0 m in front of the lidar, reads one `/scan`, and checks that the beam toward the box measures the expected distance within 0.05 m and that at least 300 ranges are finite. It records its exact command and output in `results/headless_render_check.txt`.
 
 > **Headless-rendering outcome (filled in by task 5.4 after the check runs in the container):**
-> - Method: _TBD (EGL or Xvfb, Requirement 8.2)._
-> - Evidence: _TBD (command and output showing the expected range from a known scene, Requirement 8.3)._
-> - Pinned versions: _TBD (base digest and `docker/apt-pins.txt`, recorded in `docs/ENVIRONMENT.md`, Requirement 8.4)._
+> - Method: **EGL, headless, on Mesa's `llvmpipe`** (CPU software rendering), chosen at M0; no display and no X socket in the container (`ATH_RENDER_MODE=egl`, `DISPLAY` unset).
+> - Evidence: `bash scripts/check_headless_render.sh` (seed 0, commit `eab421795f3efad6cf9e0ef2269c98b714bc47ed`) → `results/headless_render_check.txt`: PASS. A 1.0 m box with its near face 2.0 m ahead of the lidar measured 2.0009 m on the forward beam (bearing 269.613°, tolerance 0.05 m); 360 of 360 ranges finite; renderer `llvmpipe (LLVM 20.1.2, 256 bits)`.
+> - Pinned versions: base `ros:jazzy-ros-base-noble@sha256:103b6c417973394659af6804d4917cd489b91e5ed22eb7bef263025a3bed2410` and every line of `docker/apt-pins.txt`, recorded in `docs/ENVIRONMENT.md` ("Docker image") and checked by `python scripts/check_dockerfile_pins.py`.
 
 **Requirements coverage:** Requirement 8 (8.1–8.5).
 

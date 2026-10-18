@@ -313,7 +313,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Record in `docs/ENVIRONMENT.md` the base image digest, every line of `docker/apt-pins.txt`, and the reproducibility limit from design.md.
   - _Requirements: 8.1, 8.4, 0.5, 0.6_
 
-- [ ] 5.4 Write and run the headless-render check
+- [x] 5.4 Write and run the headless-render check
   - `scripts/check_headless_render.sh` (logic in `harness/render_check.py`) does what design.md describes: in the container with no display attached, it starts the arena world with one 1.0 m box 2.0 m in front of the lidar, reads one `/scan`, checks the beam toward the box measures the expected range within 0.05 m and that at least 300 ranges are finite, and records the command and output in `results/headless_render_check.txt`.
   - Commit, build `ath-sim:<commit>`, run it, and fill design.md's "Headless-rendering outcome" block and the "Headless rendering" section of `docs/ENVIRONMENT.md`.
   - _Requirements: 8.2, 8.3_
