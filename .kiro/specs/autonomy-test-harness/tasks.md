@@ -110,7 +110,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - `harness/repro.py` provides `commit_hash()` (`ATH_COMMIT` when set, otherwise `git rev-parse HEAD`, always a full 40-character hash), a `Stamp` dataclass `{command, seed, commit}`, and `stamp_json(obj, stamp)`, used by every result-writing script. Host scripts that start a reported run call `scripts/require_clean.sh` first and pass its hash into the container as `ATH_COMMIT`.
   - _Requirements: 0.1, 0.2_
 
-- [ ] 0.4 Write unit tests for the reproducibility helper
+- [x] 0.4 Write unit tests for the reproducibility helper
   - Assert the commit hash is 40 hex characters, that `ATH_COMMIT` takes precedence, that a malformed `ATH_COMMIT` is rejected, and that a stamp round-trips through JSON. Test `scripts/require_clean.sh` in a throwaway repository in a temporary directory (a change under `results/` is allowed; a change under `harness/` is refused).
   - _Requirements: 0.1_
 
