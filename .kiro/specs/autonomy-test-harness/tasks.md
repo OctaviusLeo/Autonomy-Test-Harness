@@ -322,7 +322,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Commit, build `ath-sim:<commit>`, then run `env -u DISPLAY -u WAYLAND_DISPLAY bash scripts/run_suite.sh smoke` detached (WSLg sets those variables; the container also gets no X socket mount), and copy `junit.xml`, `summary.md`, and `suite.json` into `results/smoke/`.
   - _Requirements: 8.5, 7.1, 7.2, 9.1_
 
-- [ ] 5.6 **Automated gate (M4):** run `bash scripts/verify_m4.sh`, which runs `bash scripts/test_unit.sh` and `python scripts/check_dockerfile_pins.py` (in the image), and checks:
+- [x] 5.6 **Automated gate (M4):** run `bash scripts/verify_m4.sh`, which runs `bash scripts/test_unit.sh` and `python scripts/check_dockerfile_pins.py` (in the image), and checks:
   - `results/headless_render_check.txt` shows a pass, with its command;
   - design.md's "Headless-rendering outcome" block has no `TBD`;
   - `results/smoke/junit.xml` parses and has one test case per Smoke_Suite Scenario, all passing; `results/smoke/summary.md` exists with a stamp.

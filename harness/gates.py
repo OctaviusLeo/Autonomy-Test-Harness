@@ -289,6 +289,45 @@ def check_m3(repo: Path) -> list[str]:
     return problems
 
 
+def check_junit_all_pass(path: Path, expected_cases: list[str], where: str, problems: list[str]) -> None:
+    """``path`` parses as JUnit XML with exactly one passing test case per expected name."""
+    import xml.etree.ElementTree as ET
+
+    try:
+        root = ET.parse(path).getroot()
+    except (OSError, ET.ParseError) as exc:
+        problems.append(f"{where}: does not parse ({exc})")
+        return
+    suites = [root] if root.tag == "testsuite" else root.findall("testsuite")
+    cases = [c for s in suites for c in s.findall("testcase")]
+    names = sorted(c.get("name") for c in cases)
+    if names != sorted(expected_cases):
+        problems.append(f"{where}: test cases {names} != Smoke_Suite {sorted(expected_cases)}")
+    failing = [c.get("name") for c in cases if c.find("failure") is not None or c.find("error") is not None]
+    if failing:
+        problems.append(f"{where}: failing or errored test cases {failing}")
+
+
+def check_m4(repo: Path) -> list[str]:
+    problems: list[str] = []
+    render = _read(repo / "results" / "headless_render_check.txt", problems)
+    if "Result: PASS" not in render or "Command: bash scripts/check_headless_render.sh" not in render:
+        problems.append("results/headless_render_check.txt does not show a PASS with its command")
+    design = _read(repo / ".kiro" / "specs" / "autonomy-test-harness" / "design.md", problems)
+    block = quoted_block(design, "Headless-rendering outcome")
+    if not block or "TBD" in block:
+        problems.append("design.md: the 'Headless-rendering outcome' block is missing or still has TBD")
+    check_junit_all_pass(repo / "results" / "smoke" / "junit.xml", smoke_selection(repo), "results/smoke/junit.xml",
+                         problems)
+    summary = _read(repo / "results" / "smoke" / "summary.md", problems)
+    if not re.search(r"Commit: `[0-9a-f]{40}`", summary) or "- Command: `" not in summary:
+        problems.append("results/smoke/summary.md has no stamp (command, seed, full commit)")
+    suite = load_json(repo / "results" / "smoke" / "suite.json", problems)
+    if isinstance(suite, dict):
+        check_stamp(suite, "results/smoke/suite.json", problems)
+    return problems
+
+
 def _read(path: Path, problems: list[str]) -> str:
     try:
         return path.read_text(encoding="utf-8")
@@ -297,4 +336,5 @@ def _read(path: Path, problems: list[str]) -> str:
         return ""
 
 
-CHECKS: dict[str, Callable[[Path], list[str]]] = {"m0": check_m0, "m1": check_m1, "m2": check_m2, "m3": check_m3}
+CHECKS: dict[str, Callable[[Path], list[str]]] = {
+    "m0": check_m0, "m1": check_m1, "m2": check_m2, "m3": check_m3, "m4": check_m4}

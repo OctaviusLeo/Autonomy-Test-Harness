@@ -224,3 +224,42 @@ def test_m3_gate_reports_problems(m3_repo):
         assert fragment in text
     (m3_repo / "config/experiment.yaml").unlink()
     assert "config/experiment.yaml" in "\n".join(gates.check_m3(m3_repo))
+
+
+@pytest.fixture
+def m4_repo(tmp_path, repo_root) -> Path:
+    from harness.reporting.junit import junit_xml
+    from harness.reporting.summary import summary_markdown
+
+    repo = tmp_path / "repo"
+    shutil.copytree(repo_root / "scenarios" / "fixed10", repo / "scenarios" / "fixed10")
+    _write(repo, "config/smoke_suite.yaml", "ids: all\n")
+    _write(repo, "results/headless_render_check.txt", "Command: bash scripts/check_headless_render.sh\nResult: PASS\n")
+    _write(repo, ".kiro/specs/autonomy-test-harness/design.md", "> **Headless-rendering outcome (filled):**\n> - EGL\n")
+    stamp = {"command": "bash scripts/run_suite.sh smoke", "seed": 0, "commit": HASH}
+    records = [{"scenario_id": sid, "seed": 1, "fault_condition": "none", "status": "ok",
+                "verdict": {"passed": True, "reason": ""}, "stamp": stamp} for sid in gates.smoke_selection(repo)]
+    _write(repo, "results/smoke/junit.xml", junit_xml(records, "smoke"))
+    _write(repo, "results/smoke/summary.md", summary_markdown(records, "smoke", stamp))
+    _write(repo, "results/smoke/suite.json", json.dumps({"suite": "smoke", "stamp": stamp}))
+    return repo
+
+
+def test_m4_gate_passes(m4_repo):
+    assert gates.check_m4(m4_repo) == []
+
+
+def test_m4_gate_reports_problems(m4_repo):
+    _write(m4_repo, "results/headless_render_check.txt", "Result: FAIL\n")
+    _write(m4_repo, ".kiro/specs/autonomy-test-harness/design.md", "> **Headless-rendering outcome:**\n> - TBD\n")
+    junit = (m4_repo / "results/smoke/junit.xml").read_text()
+    junit = junit.replace('name="fixed10-009" time="0.0">', 'name="fixed10-009" time="0.0"><failure message="timeout">x</failure>')
+    junit = junit.replace('<testcase classname="ath.smoke" name="fixed10-000"', '<testcase classname="ath.smoke" name="other"')
+    (m4_repo / "results/smoke/junit.xml").write_text(junit)
+    (m4_repo / "results/smoke/summary.md").write_text("# no stamp\n")
+    text = "\n".join(gates.check_m4(m4_repo))
+    for fragment in ("does not show a PASS", "'Headless-rendering outcome'", "!= Smoke_Suite",
+                     "failing or errored test cases ['fixed10-009']", "summary.md has no stamp"):
+        assert fragment in text
+    (m4_repo / "results/smoke/junit.xml").write_text("<testsuite")
+    assert "does not parse" in "\n".join(gates.check_m4(m4_repo))
