@@ -275,7 +275,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Extend `injector_node.py` to apply each active Fault from the Scenario with its own seeded RNG, in Scenario order, from the dispatch time on; outside every window the scan passes through unchanged. Whole-scan dropout publishes nothing; latency releases from the queue on a 200 Hz simulation-time timer; freeze republishes the stored pre-window scan.
   - _Requirements: 4.1, 4.2, 4.3_
 
-- [ ] 4.4 Write property and node tests for fault windowing
+- [x] 4.4 Write property and node tests for fault windowing
   - **Property 5: Faults apply only inside their window** — for scan times outside every window the output equals the input; inside, it reflects the Fault (tested on `schedule.py` plus the pure apply path).
   - A `ros`-marked test publishes a synthetic scan stream and a dispatch time to the node and checks the republished stream inside and outside one window per Fault type.
   - **Validates: Requirements 4.2, 4.11**
