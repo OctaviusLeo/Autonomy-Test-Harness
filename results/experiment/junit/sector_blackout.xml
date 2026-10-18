@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="experiment.sector_blackout" tests="30" failures="6" errors="0" time="1267.0">
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-000[sector_blackout]" time="29.0">
+    <system-out>seed=883193502 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-000 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-001[sector_blackout]" time="50.6">
+    <system-out>seed=460490113 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-001 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-002[sector_blackout]" time="34.9">
+    <system-out>seed=1874405553 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-002 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-003[sector_blackout]" time="38.9">
+    <system-out>seed=895118044 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-003 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-004[sector_blackout]" time="48.3">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=SUCCEEDED; end_t=20.997s after dispatch; final true pose (-1.519, 1.314, yaw 1.883); 0.336 m from goal</failure>
+    <system-out>seed=1023865560 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-004 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-005[sector_blackout]" time="28.7">
+    <system-out>seed=1734512320 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-005 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-006[sector_blackout]" time="36.8">
+    <system-out>seed=587816745 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-006 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-007[sector_blackout]" time="39.4">
+    <system-out>seed=588245755 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-007 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-008[sector_blackout]" time="116.1">
+    <failure message="collision">min clearance -0.005 m &lt; 0.02 m; nav2_result=TIME_LIMIT; end_t=92.016s after dispatch; final true pose (0.852, 2.544, yaw -3.057); 3.287 m from goal</failure>
+    <system-out>seed=1678250669 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-008 nav2_result=TIME_LIMIT</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-009[sector_blackout]" time="45.7">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=SUCCEEDED; end_t=21.135s after dispatch; final true pose (0.940, -3.410, yaw 2.132); 0.317 m from goal</failure>
+    <system-out>seed=1751873203 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-009 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-010[sector_blackout]" time="46.6">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=SUCCEEDED; end_t=17.142s after dispatch; final true pose (0.984, -1.309, yaw 1.233); 0.313 m from goal</failure>
+    <system-out>seed=2145293912 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-010 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-011[sector_blackout]" time="112.9">
+    <failure message="collision">min clearance -0.006 m &lt; 0.02 m; nav2_result=TIME_LIMIT; end_t=91.998s after dispatch; final true pose (-0.284, -2.836, yaw -2.221); 1.836 m from goal</failure>
+    <system-out>seed=231140244 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-011 nav2_result=TIME_LIMIT</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-012[sector_blackout]" time="33.1">
+    <system-out>seed=1391146725 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-012 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-013[sector_blackout]" time="31.1">
+    <system-out>seed=937167134 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-013 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-014[sector_blackout]" time="31.0">
+    <system-out>seed=1926788023 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-014 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-015[sector_blackout]" time="35.6">
+    <system-out>seed=1801378468 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-015 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-016[sector_blackout]" time="44.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=SUCCEEDED; end_t=18.039s after dispatch; final true pose (2.316, 2.465, yaw 2.155); 0.402 m from goal</failure>
+    <system-out>seed=975032298 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-016 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-017[sector_blackout]" time="37.9">
+    <system-out>seed=426629323 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-017 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-018[sector_blackout]" time="31.1">
+    <system-out>seed=1183638039 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-018 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-019[sector_blackout]" time="34.0">
+    <system-out>seed=649952284 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-019 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-020[sector_blackout]" time="37.8">
+    <system-out>seed=39028674 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-020 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-021[sector_blackout]" time="37.1">
+    <system-out>seed=736918177 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-021 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-022[sector_blackout]" time="42.4">
+    <system-out>seed=1494695488 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-022 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-023[sector_blackout]" time="33.7">
+    <system-out>seed=454983394 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-023 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-024[sector_blackout]" time="36.3">
+    <system-out>seed=1580830950 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-024 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-025[sector_blackout]" time="39.1">
+    <system-out>seed=1977508728 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-025 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-026[sector_blackout]" time="27.3">
+    <system-out>seed=1026499398 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-026 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-027[sector_blackout]" time="35.0">
+    <system-out>seed=1196390024 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-027 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-028[sector_blackout]" time="37.4">
+    <system-out>seed=1994742899 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-028 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.sector_blackout" name="exp30-029[sector_blackout]" time="34.3">
+    <system-out>seed=1816132997 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/sector_blackout/bags/exp30-029 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+</testsuite>

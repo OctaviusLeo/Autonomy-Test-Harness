@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="experiment.range_noise" tests="30" failures="1" errors="0" time="1184.1">
+  <testcase classname="ath.experiment.range_noise" name="exp30-000[range_noise]" time="28.1">
+    <system-out>seed=883193502 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-000 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-001[range_noise]" time="44.3">
+    <system-out>seed=460490113 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-001 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-002[range_noise]" time="32.6">
+    <system-out>seed=1874405553 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-002 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-003[range_noise]" time="81.4">
+    <system-out>seed=895118044 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-003 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-004[range_noise]" time="34.4">
+    <system-out>seed=1023865560 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-004 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-005[range_noise]" time="34.8">
+    <system-out>seed=1734512320 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-005 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-006[range_noise]" time="38.8">
+    <system-out>seed=587816745 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-006 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-007[range_noise]" time="37.6">
+    <system-out>seed=588245755 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-007 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-008[range_noise]" time="39.0">
+    <system-out>seed=1678250669 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-008 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-009[range_noise]" time="45.5">
+    <system-out>seed=1751873203 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-009 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-010[range_noise]" time="33.0">
+    <system-out>seed=2145293912 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-010 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-011[range_noise]" time="57.6">
+    <system-out>seed=231140244 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-011 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-012[range_noise]" time="40.3">
+    <system-out>seed=1391146725 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-012 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-013[range_noise]" time="40.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=SUCCEEDED; end_t=16.395s after dispatch; final true pose (4.052, -0.141, yaw 1.732); 0.331 m from goal</failure>
+    <system-out>seed=937167134 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-013 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-014[range_noise]" time="30.9">
+    <system-out>seed=1926788023 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-014 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-015[range_noise]" time="38.5">
+    <system-out>seed=1801378468 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-015 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-016[range_noise]" time="34.3">
+    <system-out>seed=975032298 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-016 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-017[range_noise]" time="36.3">
+    <system-out>seed=426629323 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-017 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-018[range_noise]" time="31.3">
+    <system-out>seed=1183638039 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-018 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-019[range_noise]" time="45.7">
+    <system-out>seed=649952284 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-019 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-020[range_noise]" time="42.2">
+    <system-out>seed=39028674 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-020 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-021[range_noise]" time="36.1">
+    <system-out>seed=736918177 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-021 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-022[range_noise]" time="47.6">
+    <system-out>seed=1494695488 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-022 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-023[range_noise]" time="32.2">
+    <system-out>seed=454983394 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-023 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-024[range_noise]" time="36.6">
+    <system-out>seed=1580830950 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-024 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-025[range_noise]" time="30.1">
+    <system-out>seed=1977508728 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-025 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-026[range_noise]" time="43.3">
+    <system-out>seed=1026499398 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-026 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-027[range_noise]" time="32.6">
+    <system-out>seed=1196390024 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-027 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-028[range_noise]" time="36.2">
+    <system-out>seed=1994742899 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-028 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.range_noise" name="exp30-029[range_noise]" time="41.9">
+    <system-out>seed=1816132997 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/range_noise/bags/exp30-029 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+</testsuite>

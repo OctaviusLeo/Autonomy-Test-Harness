@@ -1,0 +1,380 @@
+{
+  "base_set": "scenarios/experiment30",
+  "set_seed": 303,
+  "base_scenarios": 30,
+  "conditions": [
+    {
+      "condition": "none",
+      "n": 30,
+      "passes": 30,
+      "pass_rate": 1.0,
+      "ci95": {
+        "low": 0.8865,
+        "high": 1.0
+      },
+      "errored_after_retry": 0,
+      "scenario_ids": [
+        "exp30-000",
+        "exp30-001",
+        "exp30-002",
+        "exp30-003",
+        "exp30-004",
+        "exp30-005",
+        "exp30-006",
+        "exp30-007",
+        "exp30-008",
+        "exp30-009",
+        "exp30-010",
+        "exp30-011",
+        "exp30-012",
+        "exp30-013",
+        "exp30-014",
+        "exp30-015",
+        "exp30-016",
+        "exp30-017",
+        "exp30-018",
+        "exp30-019",
+        "exp30-020",
+        "exp30-021",
+        "exp30-022",
+        "exp30-023",
+        "exp30-024",
+        "exp30-025",
+        "exp30-026",
+        "exp30-027",
+        "exp30-028",
+        "exp30-029"
+      ]
+    },
+    {
+      "condition": "range_noise",
+      "n": 30,
+      "passes": 29,
+      "pass_rate": 0.9667,
+      "ci95": {
+        "low": 0.8333,
+        "high": 0.9941
+      },
+      "errored_after_retry": 0,
+      "scenario_ids": [
+        "exp30-000",
+        "exp30-001",
+        "exp30-002",
+        "exp30-003",
+        "exp30-004",
+        "exp30-005",
+        "exp30-006",
+        "exp30-007",
+        "exp30-008",
+        "exp30-009",
+        "exp30-010",
+        "exp30-011",
+        "exp30-012",
+        "exp30-013",
+        "exp30-014",
+        "exp30-015",
+        "exp30-016",
+        "exp30-017",
+        "exp30-018",
+        "exp30-019",
+        "exp30-020",
+        "exp30-021",
+        "exp30-022",
+        "exp30-023",
+        "exp30-024",
+        "exp30-025",
+        "exp30-026",
+        "exp30-027",
+        "exp30-028",
+        "exp30-029"
+      ]
+    },
+    {
+      "condition": "ray_dropout",
+      "n": 30,
+      "passes": 30,
+      "pass_rate": 1.0,
+      "ci95": {
+        "low": 0.8865,
+        "high": 1.0
+      },
+      "errored_after_retry": 0,
+      "scenario_ids": [
+        "exp30-000",
+        "exp30-001",
+        "exp30-002",
+        "exp30-003",
+        "exp30-004",
+        "exp30-005",
+        "exp30-006",
+        "exp30-007",
+        "exp30-008",
+        "exp30-009",
+        "exp30-010",
+        "exp30-011",
+        "exp30-012",
+        "exp30-013",
+        "exp30-014",
+        "exp30-015",
+        "exp30-016",
+        "exp30-017",
+        "exp30-018",
+        "exp30-019",
+        "exp30-020",
+        "exp30-021",
+        "exp30-022",
+        "exp30-023",
+        "exp30-024",
+        "exp30-025",
+        "exp30-026",
+        "exp30-027",
+        "exp30-028",
+        "exp30-029"
+      ]
+    },
+    {
+      "condition": "scan_dropout",
+      "n": 30,
+      "passes": 0,
+      "pass_rate": 0.0,
+      "ci95": {
+        "low": 0.0,
+        "high": 0.1135
+      },
+      "errored_after_retry": 0,
+      "scenario_ids": [
+        "exp30-000",
+        "exp30-001",
+        "exp30-002",
+        "exp30-003",
+        "exp30-004",
+        "exp30-005",
+        "exp30-006",
+        "exp30-007",
+        "exp30-008",
+        "exp30-009",
+        "exp30-010",
+        "exp30-011",
+        "exp30-012",
+        "exp30-013",
+        "exp30-014",
+        "exp30-015",
+        "exp30-016",
+        "exp30-017",
+        "exp30-018",
+        "exp30-019",
+        "exp30-020",
+        "exp30-021",
+        "exp30-022",
+        "exp30-023",
+        "exp30-024",
+        "exp30-025",
+        "exp30-026",
+        "exp30-027",
+        "exp30-028",
+        "exp30-029"
+      ]
+    },
+    {
+      "condition": "latency",
+      "n": 30,
+      "passes": 29,
+      "pass_rate": 0.9667,
+      "ci95": {
+        "low": 0.8333,
+        "high": 0.9941
+      },
+      "errored_after_retry": 0,
+      "scenario_ids": [
+        "exp30-000",
+        "exp30-001",
+        "exp30-002",
+        "exp30-003",
+        "exp30-004",
+        "exp30-005",
+        "exp30-006",
+        "exp30-007",
+        "exp30-008",
+        "exp30-009",
+        "exp30-010",
+        "exp30-011",
+        "exp30-012",
+        "exp30-013",
+        "exp30-014",
+        "exp30-015",
+        "exp30-016",
+        "exp30-017",
+        "exp30-018",
+        "exp30-019",
+        "exp30-020",
+        "exp30-021",
+        "exp30-022",
+        "exp30-023",
+        "exp30-024",
+        "exp30-025",
+        "exp30-026",
+        "exp30-027",
+        "exp30-028",
+        "exp30-029"
+      ]
+    },
+    {
+      "condition": "freeze",
+      "n": 30,
+      "passes": 0,
+      "pass_rate": 0.0,
+      "ci95": {
+        "low": 0.0,
+        "high": 0.1135
+      },
+      "errored_after_retry": 0,
+      "scenario_ids": [
+        "exp30-000",
+        "exp30-001",
+        "exp30-002",
+        "exp30-003",
+        "exp30-004",
+        "exp30-005",
+        "exp30-006",
+        "exp30-007",
+        "exp30-008",
+        "exp30-009",
+        "exp30-010",
+        "exp30-011",
+        "exp30-012",
+        "exp30-013",
+        "exp30-014",
+        "exp30-015",
+        "exp30-016",
+        "exp30-017",
+        "exp30-018",
+        "exp30-019",
+        "exp30-020",
+        "exp30-021",
+        "exp30-022",
+        "exp30-023",
+        "exp30-024",
+        "exp30-025",
+        "exp30-026",
+        "exp30-027",
+        "exp30-028",
+        "exp30-029"
+      ]
+    },
+    {
+      "condition": "sector_blackout",
+      "n": 30,
+      "passes": 24,
+      "pass_rate": 0.8,
+      "ci95": {
+        "low": 0.6269,
+        "high": 0.9049
+      },
+      "errored_after_retry": 0,
+      "scenario_ids": [
+        "exp30-000",
+        "exp30-001",
+        "exp30-002",
+        "exp30-003",
+        "exp30-004",
+        "exp30-005",
+        "exp30-006",
+        "exp30-007",
+        "exp30-008",
+        "exp30-009",
+        "exp30-010",
+        "exp30-011",
+        "exp30-012",
+        "exp30-013",
+        "exp30-014",
+        "exp30-015",
+        "exp30-016",
+        "exp30-017",
+        "exp30-018",
+        "exp30-019",
+        "exp30-020",
+        "exp30-021",
+        "exp30-022",
+        "exp30-023",
+        "exp30-024",
+        "exp30-025",
+        "exp30-026",
+        "exp30-027",
+        "exp30-028",
+        "exp30-029"
+      ]
+    }
+  ],
+  "segments": 1,
+  "total_run_time_s": 7742.1,
+  "total_run_time_h": 2.15,
+  "settings": {
+    "faults": {
+      "none": null,
+      "range_noise": {
+        "window_s": [
+          5.0,
+          65.0
+        ],
+        "params": {
+          "sigma_m": 0.1
+        }
+      },
+      "ray_dropout": {
+        "window_s": [
+          5.0,
+          65.0
+        ],
+        "params": {
+          "prob": 0.5
+        }
+      },
+      "scan_dropout": {
+        "window_s": [
+          5.0,
+          15.0
+        ],
+        "params": {}
+      },
+      "latency": {
+        "window_s": [
+          5.0,
+          65.0
+        ],
+        "params": {
+          "latency_ms": 300.0
+        }
+      },
+      "freeze": {
+        "window_s": [
+          5.0,
+          15.0
+        ],
+        "params": {}
+      },
+      "sector_blackout": {
+        "window_s": [
+          5.0,
+          65.0
+        ],
+        "params": {
+          "center_deg": 270.0,
+          "width_deg": 90.0
+        }
+      }
+    },
+    "thresholds": {
+      "footprint_radius_m": 0.18,
+      "collision_threshold_m": 0.02,
+      "goal_position_tol_m": 0.3,
+      "goal_orientation_tol_rad": 0.3,
+      "startup_timeout_s": 180.0,
+      "settle_s": 2.0
+    }
+  },
+  "stamp": {
+    "command": "bash scripts/run_experiment.sh",
+    "seed": 303,
+    "commit": "4849ce0e6aa64c9da66078c9eaddeb5043d76320"
+  }
+}

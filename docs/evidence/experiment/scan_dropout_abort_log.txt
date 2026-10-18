@@ -1,0 +1,8 @@
+# scan_dropout, exp30-000: Nav2 log lines (launch.log, before teardown) around the aborted goal.
+# Source: /home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/runs/exp30-000/logs/launch.log
+[component_container_isolated-8] [INFO] [1792341787.608625602] [controller_server]: Received a goal, begin computing control effort.
+[component_container_isolated-8] [ERROR] [1792341793.669895785] [controller_server]: Exception in transformPose: Lookup would require extrapolation into the future.  Requested time 17.568000 but the latest data is at time 17.500000, when looking up transform from frame [map] to frame [odom]
+[component_container_isolated-8] [ERROR] [1792341793.670037552] [controller_server]: Unable to transform goal pose into costmap frame
+[component_container_isolated-8] [WARN] [1792341793.671682448] [controller_server]: [follow_path] [ActionServer] Aborting handle.
+[component_container_isolated-8] [WARN] [1792341793.697849764] [bt_navigator]: [navigate_to_pose] [ActionServer] Aborting handle.
+[component_container_isolated-8] [ERROR] [1792341793.698304793] [bt_navigator]: Goal failed

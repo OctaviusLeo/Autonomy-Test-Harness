@@ -358,7 +358,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Unit tests: `wilson_interval(27, 30)` is [0.744, 0.965] and `wilson_interval(15, 30)` is [0.332, 0.668] within 1e-3; resumption skips completed runs and keeps the total run time as the sum of run durations; an errored run is retried once.
   - **Validates: Requirements 10.1, 10.2, 10.3**
 
-- [ ] 6.6 Run the paired experiment
+- [x] 6.6 Run the paired experiment
   - Commit, build `ath-sim:<commit>`, then run `bash scripts/bg.sh experiment bash scripts/run_experiment.sh` and poll it (210 runs; this is the longest job in the plan). If the job is `LOST`, start it again with the same command once; it resumes. Report the real rates even when a Fault lowers them; never change a threshold, time limit, or Fault setting to alter an outcome.
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 0.1, 0.4_
 

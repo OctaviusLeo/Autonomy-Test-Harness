@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="experiment.freeze" tests="30" failures="30" errors="0" time="765.5">
+  <testcase classname="ath.experiment.freeze" name="exp30-000[freeze]" time="23.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.094s after dispatch; final true pose (-1.447, 1.056, yaw 2.393); 1.884 m from goal</failure>
+    <system-out>seed=883193502 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-000 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-001[freeze]" time="24.1">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.097s after dispatch; final true pose (-2.791, -2.371, yaw 3.140); 4.931 m from goal</failure>
+    <system-out>seed=460490113 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-001 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-002[freeze]" time="30.5">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.097s after dispatch; final true pose (0.370, 0.408, yaw -2.763); 1.775 m from goal</failure>
+    <system-out>seed=1874405553 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-002 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-003[freeze]" time="27.4">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.037s after dispatch; final true pose (0.054, -2.437, yaw 0.200); 2.550 m from goal</failure>
+    <system-out>seed=895118044 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-003 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-004[freeze]" time="27.1">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.103s after dispatch; final true pose (-2.522, -3.560, yaw 2.526); 4.642 m from goal</failure>
+    <system-out>seed=1023865560 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-004 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-005[freeze]" time="21.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.058s after dispatch; final true pose (-0.844, 0.693, yaw 3.018); 1.583 m from goal</failure>
+    <system-out>seed=1734512320 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-005 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-006[freeze]" time="22.5">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.052s after dispatch; final true pose (-2.430, 0.678, yaw -0.664); 2.631 m from goal</failure>
+    <system-out>seed=587816745 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-006 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-007[freeze]" time="27.0">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.106s after dispatch; final true pose (3.389, -2.810, yaw 0.757); 1.248 m from goal</failure>
+    <system-out>seed=588245755 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-007 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-008[freeze]" time="26.6">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.064s after dispatch; final true pose (3.962, 2.382, yaw -1.975); 6.400 m from goal</failure>
+    <system-out>seed=1678250669 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-008 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-009[freeze]" time="25.3">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.109s after dispatch; final true pose (-3.155, -0.721, yaw -0.628); 4.780 m from goal</failure>
+    <system-out>seed=1751873203 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-009 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-010[freeze]" time="27.6">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.043s after dispatch; final true pose (-2.822, -2.031, yaw 0.230); 3.587 m from goal</failure>
+    <system-out>seed=2145293912 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-010 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-011[freeze]" time="31.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.088s after dispatch; final true pose (3.147, -0.091, yaw -1.713); 6.170 m from goal</failure>
+    <system-out>seed=231140244 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-011 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-012[freeze]" time="28.0">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.157s after dispatch; final true pose (-2.442, -1.449, yaw -0.506); 3.211 m from goal</failure>
+    <system-out>seed=1391146725 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-012 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-013[freeze]" time="21.6">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.001s after dispatch; final true pose (1.838, -2.489, yaw 0.765); 3.208 m from goal</failure>
+    <system-out>seed=937167134 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-013 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-014[freeze]" time="22.3">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.043s after dispatch; final true pose (-1.510, -1.973, yaw 1.587); 1.858 m from goal</failure>
+    <system-out>seed=1926788023 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-014 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-015[freeze]" time="25.2">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.145s after dispatch; final true pose (-0.657, -3.965, yaw 1.039); 4.261 m from goal</failure>
+    <system-out>seed=1801378468 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-015 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-016[freeze]" time="27.2">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.058s after dispatch; final true pose (2.139, -1.807, yaw 1.608); 3.919 m from goal</failure>
+    <system-out>seed=975032298 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-016 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-017[freeze]" time="24.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.052s after dispatch; final true pose (-2.952, -0.448, yaw -1.544); 3.337 m from goal</failure>
+    <system-out>seed=426629323 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-017 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-018[freeze]" time="22.1">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.082s after dispatch; final true pose (2.829, -1.124, yaw 1.897); 2.453 m from goal</failure>
+    <system-out>seed=1183638039 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-018 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-019[freeze]" time="24.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.046s after dispatch; final true pose (-1.809, -0.143, yaw -0.348); 3.283 m from goal</failure>
+    <system-out>seed=649952284 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-019 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-020[freeze]" time="24.6">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.031s after dispatch; final true pose (-0.232, 0.227, yaw -2.407); 3.416 m from goal</failure>
+    <system-out>seed=39028674 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-020 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-021[freeze]" time="27.1">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.046s after dispatch; final true pose (-0.451, 3.648, yaw 0.139); 3.784 m from goal</failure>
+    <system-out>seed=736918177 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-021 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-022[freeze]" time="24.7">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.046s after dispatch; final true pose (3.771, -2.160, yaw 0.425); 5.531 m from goal</failure>
+    <system-out>seed=1494695488 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-022 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-023[freeze]" time="24.6">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.043s after dispatch; final true pose (0.452, 2.317, yaw 2.631); 3.114 m from goal</failure>
+    <system-out>seed=454983394 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-023 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-024[freeze]" time="24.0">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.142s after dispatch; final true pose (0.172, -2.947, yaw 1.588); 4.503 m from goal</failure>
+    <system-out>seed=1580830950 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-024 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-025[freeze]" time="27.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.106s after dispatch; final true pose (3.384, 0.566, yaw 1.974); 3.358 m from goal</failure>
+    <system-out>seed=1977508728 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-025 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-026[freeze]" time="24.4">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.100s after dispatch; final true pose (0.348, -2.637, yaw 2.454); 2.047 m from goal</failure>
+    <system-out>seed=1026499398 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-026 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-027[freeze]" time="25.6">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.055s after dispatch; final true pose (3.009, 1.323, yaw -1.702); 3.133 m from goal</failure>
+    <system-out>seed=1196390024 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-027 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-028[freeze]" time="26.1">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.064s after dispatch; final true pose (-0.253, 2.681, yaw -0.024); 4.793 m from goal</failure>
+    <system-out>seed=1994742899 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-028 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.freeze" name="exp30-029[freeze]" time="24.7">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.058s after dispatch; final true pose (0.568, -0.010, yaw 0.945); 3.402 m from goal</failure>
+    <system-out>seed=1816132997 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/freeze/bags/exp30-029 nav2_result=ABORTED</system-out>
+  </testcase>
+</testsuite>

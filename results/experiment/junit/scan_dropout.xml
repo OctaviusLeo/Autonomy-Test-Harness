@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="experiment.scan_dropout" tests="30" failures="30" errors="0" time="763.8">
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-000[scan_dropout]" time="26.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.106s after dispatch; final true pose (-1.489, 1.036, yaw 2.444); 1.864 m from goal</failure>
+    <system-out>seed=883193502 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-000 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-001[scan_dropout]" time="24.3">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.091s after dispatch; final true pose (-2.760, -2.229, yaw -3.090); 4.909 m from goal</failure>
+    <system-out>seed=460490113 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-001 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-002[scan_dropout]" time="25.6">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.091s after dispatch; final true pose (0.382, 0.444, yaw -2.762); 1.798 m from goal</failure>
+    <system-out>seed=1874405553 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-002 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-003[scan_dropout]" time="24.4">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.049s after dispatch; final true pose (0.005, -2.461, yaw 0.224); 2.603 m from goal</failure>
+    <system-out>seed=895118044 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-003 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-004[scan_dropout]" time="25.2">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.112s after dispatch; final true pose (-2.457, -3.474, yaw 3.115); 4.544 m from goal</failure>
+    <system-out>seed=1023865560 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-004 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-005[scan_dropout]" time="21.2">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.052s after dispatch; final true pose (-0.847, 0.779, yaw 2.971); 1.558 m from goal</failure>
+    <system-out>seed=1734512320 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-005 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-006[scan_dropout]" time="22.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.094s after dispatch; final true pose (-2.399, 0.687, yaw -0.611); 2.613 m from goal</failure>
+    <system-out>seed=587816745 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-006 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-007[scan_dropout]" time="27.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.058s after dispatch; final true pose (3.351, -2.762, yaw 0.791); 1.252 m from goal</failure>
+    <system-out>seed=588245755 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-007 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-008[scan_dropout]" time="24.0">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.037s after dispatch; final true pose (3.951, 2.396, yaw -2.158); 6.387 m from goal</failure>
+    <system-out>seed=1678250669 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-008 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-009[scan_dropout]" time="38.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.097s after dispatch; final true pose (-3.164, -0.715, yaw -0.643); 4.790 m from goal</failure>
+    <system-out>seed=1751873203 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-009 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-010[scan_dropout]" time="25.2">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.097s after dispatch; final true pose (-2.699, -2.039, yaw 0.229); 3.468 m from goal</failure>
+    <system-out>seed=2145293912 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-010 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-011[scan_dropout]" time="24.5">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.109s after dispatch; final true pose (3.178, 0.108, yaw -1.550); 6.332 m from goal</failure>
+    <system-out>seed=231140244 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-011 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-012[scan_dropout]" time="26.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.091s after dispatch; final true pose (-2.390, -1.495, yaw -0.491); 3.144 m from goal</failure>
+    <system-out>seed=1391146725 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-012 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-013[scan_dropout]" time="21.2">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.049s after dispatch; final true pose (1.738, -2.567, yaw 0.786); 3.335 m from goal</failure>
+    <system-out>seed=937167134 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-013 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-014[scan_dropout]" time="21.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.070s after dispatch; final true pose (-1.537, -1.966, yaw 1.578); 1.847 m from goal</failure>
+    <system-out>seed=1926788023 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-014 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-015[scan_dropout]" time="25.5">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.067s after dispatch; final true pose (-0.679, -3.948, yaw 0.966); 4.278 m from goal</failure>
+    <system-out>seed=1801378468 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-015 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-016[scan_dropout]" time="25.4">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.109s after dispatch; final true pose (2.178, -1.748, yaw 1.597); 3.857 m from goal</failure>
+    <system-out>seed=975032298 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-016 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-017[scan_dropout]" time="27.3">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.058s after dispatch; final true pose (-2.947, -0.375, yaw -1.437); 3.411 m from goal</failure>
+    <system-out>seed=426629323 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-017 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-018[scan_dropout]" time="24.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.052s after dispatch; final true pose (2.801, -1.117, yaw 1.905); 2.434 m from goal</failure>
+    <system-out>seed=1183638039 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-018 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-019[scan_dropout]" time="26.7">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.115s after dispatch; final true pose (-1.939, -0.096, yaw -0.343); 3.408 m from goal</failure>
+    <system-out>seed=649952284 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-019 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-020[scan_dropout]" time="24.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.112s after dispatch; final true pose (-0.182, 0.293, yaw -2.374); 3.495 m from goal</failure>
+    <system-out>seed=39028674 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-020 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-021[scan_dropout]" time="28.4">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.034s after dispatch; final true pose (-0.487, 3.545, yaw 0.060); 3.833 m from goal</failure>
+    <system-out>seed=736918177 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-021 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-022[scan_dropout]" time="25.2">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.055s after dispatch; final true pose (3.760, -2.094, yaw -0.041); 5.464 m from goal</failure>
+    <system-out>seed=1494695488 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-022 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-023[scan_dropout]" time="28.0">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.205s after dispatch; final true pose (0.352, 2.344, yaw 2.631); 3.015 m from goal</failure>
+    <system-out>seed=454983394 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-023 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-024[scan_dropout]" time="21.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.106s after dispatch; final true pose (0.167, -2.975, yaw 1.517); 4.527 m from goal</failure>
+    <system-out>seed=1580830950 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-024 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-025[scan_dropout]" time="24.9">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.058s after dispatch; final true pose (3.355, 0.552, yaw 1.972); 3.357 m from goal</failure>
+    <system-out>seed=1977508728 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-025 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-026[scan_dropout]" time="23.0">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.028s after dispatch; final true pose (0.362, -2.673, yaw 2.458); 2.080 m from goal</failure>
+    <system-out>seed=1026499398 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-026 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-027[scan_dropout]" time="25.8">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.082s after dispatch; final true pose (3.066, 1.418, yaw -1.642); 3.240 m from goal</failure>
+    <system-out>seed=1196390024 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-027 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-028[scan_dropout]" time="26.1">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.208s after dispatch; final true pose (-0.213, 2.670, yaw -0.007); 4.752 m from goal</failure>
+    <system-out>seed=1994742899 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-028 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.scan_dropout" name="exp30-029[scan_dropout]" time="25.4">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.154s after dispatch; final true pose (0.611, 0.018, yaw 0.969); 3.354 m from goal</failure>
+    <system-out>seed=1816132997 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/scan_dropout/bags/exp30-029 nav2_result=ABORTED</system-out>
+  </testcase>
+</testsuite>

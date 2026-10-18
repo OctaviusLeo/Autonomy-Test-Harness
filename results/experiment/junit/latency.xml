@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="experiment.latency" tests="30" failures="1" errors="0" time="1163.7">
+  <testcase classname="ath.experiment.latency" name="exp30-000[latency]" time="28.6">
+    <system-out>seed=883193502 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-000 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-001[latency]" time="42.5">
+    <system-out>seed=460490113 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-001 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-002[latency]" time="34.3">
+    <system-out>seed=1874405553 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-002 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-003[latency]" time="79.6">
+    <system-out>seed=895118044 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-003 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-004[latency]" time="38.3">
+    <system-out>seed=1023865560 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-004 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-005[latency]" time="32.4">
+    <system-out>seed=1734512320 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-005 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-006[latency]" time="34.8">
+    <system-out>seed=587816745 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-006 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-007[latency]" time="37.7">
+    <system-out>seed=588245755 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-007 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-008[latency]" time="47.2">
+    <system-out>seed=1678250669 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-008 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-009[latency]" time="39.5">
+    <system-out>seed=1751873203 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-009 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-010[latency]" time="37.3">
+    <system-out>seed=2145293912 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-010 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-011[latency]" time="33.3">
+    <failure message="timeout">goal not reached within 90.0 s; nav2_result=ABORTED; end_t=14.532s after dispatch; final true pose (0.953, -2.121, yaw -2.726); 3.182 m from goal</failure>
+    <system-out>seed=231140244 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-011 nav2_result=ABORTED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-012[latency]" time="41.3">
+    <system-out>seed=1391146725 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-012 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-013[latency]" time="34.6">
+    <system-out>seed=937167134 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-013 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-014[latency]" time="34.5">
+    <system-out>seed=1926788023 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-014 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-015[latency]" time="44.0">
+    <system-out>seed=1801378468 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-015 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-016[latency]" time="40.0">
+    <system-out>seed=975032298 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-016 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-017[latency]" time="36.2">
+    <system-out>seed=426629323 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-017 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-018[latency]" time="32.2">
+    <system-out>seed=1183638039 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-018 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-019[latency]" time="35.4">
+    <system-out>seed=649952284 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-019 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-020[latency]" time="35.6">
+    <system-out>seed=39028674 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-020 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-021[latency]" time="34.6">
+    <system-out>seed=736918177 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-021 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-022[latency]" time="48.1">
+    <system-out>seed=1494695488 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-022 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-023[latency]" time="36.5">
+    <system-out>seed=454983394 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-023 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-024[latency]" time="43.0">
+    <system-out>seed=1580830950 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-024 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-025[latency]" time="31.4">
+    <system-out>seed=1977508728 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-025 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-026[latency]" time="35.7">
+    <system-out>seed=1026499398 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-026 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-027[latency]" time="31.8">
+    <system-out>seed=1196390024 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-027 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-028[latency]" time="46.0">
+    <system-out>seed=1994742899 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-028 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.experiment.latency" name="exp30-029[latency]" time="37.3">
+    <system-out>seed=1816132997 bag=/home/octaviusleo/ath-shared/runs/experiment-4849ce0e6aa64c9da66078c9eaddeb5043d76320/latency/bags/exp30-029 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+</testsuite>
