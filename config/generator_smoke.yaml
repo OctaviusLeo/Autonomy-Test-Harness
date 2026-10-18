@@ -1,0 +1,22 @@
+# GeneratorConfig for the 10-Scenario Smoke_Suite (scenarios/fixed10/; design.md, "GeneratorConfig").
+# Easier than the experiment's: fewer obstacles, more clearance, shorter trips. The Smoke_Suite guards
+# the harness, not Nav2's limits.
+seed: 101                       # set seed (Requirements 0.2, 3.2)
+n: 10                           # number of Scenarios
+world: empty_10x10              # supported world
+sample_bounds:                  # region for poses and obstacle centers (map frame, m)
+  x: {min: -4.5, max: 4.5}
+  y: {min: -4.5, max: 4.5}
+obstacle_count: {min: 0, max: 2}
+box_size_m:
+  x: {min: 0.3, max: 0.8}
+  y: {min: 0.3, max: 0.8}
+  z: {min: 0.5, max: 1.0}
+cylinder_size_m:
+  radius: {min: 0.15, max: 0.40}
+  height: {min: 0.5, max: 1.0}
+start_goal_distance_m: {min: 3.0, max: 6.0}
+robot_radius_m: 0.22            # Nav2's stock costmap robot_radius
+clearance_m: 0.40               # extra inflation beyond the robot radius
+grid_resolution_m: 0.05         # feasibility grid cell size
+time_limit_s: 90.0              # written into every Scenario (simulation seconds after dispatch)

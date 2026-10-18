@@ -174,7 +174,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Unit tests: the example in design.md loads; `dump_scenario` then `load_scenario` round-trips; `odom_drift` is rejected naming `type`.
   - **Validates: Requirements 2.3, 2.4**
 
-- [ ] 2.3 Implement the generator and the feasibility check
+- [x] 2.3 Implement the generator and the feasibility check
   - `harness/generator/generate.py` implements `generate(seed, n, config)` and `generate_one(scenario_seed, config, scenario_id)` exactly as design.md's "Generator algorithm" describes: per-Scenario seeds drawn from the set RNG, obstacle and pose sampling, the start-to-goal distance rule, replacement of rejected draws, and rejection counts by reason.
   - `harness/generator/feasibility.py` implements `is_feasible`: the occupancy grid from the arena's walls and the obstacles, inflated by `robot_radius_m + clearance_m`, and the three rejection reasons (`start_inside_obstacle`, `off_map`, `unreachable` by 4-connected BFS).
   - Write `config/generator.yaml` and `config/generator_smoke.yaml` with the values in design.md's GeneratorConfig table, validated on load.
