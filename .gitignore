@@ -15,8 +15,9 @@ credentials.json
 credentials.yaml
 .netrc
 
-# Local run output: bags, logs, coverage data, scratch regeneration
+# Local run output: bags, logs, coverage data, scratch regeneration; ci-out/ is the Jenkins workspace's reports
 runs/
+ci-out/
 *.mcap
 *.db3
 *.bag

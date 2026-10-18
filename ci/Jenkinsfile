@@ -13,7 +13,8 @@ pipeline {
     stages {
         stage('Build image') {
             steps {
-                sh 'ATH_COMMIT="$GIT_COMMIT" bash scripts/build_image.sh --tag "ath-sim:$GIT_COMMIT"'
+                // The workspace persists between builds; drop the last build's reports first.
+                sh 'rm -rf ci-out && ATH_COMMIT="$GIT_COMMIT" bash scripts/build_image.sh --tag "ath-sim:$GIT_COMMIT"'
             }
         }
         stage('Unit tests') {
