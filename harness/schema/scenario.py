@@ -2,24 +2,30 @@
 
 Coordinate frame
 ----------------
-Every pose in a Scenario — ``start``, ``goal``, and each obstacle ``pose`` — is
-expressed in a single documented frame: the **map frame** (REP 105 ``map``).
-Positions ``x``/``y`` are in **meters** and ``yaw`` is in **radians**
-(Requirement 2.6).
+Every pose in a Scenario (``start``, ``goal``, and each obstacle ``pose``) is in one frame: the
+**map frame** (REP 105 ``map``). The arena's map is built so that map coordinates equal Gazebo
+world coordinates, so the same numbers place the robot in Gazebo, seed AMCL, and judge the run.
+Positions ``x``/``y`` are in meters and ``yaw`` in radians (Requirement 2.6).
 
-Bounds enforced here (Requirement 2.4):
+Timing
+------
+A Fault's ``window`` is in seconds of simulation time after the goal is dispatched (``start_s`` is
+inclusive, ``end_s`` exclusive). ``time_limit_s`` is also simulation seconds after dispatch.
 
-- ``schema_version`` is a supported integer (supported set = ``{1}``); an
-  unsupported value is rejected with an error that names the version (Req 2.3).
-- ``time_limit_s`` > 0.
-- obstacle sizes > 0 (box ``x``/``y``/``z``; cylinder ``radius``/``height``).
-- fault ``window.end_s`` > ``window.start_s`` >= 0.
-- fault params by type: ``sigma_m`` >= 0; ``prob`` in [0, 1];
-  ``latency_ms`` in [0, 1000]; sector ``width_deg`` in (0, 360].
+Bounds enforced here (Requirement 2.4); any violation, wrong type, missing field, or unknown field
+is rejected naming the field path:
 
-The six required fault types are ``range_noise``, ``ray_dropout``,
-``scan_dropout``, ``latency``, ``freeze``, ``sector_blackout``; ``odom_drift`` is
-optional (Requirement 4.3, 4.10).
+- ``schema_version`` in ``{1}``; another value is rejected naming the version (Requirement 2.3);
+- ``world`` in the supported set (``empty_10x10``);
+- ``seed`` >= 0; ``scenario_id`` letters, digits, ``_``, ``.``, ``-``;
+- ``time_limit_s`` > 0; obstacle sizes > 0;
+- fault ``window.end_s`` > ``window.start_s`` >= 0;
+- ``sigma_m`` >= 0; ``prob`` in [0, 1]; ``latency_ms`` in [0, 1000];
+  sector ``width_deg`` in (0, 360] and ``center_deg`` in [0, 360).
+
+The six Fault types are ``range_noise``, ``ray_dropout``, ``scan_dropout``, ``latency``,
+``freeze``, and ``sector_blackout``. Odometry drift (Requirement 4.10) is not implemented
+(design.md, "Fault models"), so ``odom_drift`` is rejected as an unknown ``type``.
 """
 
 from __future__ import annotations
@@ -28,13 +34,15 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-# Supported Scenario schema versions. A value outside this set is rejected with an
-# error naming the offending version (Requirement 2.3).
-SUPPORTED_SCHEMA_VERSIONS: frozenset[int] = frozenset({1})
+from harness.world.arena import SUPPORTED_WORLDS
 
-# Shared model config: reject unknown fields so a stray/misspelled key is caught
-# as a field-level error rather than silently ignored (Requirement 2.4).
-_STRICT = ConfigDict(extra="forbid")
+# Supported Scenario schema versions; any other value is rejected naming the version (Req 2.3).
+SUPPORTED_SCHEMA_VERSIONS: frozenset[int] = frozenset({1})
+FAULT_TYPES = ("range_noise", "ray_dropout", "scan_dropout", "latency", "freeze", "sector_blackout")
+
+# Reject unknown fields (a misspelled key is an error, not silently ignored), reject values of the
+# wrong type instead of coercing them (strict), and reject NaN and infinity.
+_STRICT = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
 
 
 class Pose(BaseModel):
@@ -47,11 +55,9 @@ class Pose(BaseModel):
     yaw: float
 
 
-# --------------------------------------------------------------------------- #
-# Obstacles — discriminated on ``shape``.
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- obstacles (by shape)
 class BoxSize(BaseModel):
-    """Box extents (meters); every dimension must be > 0."""
+    """Box extents in meters; every dimension > 0."""
 
     model_config = _STRICT
 
@@ -61,7 +67,7 @@ class BoxSize(BaseModel):
 
 
 class CylinderSize(BaseModel):
-    """Cylinder extents (meters); radius and height must be > 0."""
+    """Cylinder extents in meters; radius and height > 0."""
 
     model_config = _STRICT
 
@@ -89,17 +95,12 @@ class CylinderObstacle(BaseModel):
     pose: Pose
 
 
-Obstacle = Annotated[
-    Union[BoxObstacle, CylinderObstacle],
-    Field(discriminator="shape"),
-]
+Obstacle = Annotated[Union[BoxObstacle, CylinderObstacle], Field(discriminator="shape")]
 
 
-# --------------------------------------------------------------------------- #
-# Fault window and per-type params.
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- fault window and params
 class Window(BaseModel):
-    """A fault's active window: ``end_s`` > ``start_s`` >= 0."""
+    """Seconds of simulation time after goal dispatch: active iff start_s <= t < end_s."""
 
     model_config = _STRICT
 
@@ -109,15 +110,12 @@ class Window(BaseModel):
     @model_validator(mode="after")
     def _check_order(self) -> "Window":
         if not self.end_s > self.start_s:
-            raise ValueError(
-                f"window.end_s ({self.end_s}) must be greater than "
-                f"window.start_s ({self.start_s})"
-            )
+            raise ValueError(f"window.end_s ({self.end_s}) must be greater than window.start_s ({self.start_s})")
         return self
 
 
 class RangeNoiseParams(BaseModel):
-    """Gaussian range-noise params: ``sigma_m`` >= 0 (Req 4.4)."""
+    """Gaussian range noise: ``sigma_m`` >= 0 (Req 4.4)."""
 
     model_config = _STRICT
 
@@ -125,53 +123,37 @@ class RangeNoiseParams(BaseModel):
 
 
 class RayDropoutParams(BaseModel):
-    """Per-ray dropout params: ``prob`` in [0, 1] (Req 4.5)."""
+    """Per-ray dropout: ``prob`` in [0, 1] (Req 4.5)."""
 
     model_config = _STRICT
 
     prob: float = Field(ge=0, le=1)
 
 
-class ScanDropoutParams(BaseModel):
-    """Whole-scan dropout takes no params (Req 4.6)."""
+class NoParams(BaseModel):
+    """Whole-scan dropout and frozen scans take no params (Req 4.6, 4.8)."""
 
     model_config = _STRICT
 
 
 class LatencyParams(BaseModel):
-    """Added-latency params: ``latency_ms`` in [0, 1000] (Req 4.7)."""
+    """Added latency: ``latency_ms`` in [0, 1000] (Req 4.7)."""
 
     model_config = _STRICT
 
     latency_ms: float = Field(ge=0, le=1000)
 
 
-class FreezeParams(BaseModel):
-    """Frozen-scan fault takes no params (Req 4.8)."""
-
-    model_config = _STRICT
-
-
 class SectorBlackoutParams(BaseModel):
-    """Sector-blackout params: ``width_deg`` in (0, 360]; ``center_deg`` free (Req 4.9)."""
+    """Blacked-out sector in the scan's own frame: ``center_deg`` in [0, 360), ``width_deg`` in (0, 360] (Req 4.9)."""
 
     model_config = _STRICT
 
-    center_deg: float
+    center_deg: float = Field(ge=0, lt=360)
     width_deg: float = Field(gt=0, le=360)
 
 
-class OdomDriftParams(BaseModel):
-    """Optional odometry-drift params (Req 4.10)."""
-
-    model_config = _STRICT
-
-    drift_m_per_s: float = Field(ge=0)
-
-
-# --------------------------------------------------------------------------- #
-# Faults — discriminated on ``type``.
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- faults (by type)
 class RangeNoiseFault(BaseModel):
     model_config = _STRICT
 
@@ -193,7 +175,7 @@ class ScanDropoutFault(BaseModel):
 
     type: Literal["scan_dropout"]
     window: Window
-    params: ScanDropoutParams = Field(default_factory=ScanDropoutParams)
+    params: NoParams = Field(default_factory=NoParams)
 
 
 class LatencyFault(BaseModel):
@@ -209,7 +191,7 @@ class FreezeFault(BaseModel):
 
     type: Literal["freeze"]
     window: Window
-    params: FreezeParams = Field(default_factory=FreezeParams)
+    params: NoParams = Field(default_factory=NoParams)
 
 
 class SectorBlackoutFault(BaseModel):
@@ -220,52 +202,39 @@ class SectorBlackoutFault(BaseModel):
     params: SectorBlackoutParams
 
 
-class OdomDriftFault(BaseModel):
-    model_config = _STRICT
-
-    type: Literal["odom_drift"]
-    window: Window
-    params: OdomDriftParams
-
-
 Fault = Annotated[
-    Union[
-        RangeNoiseFault,
-        RayDropoutFault,
-        ScanDropoutFault,
-        LatencyFault,
-        FreezeFault,
-        SectorBlackoutFault,
-        OdomDriftFault,
-    ],
+    Union[RangeNoiseFault, RayDropoutFault, ScanDropoutFault, LatencyFault, FreezeFault, SectorBlackoutFault],
     Field(discriminator="type"),
 ]
 
 
-# --------------------------------------------------------------------------- #
-# Top-level Scenario.
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- Scenario
 class Scenario(BaseModel):
-    """One versioned test case (Requirements 2.1–2.6)."""
+    """One versioned test case (Requirements 2.1-2.6). Field order here is the YAML key order."""
 
     model_config = _STRICT
 
     schema_version: int
-    scenario_id: str
-    seed: int
+    scenario_id: str = Field(min_length=1, pattern=r"^[A-Za-z0-9_.-]+$")
+    seed: int = Field(ge=0)
     world: str
+    time_limit_s: float = Field(gt=0)
     start: Pose
     goal: Pose
     obstacles: list[Obstacle]
     faults: list[Fault]
-    time_limit_s: float = Field(gt=0)
 
     @field_validator("schema_version")
     @classmethod
     def _check_version(cls, v: int) -> int:
         if v not in SUPPORTED_SCHEMA_VERSIONS:
             supported = ", ".join(str(s) for s in sorted(SUPPORTED_SCHEMA_VERSIONS))
-            raise ValueError(
-                f"unsupported schema_version {v}; supported versions: {supported}"
-            )
+            raise ValueError(f"unsupported schema_version {v}; supported versions: {supported}")
+        return v
+
+    @field_validator("world")
+    @classmethod
+    def _check_world(cls, v: str) -> str:
+        if v not in SUPPORTED_WORLDS:
+            raise ValueError(f"unsupported world {v!r}; supported worlds: {', '.join(SUPPORTED_WORLDS)}")
         return v

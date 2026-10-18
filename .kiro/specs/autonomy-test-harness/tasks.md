@@ -164,7 +164,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
 
 ## M1 — Scenario schema and generator
 
-- [ ] 2.1 Bring the Scenario schema in line with the design
+- [x] 2.1 Bring the Scenario schema in line with the design
   - Keep the earlier run's pydantic v2 models in `harness/schema/scenario.py` and `load_scenario` in `validate.py`. Restrict `world` to the supported set (`empty_10x10`), require `center_deg` in [0, 360), remove the `odom_drift` Fault type (not implemented; design.md records why), and document that Fault windows are seconds after goal dispatch. All poses are in the map frame, documented in the module.
   - Add `dump_scenario(scenario) -> str`, deterministic YAML (fixed key order, floats rounded to 4 decimals), and make `load_scenario` report every error with the offending field path or the unsupported version.
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_

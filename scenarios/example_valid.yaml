@@ -1,16 +1,15 @@
-# A valid example scenario mirroring design.md > "Scenario schema and example".
-# All poses are in the map frame (REP 105 map): meters for x/y, radians for yaw.
+# The example Scenario from design.md ("Scenario schema and example"), kept as a loadable reference.
+# All poses are in the map frame (REP 105 map, equal to the Gazebo world frame): meters and radians.
+# Fault windows are seconds of simulation time after the goal is dispatched.
 schema_version: 1                 # unsupported versions are rejected by name (Req 2.3)
-scenario_id: gen-000042
-seed: 42                          # written in so this scenario re-runs alone (Req 3.5)
-world: empty_10x10                # world identifier (Req 2.1)
-time_limit_s: 120.0               # hard per-run limit (Req 5.3, 6.5)
-start: {x: -4.0, y: -4.0, yaw: 0.0}
-goal: {x: 4.0, y: 4.0, yaw: 1.57}
+scenario_id: exp30-007
+seed: 1733220917                  # this Scenario's own seed; regenerates it alone (Req 3.5)
+world: empty_10x10                # must be a supported world (Req 2.1)
+time_limit_s: 90.0                # simulation seconds after goal dispatch (Req 5.3, 6.5)
+start: {x: -3.2, y: -2.75, yaw: 0.4}
+goal:  {x: 2.9, y: 1.85, yaw: -2.1}
 obstacles:                        # each: shape, size, pose (Req 2.2)
-  - {shape: box, size: {x: 0.5, y: 0.5, z: 0.5}, pose: {x: 0.0, y: 0.0, yaw: 0.0}}
+  - {shape: box, size: {x: 0.5, y: 0.4, z: 0.8}, pose: {x: 0.1, y: -0.3, yaw: 0.7}}
   - {shape: cylinder, size: {radius: 0.3, height: 0.6}, pose: {x: 1.5, y: -1.0, yaw: 0.0}}
-faults:                           # each fault has a type, a window, and params
-  - {type: range_noise, window: {start_s: 10.0, end_s: 40.0}, params: {sigma_m: 0.05}}
-  - {type: scan_dropout, window: {start_s: 50.0, end_s: 55.0}, params: {}}
-  - {type: sector_blackout, window: {start_s: 60.0, end_s: 90.0}, params: {center_deg: 0.0, width_deg: 60.0}}
+faults:                           # each: type, window, params (Req 2.1, 4.2, 4.3)
+  - {type: sector_blackout, window: {start_s: 5.0, end_s: 65.0}, params: {center_deg: 270.0, width_deg: 90.0}}
