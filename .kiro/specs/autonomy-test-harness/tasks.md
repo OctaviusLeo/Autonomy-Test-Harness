@@ -133,7 +133,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Tests (`ros` marker where `rclpy` is needed): a recorded or synthetic JSON stream produces the expected poses and stamps; lines for other models are ignored; a malformed line is skipped and counted; the process helper kills a sleeping child group and reports leftovers.
   - _Requirements: 6.1, 5.2, 5.5_
 
-- [ ] 1.4 Write the M0 baseline script
+- [x] 1.4 Write the M0 baseline script
   - `scripts/m0_baseline.py` (logic in `harness/m0.py`, tested with fakes) runs inside the image and does the following, writing logs to `/results/m0/`:
     - records `dpkg-query -W` for `ros-jazzy-navigation2`, `ros-jazzy-nav2-bringup`, and every installed `ros-jazzy-nav2-minimal-tb*` package, plus `/etc/os-release`, `gz sim --versions`, and the ROS distro;
     - launches `tb4_simulation_launch.py` with `headless:=True use_rviz:=False`, the arena world and map, the **stock** parameter file, and start pose (−3.0, −3.0, 0.0), first in EGL mode;
