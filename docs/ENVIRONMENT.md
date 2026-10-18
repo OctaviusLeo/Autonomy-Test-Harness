@@ -158,7 +158,25 @@ From `results/m0_baseline.json`, written by `bash scripts/run_m0.sh` (seed 0, co
 
 ## Jenkins
 
-Not set up yet; task 6.2 records Jenkins, its plugins, and the Docker CLI here.
+The local controller (`bash scripts/jenkins_up.sh`; Compose project `ath-jenkins`, container `ath-jenkins`,
+image `ath-jenkins:local`, volume `ath_jenkins_home`) listens on `http://127.0.0.1:8091` with anonymous
+read-only access. Port 8090, which the design first named, is already published on this machine by
+another project's container. Evidence from `bash scripts/collect_jenkins_evidence.sh`:
+
+| Component | Exact version | Evidence |
+| --- | --- | --- |
+| Jenkins LTS | 2.580.1 | `docs/evidence/jenkins/jenkins_version.txt` (`X-Jenkins` header) |
+| Base image `jenkins/jenkins:2.580.1-lts-jdk21` | `sha256:a660310e39ade10631f774bacd5219de767dfd08947ea5c32a739b5e5bb382c1` | `ci/jenkins/Dockerfile` |
+| OpenJDK (in the controller) | 21.0.12.1 | `docs/evidence/jenkins/jenkins_tools.txt` |
+| Docker CLI (from `docker:29.9.1-cli@sha256:6fae2214c3121a28d5aa639d09032f61310b7c9c75ffbad1025f261a1b621800`) | 29.9.1 | `docs/evidence/jenkins/jenkins_tools.txt` (`docker version` inside `ath-jenkins`) |
+| Docker Buildx plugin | v0.38.0 | `docs/evidence/jenkins/jenkins_tools.txt` |
+| Jenkins plugins (69, every one pinned in `ci/jenkins/plugins.txt`) | see the file | `docs/evidence/jenkins/jenkins_plugins.tsv` (installed name, version, declared license); identical to `ci/jenkins/plugins.txt` |
+| `ath-jenkins:local` image | see the file | `docs/evidence/jenkins/ath_jenkins_image_id.txt` |
+
+The job `autonomy-test-harness` is defined by Configuration as Code (`ci/jenkins/casc.yaml`): pipeline
+`ci/Jenkinsfile` from branch `main` of `file:///repo` (the repository mounted read-only), polled with
+`H/5 * * * *` and run nightly with `H 2 * * *`, ignoring commits that touch only `results/`, `docs/`,
+`ci/jenkins_run_log/`, `README.md`, or `.kiro/`.
 
 ## Reproducibility limit
 
