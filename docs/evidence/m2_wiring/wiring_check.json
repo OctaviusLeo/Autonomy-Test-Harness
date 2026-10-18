@@ -1,0 +1,42 @@
+{
+  "scenario_id": "fixed10-000",
+  "scan_ath_subscribers": [
+    "/amcl",
+    "/collision_monitor",
+    "/global_costmap/global_costmap",
+    "/local_costmap/local_costmap",
+    "/rosbag2_recorder"
+  ],
+  "scan_subscribers": [
+    "/ath_client",
+    "/injector_node",
+    "/rosbag2_recorder"
+  ],
+  "missing_nav2_readers": [],
+  "passthrough": {
+    "raw_scans": 275,
+    "out_scans": 276,
+    "paired": 275,
+    "identical": 275,
+    "differing": 0,
+    "unmatched_raw": 0,
+    "unmatched_raw_inside": 0,
+    "ok": true
+  },
+  "ground_truth_samples": 1579,
+  "run_status": "ok",
+  "leftover_processes": [],
+  "checks": {
+    "nav2_reads_scan_ath": true,
+    "nav2_does_not_read_scan": true,
+    "scan_ath_equals_scan": true,
+    "ground_truth_recorded": true,
+    "no_leftover_processes": true
+  },
+  "ok": true,
+  "stamp": {
+    "command": "bash scripts/run_suite.sh runs/m2_one --wiring --out /home/octaviusleo/ath-shared/runs/m2-wiring",
+    "seed": 666291129,
+    "commit": "5a615def950b16031a5c367a74f8678d30aafa12"
+  }
+}

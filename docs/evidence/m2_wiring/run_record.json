@@ -1,0 +1,28 @@
+{
+  "scenario_id": "fixed10-000",
+  "seed": 666291129,
+  "generator_config": "config/generator_smoke.yaml",
+  "fault_condition": "none",
+  "run_index": 0,
+  "bag_path": "/home/octaviusleo/ath-shared/runs/m2-wiring/bags/fixed10-000",
+  "status": "ok",
+  "failing_step": null,
+  "effect": null,
+  "nav2_result": "SUCCEEDED",
+  "wall_time_s": 52.1,
+  "leftover_processes": [],
+  "verdict": {
+    "passed": true,
+    "reason": "",
+    "detail": "goal reached at 12.717 s; nav2_result=SUCCEEDED; end_t=22.467s after dispatch; final true pose (-0.365, -0.911, yaw 0.642); 0.095 m from goal",
+    "time_to_goal_s": 12.717,
+    "min_clearance_m": 0.6041
+  },
+  "dispatch_sim_time_s": 9.117,
+  "result_sim_time_s": 20.442,
+  "stamp": {
+    "command": "bash scripts/run_suite.sh runs/m2_one --wiring --out /home/octaviusleo/ath-shared/runs/m2-wiring",
+    "seed": 666291129,
+    "commit": "5a615def950b16031a5c367a74f8678d30aafa12"
+  }
+}

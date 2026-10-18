@@ -239,7 +239,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - With fake processes and a fake clock: a hung Scenario is killed at the hard limit, marked `timed_out`, and the suite continues; a spawn failure is `errored` with step `spawn` and the next Scenario still runs; leftover processes are detected, killed, and recorded; the bag path is derived from `scenario_id`; the RunRecord carries the stamp.
   - _Requirements: 5.2, 5.3, 5.4, 5.7_
 
-- [ ] 3.7 Run one Scenario end to end and check the wiring
+- [x] 3.7 Run one Scenario end to end and check the wiring
   - Commit, build `ath-sim:<commit>`, and run the first `fixed10` Scenario with `scripts/run_suite.sh` (a one-Scenario directory under `runs/`). From its bag and logs confirm: Nav2's AMCL, costmaps, and collision monitor subscribe to `/scan_ath` (save `ros2 topic info /scan_ath -v` captured during the run); `/scan_ath` equals `/scan` (no Faults); Ground_Truth samples exist; teardown left no process. Fix the Runner within the retry cap if any check fails. Save the evidence under `docs/evidence/m2_wiring/`.
   - _Requirements: 5.1, 5.2, 5.5, 4.1_
 

@@ -112,13 +112,15 @@ def pump(lines: Iterable[str], model: str, publish: Callable[[PoseSample], None]
 def to_pose_stamped(sample: PoseSample, frame_id: str = "map"):
     from geometry_msgs.msg import PoseStamped  # ROS message types exist only in the image
 
+    # ROS's C serializer aborts the process on a Python int in a float64 field, so cast explicitly.
     msg = PoseStamped()
-    msg.header.stamp.sec = sample.sec
-    msg.header.stamp.nanosec = sample.nanosec
+    msg.header.stamp.sec = int(sample.sec)
+    msg.header.stamp.nanosec = int(sample.nanosec)
     msg.header.frame_id = frame_id
-    msg.pose.position.x, msg.pose.position.y, msg.pose.position.z = sample.x, sample.y, sample.z
+    p = msg.pose.position
+    p.x, p.y, p.z = float(sample.x), float(sample.y), float(sample.z)
     o = msg.pose.orientation
-    o.x, o.y, o.z, o.w = sample.qx, sample.qy, sample.qz, sample.qw
+    o.x, o.y, o.z, o.w = float(sample.qx), float(sample.qy), float(sample.qz), float(sample.qw)
     return msg
 
 

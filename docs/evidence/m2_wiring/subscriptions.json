@@ -1,0 +1,46 @@
+{
+  "/scan_ath": [
+    {
+      "node": "/rosbag2_recorder",
+      "type": "sensor_msgs/msg/LaserScan",
+      "reliability": "RELIABLE"
+    },
+    {
+      "node": "/amcl",
+      "type": "sensor_msgs/msg/LaserScan",
+      "reliability": "BEST_EFFORT"
+    },
+    {
+      "node": "/collision_monitor",
+      "type": "sensor_msgs/msg/LaserScan",
+      "reliability": "BEST_EFFORT"
+    },
+    {
+      "node": "/local_costmap/local_costmap",
+      "type": "sensor_msgs/msg/LaserScan",
+      "reliability": "BEST_EFFORT"
+    },
+    {
+      "node": "/global_costmap/global_costmap",
+      "type": "sensor_msgs/msg/LaserScan",
+      "reliability": "BEST_EFFORT"
+    }
+  ],
+  "/scan": [
+    {
+      "node": "/injector_node",
+      "type": "sensor_msgs/msg/LaserScan",
+      "reliability": "RELIABLE"
+    },
+    {
+      "node": "/rosbag2_recorder",
+      "type": "sensor_msgs/msg/LaserScan",
+      "reliability": "RELIABLE"
+    },
+    {
+      "node": "/ath_client",
+      "type": "sensor_msgs/msg/LaserScan",
+      "reliability": "BEST_EFFORT"
+    }
+  ]
+}
