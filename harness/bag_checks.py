@@ -72,16 +72,22 @@ GUARD_S = 0.05  # scans this close to a window boundary are skipped: the injecto
 
 
 def fault_report(raw: list[ScanMsg], out: list[ScanMsg], fault_type: str, window: tuple[float, float],
-                 dispatch: float, params: dict[str, Any] | None = None, edge: int = 2) -> dict[str, Any]:
+                 dispatch: float, params: dict[str, Any] | None = None) -> dict[str, Any]:
     """Are a Fault's effects confined to its window (simulation seconds after ``dispatch``)?
 
     Inputs are classified by their bag receive time. Outside the window every input must have exactly
     its own unchanged output. Inside it: range noise, ray dropout, and sector blackout change the ranges;
     whole-scan dropout publishes nothing; a frozen scan publishes only repeats of the last pre-window
     scan; latency publishes each input unchanged, later by the configured delay (within 20%).
+
+    The recorder subscribes to /scan and /scan_ath as it discovers them, so it can start recording /scan
+    up to about a second earlier; an input outside the window counts as missing its output only while
+    /scan_ath was being recorded (between its first and last recorded message).
     """
     params = params or {}
     start, end = dispatch + window[0], dispatch + window[1]
+    first_out = min((o.received for o in out), default=float("inf"))
+    last_out = max((o.received for o in out), default=float("-inf"))
 
     def zone(t: float) -> str:
         if start + GUARD_S <= t < end - GUARD_S:
@@ -91,16 +97,19 @@ def fault_report(raw: list[ScanMsg], out: list[ScanMsg], fault_type: str, window
         return "edge"
 
     pairs = pair_by_stamp(raw, out)
-    outside_scans = outside_changed = outside_missing = 0
+    outside_scans = outside_changed = outside_missing = not_recorded = 0
     inside_scans = inside_changed = inside_published = 0
     delays: list[float] = []
-    for i, (r, outs) in enumerate(pairs):
+    for r, outs in pairs:
         where = zone(r.received)
         if where == "outside":
-            outside_scans += 1
             own = [o for o in outs if not start <= o.received < end]  # not a frozen repeat made inside the window
+            if not own and not first_out - GUARD_S <= r.received <= last_out:
+                not_recorded += 1  # /scan_ath was not being recorded yet (or any more)
+                continue
+            outside_scans += 1
             if not own:
-                outside_missing += int(edge <= i < len(pairs) - edge)
+                outside_missing += 1
             elif not same_ranges(r.ranges, own[0].ranges):
                 outside_changed += 1
         elif where == "inside":
@@ -113,7 +122,7 @@ def fault_report(raw: list[ScanMsg], out: list[ScanMsg], fault_type: str, window
                 inside_changed += int(not same_ranges(r.ranges, outs[0].ranges))
     report: dict[str, Any] = {
         "fault": fault_type, "window_s": list(window), "dispatch_sim_time_s": round(dispatch, 3),
-        "raw_scans": len(raw), "out_scans": len(out),
+        "raw_scans": len(raw), "out_scans": len(out), "raw_before_or_after_out_recording": not_recorded,
         "outside_scans": outside_scans, "outside_changed": outside_changed, "outside_missing": outside_missing,
         "inside_scans": inside_scans, "inside_changed": inside_changed,
     }

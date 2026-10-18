@@ -46,7 +46,8 @@ def main(argv: list[str] | None = None) -> int:
     by_type = {e["fault"]: e for e in entries}
     missing = [t for t in FAULT_TYPES if t not in by_type]
     result = {"faults": [by_type[t] for t in FAULT_TYPES if t in by_type], "missing_fault_types": missing,
-              "all_confined": not missing and all(e["confined_to_window"] for e in entries)}
+              "all_confined": not missing and all(e["confined_to_window"] for e in entries),
+              "checked_with_commit": repro.commit_hash()}
     stamp = repro.Stamp.from_dict(suite["stamp"])
     repro.write_stamped_json(args.out, result, stamp)
     for e in result["faults"]:

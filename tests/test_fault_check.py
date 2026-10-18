@@ -66,6 +66,14 @@ def test_changes_outside_the_window_are_caught():
     assert not missing["confined_to_window"] and missing["outside_missing"] == 1
 
 
+def test_scans_before_scan_ath_was_recorded_are_not_missing():
+    raw, out = simulate("sector_blackout")
+    late_start = fault_report(raw, out[4:], "sector_blackout", WINDOW, DISPATCH, PARAMS["sector_blackout"])
+    assert late_start["confined_to_window"] and late_start["raw_before_or_after_out_recording"] == 4
+    early_stop = fault_report(raw, out[:-3], "sector_blackout", WINDOW, DISPATCH, PARAMS["sector_blackout"])
+    assert early_stop["confined_to_window"] and early_stop["raw_before_or_after_out_recording"] == 3
+
+
 def test_wrong_latency_and_leaking_dropout_fail():
     raw, out = simulate("latency")
     assert not fault_report(raw, out, "latency", WINDOW, DISPATCH, {"latency_ms": 100.0})["within_20_percent"]
@@ -123,6 +131,7 @@ def test_m3_fault_check_script(tmp_path, repo_root, load_script, monkeypatch):
         records.append(f"runs/{scenario_id}/run_record.json")
     (run / "suite.json").write_text(json.dumps({"suite": "m3_conditions", "records": records, "stamp": stamp}))
     script = load_script("m3_fault_check")
+    monkeypatch.setenv("ATH_COMMIT", "b" * 40)
     assert script.main(["--run", str(run), "--out", str(tmp_path / "m3.json")]) == 0
     result = json.loads((tmp_path / "m3.json").read_text())
     assert result["all_confined"] and [f["fault"] for f in result["faults"]] == [
