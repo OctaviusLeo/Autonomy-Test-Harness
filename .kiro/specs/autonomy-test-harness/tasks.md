@@ -286,7 +286,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Write `harness/experiment/conditions.py` with `apply_condition(scenario, condition) -> Scenario` (adds the condition's one Fault; `none` returns the Scenario unchanged) and a CLI that writes one file per condition for a base Scenario, with unit tests. Task 4.6 and the experiment use it.
   - _Requirements: 4.10, 4.3, 10.1_
 
-- [ ] 4.6 Run one Scenario per Fault type end to end
+- [x] 4.6 Run one Scenario per Fault type end to end
   - Commit, build `ath-sim:<commit>`, write the six Fault-condition variants of the first `experiment30` Scenario into `runs/m3_conditions/` with the conditions CLI, and run that directory with `scripts/run_suite.sh`, detached.
   - From each bag compute, for every scan pair, whether `/scan_ath` differs from `/scan`, and confirm differences occur only inside the Fault's window (scan dropout: no `/scan_ath` messages inside it; latency: measured delay within ±20% of the setting). Write a stamped `results/m3_fault_check.json` with one entry per Fault type and each run's Verdict.
   - _Requirements: 4.1, 4.2, 4.6, 4.7, 0.1_

@@ -1,0 +1,189 @@
+{
+  "faults": [
+    {
+      "scenario_id": "exp30-000.range_noise",
+      "seed": 883193502,
+      "status": "ok",
+      "nav2_result": "SUCCEEDED",
+      "verdict": {
+        "passed": true,
+        "reason": "",
+        "detail": "goal reached at 9.429 s; nav2_result=SUCCEEDED; end_t=11.682s after dispatch; final true pose (-2.770, 2.097, yaw 2.469); 0.203 m from goal",
+        "time_to_goal_s": 9.429,
+        "min_clearance_m": 0.7857
+      },
+      "fault": "range_noise",
+      "window_s": [
+        5.0,
+        65.0
+      ],
+      "dispatch_sim_time_s": 8.109,
+      "raw_scans": 151,
+      "out_scans": 153,
+      "raw_before_or_after_out_recording": 0,
+      "outside_scans": 83,
+      "outside_changed": 0,
+      "outside_missing": 0,
+      "inside_scans": 67,
+      "inside_changed": 67,
+      "confined_to_window": true
+    },
+    {
+      "scenario_id": "exp30-000.ray_dropout",
+      "seed": 883193502,
+      "status": "ok",
+      "nav2_result": "SUCCEEDED",
+      "verdict": {
+        "passed": true,
+        "reason": "",
+        "detail": "goal reached at 9.519 s; nav2_result=SUCCEEDED; end_t=11.715s after dispatch; final true pose (-2.715, 2.147, yaw 2.419); 0.215 m from goal",
+        "time_to_goal_s": 9.519,
+        "min_clearance_m": 0.7578
+      },
+      "fault": "ray_dropout",
+      "window_s": [
+        5.0,
+        65.0
+      ],
+      "dispatch_sim_time_s": 8.931,
+      "raw_scans": 166,
+      "out_scans": 163,
+      "raw_before_or_after_out_recording": 3,
+      "outside_scans": 95,
+      "outside_changed": 0,
+      "outside_missing": 0,
+      "inside_scans": 67,
+      "inside_changed": 67,
+      "confined_to_window": true
+    },
+    {
+      "scenario_id": "exp30-000.scan_dropout",
+      "seed": 883193502,
+      "status": "ok",
+      "nav2_result": "ABORTED",
+      "verdict": {
+        "passed": false,
+        "reason": "timeout",
+        "detail": "goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.178s after dispatch; final true pose (-1.428, 1.021, yaw 2.418); 1.921 m from goal",
+        "time_to_goal_s": null,
+        "min_clearance_m": 0.9016
+      },
+      "fault": "scan_dropout",
+      "window_s": [
+        5.0,
+        15.0
+      ],
+      "dispatch_sim_time_s": 9.462,
+      "raw_scans": 138,
+      "out_scans": 98,
+      "raw_before_or_after_out_recording": 8,
+      "outside_scans": 98,
+      "outside_changed": 0,
+      "outside_missing": 0,
+      "inside_scans": 31,
+      "inside_changed": 0,
+      "outputs_published_inside": 0,
+      "confined_to_window": true
+    },
+    {
+      "scenario_id": "exp30-000.latency",
+      "seed": 883193502,
+      "status": "ok",
+      "nav2_result": "SUCCEEDED",
+      "verdict": {
+        "passed": true,
+        "reason": "",
+        "detail": "goal reached at 9.492 s; nav2_result=SUCCEEDED; end_t=11.616s after dispatch; final true pose (-2.735, 2.072, yaw 2.409); 0.246 m from goal",
+        "time_to_goal_s": 9.492,
+        "min_clearance_m": 0.753
+      },
+      "fault": "latency",
+      "window_s": [
+        5.0,
+        65.0
+      ],
+      "dispatch_sim_time_s": 9.315,
+      "raw_scans": 165,
+      "out_scans": 162,
+      "raw_before_or_after_out_recording": 0,
+      "outside_scans": 98,
+      "outside_changed": 0,
+      "outside_missing": 0,
+      "inside_scans": 66,
+      "inside_changed": 0,
+      "delayed_messages": 63,
+      "configured_delay_s": 0.3,
+      "measured_delay_s": 0.302,
+      "min_delay_s": 0.297,
+      "within_20_percent": true,
+      "confined_to_window": true
+    },
+    {
+      "scenario_id": "exp30-000.freeze",
+      "seed": 883193502,
+      "status": "ok",
+      "nav2_result": "ABORTED",
+      "verdict": {
+        "passed": false,
+        "reason": "timeout",
+        "detail": "goal not reached within 90.0 s; nav2_result=ABORTED; end_t=8.103s after dispatch; final true pose (-1.461, 1.078, yaw 2.448); 1.858 m from goal",
+        "time_to_goal_s": null,
+        "min_clearance_m": 0.8981
+      },
+      "fault": "freeze",
+      "window_s": [
+        5.0,
+        15.0
+      ],
+      "dispatch_sim_time_s": 9.693,
+      "raw_scans": 142,
+      "out_scans": 144,
+      "raw_before_or_after_out_recording": 0,
+      "outside_scans": 110,
+      "outside_changed": 0,
+      "outside_missing": 0,
+      "inside_scans": 31,
+      "inside_changed": 0,
+      "frozen_repeats": 31,
+      "other_outputs_inside": 0,
+      "outputs_with_inside_stamps": 0,
+      "confined_to_window": true
+    },
+    {
+      "scenario_id": "exp30-000.sector_blackout",
+      "seed": 883193502,
+      "status": "ok",
+      "nav2_result": "SUCCEEDED",
+      "verdict": {
+        "passed": true,
+        "reason": "",
+        "detail": "goal reached at 9.504 s; nav2_result=SUCCEEDED; end_t=11.748s after dispatch; final true pose (-2.838, 2.037, yaw 2.422); 0.224 m from goal",
+        "time_to_goal_s": 9.504,
+        "min_clearance_m": 0.7016
+      },
+      "fault": "sector_blackout",
+      "window_s": [
+        5.0,
+        65.0
+      ],
+      "dispatch_sim_time_s": 9.651,
+      "raw_scans": 179,
+      "out_scans": 167,
+      "raw_before_or_after_out_recording": 12,
+      "outside_scans": 99,
+      "outside_changed": 0,
+      "outside_missing": 0,
+      "inside_scans": 66,
+      "inside_changed": 66,
+      "confined_to_window": true
+    }
+  ],
+  "missing_fault_types": [],
+  "all_confined": true,
+  "checked_with_commit": "b72ca89712cfba92aa57218bee97e2e9eafa08b4",
+  "stamp": {
+    "command": "bash scripts/run_suite.sh runs/m3_conditions --out /home/octaviusleo/ath-shared/runs/m3-conditions",
+    "seed": 0,
+    "commit": "b06c031f8945fd526723032ba29741793be5db1b"
+  }
+}
