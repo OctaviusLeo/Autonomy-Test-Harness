@@ -180,7 +180,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Write `config/generator.yaml` and `config/generator_smoke.yaml` with the values in design.md's GeneratorConfig table, validated on load.
   - _Requirements: 3.1, 3.3, 3.4, 3.5, 3.6, 0.2_
 
-- [ ] 2.4 Write property tests for generator feasibility
+- [x] 2.4 Write property tests for generator feasibility
   - **Property 2: Generator returns exactly N feasible scenarios** — every returned Scenario has its start free, start and goal on the map, and the goal in the start's free component.
   - **Property 3: Infeasible scenarios are rejected by reason** — constructed start-in-obstacle, off-map, and disconnected-goal cases are rejected with the matching reason.
   - **Validates: Requirements 3.1, 3.3, 3.4, 3.6**
