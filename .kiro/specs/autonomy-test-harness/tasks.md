@@ -199,7 +199,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Commit, then generate `scenarios/fixed10/` from `config/generator_smoke.yaml` (prefix `fixed10`) and `scenarios/experiment30/` from `config/generator.yaml` (prefix `exp30`) inside the image, and commit both with their `generation.json`.
   - _Requirements: 3.1, 3.2, 3.4, 0.1_
 
-- [ ] 2.8 **Automated gate (M1):** run `bash scripts/verify_m1.sh`, which runs `bash scripts/test_unit.sh` and checks:
+- [x] 2.8 **Automated gate (M1):** run `bash scripts/verify_m1.sh`, which runs `bash scripts/test_unit.sh` and checks:
   - regenerating both sets into `runs/` gives byte-identical files;
   - each set has the right count, every file loads with `load_scenario`, and `generation.json` holds rejection counts by reason and a stamp;
   - regenerating the first Scenario of each set from its stored seed gives an identical file.

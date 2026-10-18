@@ -140,6 +140,51 @@ def check_m0(repo: Path, regenerate: Callable[[Path, Path], None] = regenerate_m
     return problems
 
 
+SETS = (("fixed10", "config/generator_smoke.yaml", 10), ("experiment30", "config/generator.yaml", 30))
+
+
+def check_m1(repo: Path, regenerated_root: Path | None = None) -> list[str]:
+    """Committed scenario sets: regenerate byte for byte, right counts, valid files, stamped records."""
+    from harness.generator.cli import regenerate_text
+    from harness.generator.feasibility import REASONS
+    from harness.schema.validate import ScenarioValidationError, load_scenario
+
+    problems: list[str] = []
+    regenerated_root = regenerated_root or repo / "runs" / "gate_m1"
+    for name, config, count in SETS:
+        committed, again = repo / "scenarios" / name, regenerated_root / name
+        files = sorted(p.name for p in committed.glob("*.yaml"))
+        if len(files) != count:
+            problems.append(f"scenarios/{name}: {len(files)} Scenario files, expected {count}")
+        if sorted(p.name for p in again.glob("*.yaml")) != files:
+            problems.append(f"scenarios/{name}: regenerated set has different files")
+        for fname in files:
+            if not same_bytes(committed / fname, again / fname):
+                problems.append(f"scenarios/{name}/{fname}: regenerated file differs")
+            try:
+                load_scenario(committed / fname)
+            except ScenarioValidationError as exc:
+                problems.append(f"scenarios/{name}/{fname}: does not load ({exc})")
+        record = load_json(committed / "generation.json", problems)
+        regenerated = load_json(again / "generation.json", problems)
+        if isinstance(record, dict):
+            check_stamp(record, f"scenarios/{name}/generation.json", problems)
+            if set(record.get("rejections", {})) != set(REASONS):
+                problems.append(f"scenarios/{name}/generation.json: rejection counts by reason missing")
+            if record.get("n") != count or len(record.get("scenarios", [])) != count:
+                problems.append(f"scenarios/{name}/generation.json: N is not {count}")
+            if isinstance(regenerated, dict) and {k: v for k, v in record.items() if k != "stamp"} != {
+                    k: v for k, v in regenerated.items() if k != "stamp"}:
+                problems.append(f"scenarios/{name}/generation.json: regenerated record differs (stamp aside)")
+            first = (record.get("scenarios") or [None])[0]
+            if first:
+                text = regenerate_text(config, first["seed"], first["scenario_id"])
+                path = committed / f"{first['scenario_id']}.yaml"
+                if not path.exists() or path.read_text(encoding="utf-8") != text:
+                    problems.append(f"scenarios/{name}: regenerating {first['scenario_id']} from seed {first['seed']} differs")
+    return problems
+
+
 def _read(path: Path, problems: list[str]) -> str:
     try:
         return path.read_text(encoding="utf-8")
@@ -148,4 +193,4 @@ def _read(path: Path, problems: list[str]) -> str:
         return ""
 
 
-CHECKS: dict[str, Callable[[Path], list[str]]] = {"m0": check_m0}
+CHECKS: dict[str, Callable[[Path], list[str]]] = {"m0": check_m0, "m1": check_m1}

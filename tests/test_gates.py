@@ -101,3 +101,40 @@ def test_real_regeneration_matches_committed_files(repo_root, tmp_path):
     gates.regenerate_m0_files(repo_root, tmp_path)
     for rel in ("worlds/empty_10x10.sdf", "maps/empty_10x10.pgm", "config/nav2_params_ath.yaml"):
         assert gates.same_bytes(repo_root / rel, tmp_path / rel)
+
+
+@pytest.fixture
+def m1_repo(tmp_path, repo_root, monkeypatch) -> tuple[Path, Path]:
+    """A copy of the committed sets plus a fresh regeneration of both."""
+    from harness.generator import cli
+
+    monkeypatch.setenv("ATH_COMMIT", HASH)
+    repo = tmp_path / "repo"
+    shutil.copytree(repo_root / "scenarios", repo / "scenarios")
+    regen = tmp_path / "regen"
+    for name, config, _ in gates.SETS:
+        prefix = json.loads((repo_root / "scenarios" / name / "generation.json").read_text())["prefix"]
+        cli.write_set(config, regen / name, prefix)
+    return repo, regen
+
+
+def test_m1_gate_passes_on_the_committed_sets(m1_repo):
+    repo, regen = m1_repo
+    assert gates.check_m1(repo, regenerated_root=regen) == []
+
+
+def test_m1_gate_reports_problems(m1_repo):
+    repo, regen = m1_repo
+    (repo / "scenarios/fixed10/fixed10-003.yaml").write_text((repo / "scenarios/fixed10/fixed10-003.yaml").read_text() + "# edit\n")
+    (repo / "scenarios/fixed10/fixed10-000.yaml").write_text("schema_version: 2\n")
+    (repo / "scenarios/experiment30/exp30-029.yaml").unlink()
+    record = json.loads((repo / "scenarios/fixed10/generation.json").read_text())
+    record["rejections"] = {"unreachable": 1}
+    record["stamp"]["commit"] = "short"
+    (repo / "scenarios/fixed10/generation.json").write_text(json.dumps(record))
+    problems = "\n".join(gates.check_m1(repo, regenerated_root=regen))
+    for fragment in ("fixed10-003.yaml: regenerated file differs", "fixed10-000.yaml: does not load",
+                     "experiment30: 29 Scenario files", "regenerated set has different files",
+                     "rejection counts by reason missing", "40-character", "regenerated record differs",
+                     "regenerating fixed10-000 from seed"):
+        assert fragment in problems
