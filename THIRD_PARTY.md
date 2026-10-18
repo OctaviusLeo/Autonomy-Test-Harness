@@ -9,7 +9,8 @@ package's own metadata on this machine: Python package metadata, ROS `package.xm
 kept as the evidence for the parameter diff) and `config/nav2_params_ath.yaml` (derived
 from it by changing four topic names). Images and packages are fetched at build time.
 
-This repository is private: no public license, no packaging, no public releases.
+This repository's own code is under the MIT License (`LICENSE`); the third-party components below keep their
+own licenses and none of them is redistributed here. There is no packaging or release.
 
 ## Docker images
 

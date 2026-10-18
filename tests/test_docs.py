@@ -30,7 +30,11 @@ def test_build_fills_every_placeholder_from_results(repo, load_script):
     assert "repeat 1: 10 of 10" in readme and "every `fixed10` Scenario" in readme
     assert "measured delay 0.302 s" in readme and "0.1358 m from the goal" in readme
     assert "measured 2.0009 m (tolerance 0.05 m), 360 of 360 ranges finite" in readme
-    assert "faults are models, not field data" in readme and "private" in readme
+    assert "faults are models, not field data" in readme
+    # Every line of the template without a placeholder (prose, license statement, commands) is kept verbatim.
+    template = (repo / "docs" / "README.template.md").read_text()
+    static = [line for line in template.splitlines() if line.strip() and "{{" not in line]
+    assert [line for line in static if line not in readme] == []
     assert docs.untraceable(repo) == []
     script2 = load_script("check_traceability")
     assert script2.main(["--repo", str(repo)]) == 0
