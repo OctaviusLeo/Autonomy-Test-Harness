@@ -1,0 +1,247 @@
+Started by an SCM change
+Checking out git file:///repo into /var/jenkins_home/workspace/autonomy-test-harness@script/5894a93e28682d2b6d34e2cb3b0304efc5172ba06a58f18611cef4585e76ff4c to read ci/Jenkinsfile
+The recommended git tool is: NONE
+No credentials specified
+DEPRECATED: The extension that requires a workspace for polling is deprecated for Pipeline jobs. Use Pipeline-native SCM polling instead.
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/autonomy-test-harness@script/5894a93e28682d2b6d34e2cb3b0304efc5172ba06a58f18611cef4585e76ff4c/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url file:///repo # timeout=10
+Fetching upstream changes from file:///repo
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- file:///repo +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 61efb3b8a43b7b657c11229d3f5d477ec3c0c69e (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 61efb3b8a43b7b657c11229d3f5d477ec3c0c69e # timeout=10
+Commit message: "task 6.3: ignore ci-out/ and clear it per build (build 2 failed: the reused workspace looked dirty)"
+ > git rev-list --no-walk 1aa425ec2d14e543729c83cf6c2ace5b20f04ac6 # timeout=10
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/autonomy-test-harness
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: NONE
+No credentials specified
+DEPRECATED: The extension that requires a workspace for polling is deprecated for Pipeline jobs. Use Pipeline-native SCM polling instead.
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/autonomy-test-harness/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url file:///repo # timeout=10
+Fetching upstream changes from file:///repo
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- file:///repo +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 61efb3b8a43b7b657c11229d3f5d477ec3c0c69e (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 61efb3b8a43b7b657c11229d3f5d477ec3c0c69e # timeout=10
+Commit message: "task 6.3: ignore ci-out/ and clear it per build (build 2 failed: the reused workspace looked dirty)"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 1 day 0 hr
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build image)
+[Pipeline] sh
++ rm -rf ci-out
++ ATH_COMMIT=61efb3b8a43b7b657c11229d3f5d477ec3c0c69e bash scripts/build_image.sh --tag ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e
+build_image: building ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e (commit label 61efb3b8a43b7b657c11229d3f5d477ec3c0c69e)
+waiting for /home/octaviusleo/ath-shared/sim.lock
+acquired /home/octaviusleo/ath-shared/sim.lock
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.84kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/ros:jazzy-ros-base-noble@sha256:103b6c417973394659af6804d4917cd489b91e5ed22eb7bef263025a3bed2410
+#2 DONE 0.0s
+
+#3 [internal] load metadata for ghcr.io/astral-sh/uv:0.13.1@sha256:4a1f3666816dafadd20ceb71eac9a7d56d7ef30279f7d64048519ab901ada336
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 162B done
+#4 DONE 0.0s
+
+#5 [uv 1/1] FROM ghcr.io/astral-sh/uv:0.13.1@sha256:4a1f3666816dafadd20ceb71eac9a7d56d7ef30279f7d64048519ab901ada336
+#5 resolve ghcr.io/astral-sh/uv:0.13.1@sha256:4a1f3666816dafadd20ceb71eac9a7d56d7ef30279f7d64048519ab901ada336 0.0s done
+#5 DONE 0.1s
+
+#6 [stage-1  1/12] FROM docker.io/library/ros:jazzy-ros-base-noble@sha256:103b6c417973394659af6804d4917cd489b91e5ed22eb7bef263025a3bed2410
+#6 resolve docker.io/library/ros:jazzy-ros-base-noble@sha256:103b6c417973394659af6804d4917cd489b91e5ed22eb7bef263025a3bed2410 0.0s done
+#6 DONE 0.1s
+
+#7 [internal] load build context
+#7 transferring context: 41.13kB 0.0s done
+#7 DONE 0.0s
+
+#8 [stage-1  6/12] WORKDIR /opt/ath
+#8 CACHED
+
+#9 [stage-1  3/12] RUN apt-get update  && xargs -a /tmp/apt-pins.txt apt-get install -y --no-install-recommends  && rm -rf /var/lib/apt/lists/*
+#9 CACHED
+
+#10 [stage-1  4/12] RUN git config --system --add safe.directory '*'
+#10 CACHED
+
+#11 [stage-1  2/12] COPY docker/apt-pins.txt /tmp/apt-pins.txt
+#11 CACHED
+
+#12 [stage-1  5/12] COPY --from=uv /uv /uvx /usr/local/bin/
+#12 CACHED
+
+#13 [stage-1  7/12] COPY pyproject.toml uv.lock ./
+#13 CACHED
+
+#14 [stage-1  8/12] RUN uv venv --system-site-packages --python /usr/bin/python3 /opt/venv  && uv sync --frozen --no-install-project
+#14 CACHED
+
+#15 [stage-1  9/12] COPY . /opt/ath
+#15 DONE 0.1s
+
+#16 [stage-1 10/12] RUN uv sync --frozen  && mkdir -p /results
+#16 0.386    Building autonomy-test-harness @ file:///opt/ath
+#16 1.817       Built autonomy-test-harness @ file:///opt/ath
+#16 1.820 Prepared 1 package in 1.43s
+#16 1.823 Installed 1 package in 2ms
+#16 1.823  + autonomy-test-harness==0.1.0 (from file:///opt/ath)
+#16 DONE 1.9s
+
+#17 [stage-1 11/12] COPY docker/entrypoint.sh /usr/local/bin/ath-entrypoint
+#17 DONE 0.1s
+
+#18 [stage-1 12/12] RUN chmod 755 /usr/local/bin/ath-entrypoint
+#18 DONE 0.3s
+
+#19 exporting to image
+#19 exporting layers
+#19 exporting layers 0.4s done
+#19 exporting manifest sha256:95dbccadd23a4cdffb7462d0dec32bdc59cfad3c253d4df11681d5787a6d8807 0.0s done
+#19 exporting config sha256:04cf58fff39fb1b3d862883bcec10a438fd5df9938f6519e868e26f82696da00 0.0s done
+#19 exporting attestation manifest sha256:291774f93e241c67c721b7d8d3b73b5cb64991f66ca958194e109771a678df7e 0.0s done
+#19 exporting manifest list sha256:3719b07420ea8bc043e3a7036dcbd52641691d2d8504240a9ddf9b33848849cb
+#19 exporting manifest list sha256:3719b07420ea8bc043e3a7036dcbd52641691d2d8504240a9ddf9b33848849cb 0.0s done
+#19 naming to docker.io/library/ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e done
+#19 unpacking to docker.io/library/ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e
+#19 unpacking to docker.io/library/ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e 0.3s done
+#19 DONE 0.8s
+build_image: built ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e id=sha256:3719b07420ea8bc043e3a7036dcbd52641691d2d8504240a9ddf9b33848849cb size_bytes=5357641172
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Unit tests)
+[Pipeline] sh
++ ATH_COMMIT=61efb3b8a43b7b657c11229d3f5d477ec3c0c69e bash scripts/test_unit.sh --image ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e --baked --junit ci-out/unit-junit.xml
+waiting for /home/octaviusleo/ath-shared/sim.lock
+acquired /home/octaviusleo/ath-shared/sim.lock
+..........................s............................................. [ 30%]
+........................................................................ [ 60%]
+........................................................................ [ 90%]
+............s.........                                                   [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Name                                Stmts   Miss  Cover
+-------------------------------------------------------
+harness/__init__.py                     0      0   100%
+harness/bag_checks.py                 103      0   100%
+harness/evidence.py                    65      0   100%
+harness/experiment/__init__.py          0      0   100%
+harness/experiment/conditions.py       75      0   100%
+harness/faults/__init__.py              0      0   100%
+harness/faults/injector_node.py       135      0   100%
+harness/faults/models.py               47      0   100%
+harness/faults/schedule.py              9      0   100%
+harness/gates.py                      261      4    98%
+harness/generator/__init__.py           0      0   100%
+harness/generator/cli.py               64      0   100%
+harness/generator/feasibility.py       61      0   100%
+harness/generator/generate.py         138      0   100%
+harness/m0.py                         205      6    97%
+harness/nav2_params.py                 74      1    99%
+harness/oracle/__init__.py              0      0   100%
+harness/oracle/bag_reader.py           39      0   100%
+harness/oracle/geometry.py             34      0   100%
+harness/oracle/judge.py                61      0   100%
+harness/render_check.py               111     15    86%
+harness/reporting/__init__.py           0      0   100%
+harness/reporting/junit.py             35      0   100%
+harness/reporting/records.py           66      1    98%
+harness/reporting/summary.py           45      0   100%
+harness/repro.py                       53      0   100%
+harness/runner/__init__.py              0      0   100%
+harness/runner/gt_bridge.py           120      0   100%
+harness/runner/nav_client.py          175      3    98%
+harness/runner/processes.py            99      6    94%
+harness/runner/rerun.py                45      0   100%
+harness/runner/run_config.py           29      0   100%
+harness/runner/run_scenario.py        219     21    90%
+harness/runner/session.py              92      0   100%
+harness/runner/suite.py               130      4    97%
+harness/schema/__init__.py              0      0   100%
+harness/schema/scenario.py            111      0   100%
+harness/schema/validate.py             53      0   100%
+harness/world/__init__.py               0      0   100%
+harness/world/arena.py                105      0   100%
+scripts/build_world.py                 13      0   100%
+scripts/check_coverage.py              74      0   100%
+scripts/check_dockerfile_pins.py       86      0   100%
+scripts/check_wiring.py                23      0   100%
+scripts/collect_image_evidence.py      14     14     0%
+scripts/m0_baseline.py                 23     23     0%
+scripts/m2_summary.py                  54      0   100%
+scripts/m3_fault_check.py              37      1    97%
+scripts/make_nav2_params.py            15      0   100%
+scripts/verify_gate.py                 17      0   100%
+-------------------------------------------------------
+TOTAL                                3215     99    97%
+Coverage JSON written to file /out/coverage.json
+236 passed, 2 skipped in 106.60s (0:01:46)
+check_coverage: every non-trivial module in harness, scripts is at or above 80%
+test_unit: exit 0 (image ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e, baked=1)
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Scenario suite)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ export ATH_COMMIT=61efb3b8a43b7b657c11229d3f5d477ec3c0c69e
++ export ATH_BAG_LINK_BASE=http://127.0.0.1:8091/job/autonomy-test-harness/3/artifact/ci-out/suite/
++ bash scripts/run_suite.sh smoke --image ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e --out /home/octaviusleo/ath-shared/jenkins/jenkins-autonomy-test-harness-3/smoke --fail-on failures
+waiting for /home/octaviusleo/ath-shared/sim.lock
+acquired /home/octaviusleo/ath-shared/sim.lock
+run_suite: smoke with ath-sim:61efb3b8a43b7b657c11229d3f5d477ec3c0c69e -> /home/octaviusleo/ath-shared/jenkins/jenkins-autonomy-test-harness-3/smoke
+suite smoke: 10 runs, 10 passed, 0 failed, 0 errored, 0 timed out
+run_suite: exit 0; output /home/octaviusleo/ath-shared/jenkins/jenkins-autonomy-test-harness-3/smoke
+Post stage
+[Pipeline] sh
++ bash scripts/ci_collect.sh /home/octaviusleo/ath-shared/jenkins/jenkins-autonomy-test-harness-3/smoke ci-out/suite
+ci_collect: junit.xml suite.json summary.md 
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

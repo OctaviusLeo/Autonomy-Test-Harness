@@ -1,0 +1,6 @@
+{
+  "job": "http://127.0.0.1:8091/job/autonomy-test-harness",
+  "green": {"build": 3, "commit": "61efb3b8a43b7b657c11229d3f5d477ec3c0c69e", "result": "SUCCESS", "failed_tests": ""},
+  "red": {"build": 4, "commit": "3fd8a2d7c9a1f0b995bd25699359e06dea90850d", "result": "FAILURE", "failed_tests": "tests.test_ci_red_check::test_ci_turns_red_on_a_failing_unit_test"},
+  "revert": {"build": 5, "commit": "340cbcf9c8a8fa521809fd06f07dfa0d4ec6d5fd", "result": "SUCCESS", "failed_tests": ""}
+}

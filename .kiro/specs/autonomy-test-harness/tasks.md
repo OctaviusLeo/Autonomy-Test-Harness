@@ -341,7 +341,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Commit, then run `scripts/jenkins_up.sh` detached and poll it; confirm the job exists and `docker version` works inside `ath-jenkins`. Record Jenkins, its plugins, and the Docker CLI with versions and licenses in `docs/ENVIRONMENT.md` and `THIRD_PARTY.md`.
   - _Requirements: 9.1, 9.2, 0.5, 0.7, 0.8_
 
-- [ ] 6.3 Verify the pipeline and commit the evidence
+- [x] 6.3 Verify the pipeline and commit the evidence
   - Commit and push. Run `scripts/jenkins_wait_build.sh <HEAD>` detached until the build for HEAD finishes; it must be `SUCCESS` with the scenario test cases shown in its test report.
   - Commit one intentionally failing unit test (`tests/test_ci_red_check.py`), wait for its build, and confirm it is `FAILURE` because of that test. Then commit a revert of that change (a new commit; never rewrite history) and wait for its build to be `SUCCESS`.
   - Save, under `ci/jenkins_run_log/`: the console log of the last green build (`/job/autonomy-test-harness/<n>/consoleText`), its JSON summary, `verification.json` (build numbers, commits, and results for the green, red, and revert builds), and the job's trigger configuration read with the admin credentials from `config.xml` (showing the poll and nightly timer specs). Commit them (the path restriction keeps this commit from starting a build).
