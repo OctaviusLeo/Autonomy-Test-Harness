@@ -106,7 +106,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Start the first build detached (`bash scripts/bg.sh build_dev bash scripts/build_image.sh`) and poll it. Then confirm `bash scripts/test_unit.sh` exits 0.
   - _Requirements: 8.1, 8.4, 0.9, 1.1_
 
-- [ ] 0.3 Implement the shared reproducibility helper
+- [x] 0.3 Implement the shared reproducibility helper
   - `harness/repro.py` provides `commit_hash()` (`ATH_COMMIT` when set, otherwise `git rev-parse HEAD`, always a full 40-character hash), a `Stamp` dataclass `{command, seed, commit}`, and `stamp_json(obj, stamp)`, used by every result-writing script. Host scripts that start a reported run call `scripts/require_clean.sh` first and pass its hash into the container as `ATH_COMMIT`.
   - _Requirements: 0.1, 0.2_
 
