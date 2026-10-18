@@ -1,0 +1,16 @@
+annotated-types==0.8.0
+coverage==7.16.2
+hypothesis==6.170.1
+iniconfig==2.3.1
+numpy==1.26.4
+packaging==26.3
+pluggy==1.7.0
+pydantic==2.14.1
+pydantic-core==2.50.1
+pygments==2.21.0
+pytest==9.1.1
+pytest-cov==7.1.0
+pyyaml==6.0.3
+sortedcontainers==2.4.0
+typing-extensions==4.16.0
+typing-inspection==0.4.4

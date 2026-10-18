@@ -1,0 +1,126 @@
+{
+  "start": {
+    "x": -3.0,
+    "y": -3.0,
+    "yaw": 0.0
+  },
+  "goal": {
+    "x": 3.0,
+    "y": 3.0,
+    "yaw": 1.57
+  },
+  "goal_limit_s": 120.0,
+  "tolerance_m": 0.3,
+  "params_file": "/opt/ros/jazzy/share/nav2_bringup/params/nav2_params.yaml",
+  "robot_model": "turtlebot4",
+  "failed_step": null,
+  "effect": null,
+  "versions": {
+    "dpkg_query": "ros-jazzy-nav2-bringup\t1.3.13-1noble.20261006.042503\nros-jazzy-nav2-minimal-tb3-sim\t1.0.1-1noble.20261006.041307\nros-jazzy-nav2-minimal-tb4-description\t1.0.1-1noble.20260915.195305\nros-jazzy-nav2-minimal-tb4-sim\t1.0.1-1noble.20261006.041301\nros-jazzy-navigation2\t1.3.13-1noble.20260921.033624\n",
+    "packages": {
+      "ros-jazzy-nav2-bringup": "1.3.13-1noble.20261006.042503",
+      "ros-jazzy-nav2-minimal-tb3-sim": "1.0.1-1noble.20261006.041307",
+      "ros-jazzy-nav2-minimal-tb4-description": "1.0.1-1noble.20260915.195305",
+      "ros-jazzy-nav2-minimal-tb4-sim": "1.0.1-1noble.20261006.041301",
+      "ros-jazzy-navigation2": "1.3.13-1noble.20260921.033624"
+    },
+    "os_release": {
+      "PRETTY_NAME": "Ubuntu 24.04.5 LTS",
+      "NAME": "Ubuntu",
+      "VERSION_ID": "24.04",
+      "VERSION": "24.04.5 LTS (Noble Numbat)",
+      "VERSION_CODENAME": "noble",
+      "ID": "ubuntu",
+      "ID_LIKE": "debian",
+      "HOME_URL": "https://www.ubuntu.com/",
+      "SUPPORT_URL": "https://help.ubuntu.com/",
+      "BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/",
+      "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+      "UBUNTU_CODENAME": "noble",
+      "LOGO": "ubuntu-logo"
+    },
+    "gz_sim_versions": "8.15.0",
+    "ros_distro": "jazzy"
+  },
+  "render": {
+    "method": "egl",
+    "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+    "attempts": [
+      {
+        "mode": "egl",
+        "command": [
+          "ros2",
+          "launch",
+          "nav2_bringup",
+          "tb4_simulation_launch.py",
+          "headless:=True",
+          "use_rviz:=False",
+          "world:=/opt/ath/worlds/empty_10x10.sdf",
+          "map:=/opt/ath/maps/empty_10x10.yaml",
+          "params_file:=/opt/ros/jazzy/share/nav2_bringup/params/nav2_params.yaml",
+          "x_pose:=-3.0000",
+          "y_pose:=-3.0000",
+          "yaw:=0.0000"
+        ],
+        "launch_log": "egl/logs/launch.log",
+        "models": [
+          "ground_plane",
+          "wall_0",
+          "wall_1",
+          "wall_2",
+          "wall_3",
+          "turtlebot4"
+        ],
+        "finite_ranges": 360,
+        "ranges": 360,
+        "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+        "ok": true
+      }
+    ]
+  },
+  "launch": {
+    "command": [
+      "ros2",
+      "launch",
+      "nav2_bringup",
+      "tb4_simulation_launch.py",
+      "headless:=True",
+      "use_rviz:=False",
+      "world:=/opt/ath/worlds/empty_10x10.sdf",
+      "map:=/opt/ath/maps/empty_10x10.yaml",
+      "params_file:=/opt/ros/jazzy/share/nav2_bringup/params/nav2_params.yaml",
+      "x_pose:=-3.0000",
+      "y_pose:=-3.0000",
+      "yaw:=0.0000"
+    ],
+    "log": "egl/logs/launch.log"
+  },
+  "lidar_mount_yaw_rad": 1.5708,
+  "lidar_mount_yaw_deg": 90.0,
+  "nav2_result": "SUCCEEDED",
+  "dispatch_sim_time_s": 26.226,
+  "result_sim_time_s": 20.103,
+  "final_true_pose": {
+    "x": 2.9254,
+    "y": 3.1135,
+    "yaw": 1.3805,
+    "t": 48.324
+  },
+  "true_pose_to_goal_m": 0.1358,
+  "yaw_error_rad": 0.1895,
+  "ground_truth_samples": 1228,
+  "within_tolerance": true,
+  "leftover_processes": [],
+  "launch_log_check": {
+    "teardown_marker_found": true,
+    "error_lines_before_teardown": [],
+    "unhandled_before_teardown": [],
+    "error_lines_during_teardown": 18
+  },
+  "wall_time_s": 57.0,
+  "stamp": {
+    "command": "bash scripts/run_m0.sh",
+    "seed": 0,
+    "commit": "814a2c39bed7ff27bb2f3c8a87d1d108db3c3047"
+  }
+}

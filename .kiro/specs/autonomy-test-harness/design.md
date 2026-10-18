@@ -61,12 +61,13 @@ The entrypoint script reads `ATH_RENDER_MODE` (`egl` or `xvfb`), whose default i
 **Robot facts used by the harness** (from `nav2_minimal_tb4_description`, Jazzy branch): the Create 3 body radius is 0.164 m and the front bumper reaches 0.175 m, so the Oracle's footprint disk radius is 0.18 m. The RPLIDAR has 360 samples from 0 to 6.28 rad at 10 Hz, range 0.164–20 m, and is mounted rotated +90° about z, so the robot's forward direction is scan angle 270°. M0 confirms the mount yaw from TF (`base_link` to `rplidar_link`). The model has no Gazebo contact sensor, so collisions are decided geometrically (see "Oracle design"). Nav2's stock costmaps use `robot_radius: 0.22`.
 
 > **M0 outcome (filled in by task 1.5 after the baseline runs):**
-> - Confirmed package versions: _TBD (recorded in `docs/ENVIRONMENT.md` with `dpkg-query` evidence, Requirement 1.2)._
-> - Rendering method: _TBD (EGL or Xvfb, with the renderer string from `ogre2.log`)._
-> - Headless launch evidence: _TBD (path to the launch log showing no window and no unhandled error, Requirement 1.3)._
-> - Single-goal evidence: _TBD (command, seed, commit, action result, and true-pose-to-goal distance, Requirement 1.4)._
-> - Lidar mount yaw from TF: _TBD._
-> - If M0 fails: _the failing step and its observed effect are recorded in `docs/ENVIRONMENT.md`, and later milestones do not run (Requirement 1.5)._
+> - Confirmed package versions: `ros-jazzy-navigation2` 1.3.13-1noble.20260921.033624, `ros-jazzy-nav2-bringup` 1.3.13-1noble.20261006.042503, `ros-jazzy-nav2-minimal-tb4-sim` 1.0.1-1noble.20261006.041301, `ros-jazzy-nav2-minimal-tb4-description` 1.0.1-1noble.20260915.195305 (and `ros-jazzy-nav2-minimal-tb3-sim` 1.0.1-1noble.20261006.041307 as a dependency), recorded in `docs/ENVIRONMENT.md` with `dpkg-query` evidence (`docs/evidence/m0/dpkg_query.txt`).
+> - Rendering method: **EGL** on Mesa `llvmpipe`; `ogre2.log` reports `GL_RENDERER = llvmpipe (LLVM 20.1.2, 256 bits)` through `EGL_MESA_device_software` (`docs/evidence/m0/egl/ogre2.log`), with 360 of 360 lidar ranges finite. Xvfb was not needed; the image default `ATH_RENDER_MODE` stays `egl`.
+> - Headless launch evidence: `docs/evidence/m0/egl/launch.log` (`headless:=True use_rviz:=False`, no display in the container): no `[ERROR]`, dead process, or traceback before the teardown SIGINT. During teardown Nav2's component container logs errors and crashes on shutdown, which is recorded but is not part of bring-up.
+> - Single-goal evidence: `bash scripts/run_m0.sh`, seed 0, commit `814a2c39bed7ff27bb2f3c8a87d1d108db3c3047`: `NavigateToPose` to (3.0, 3.0, 1.57) from (-3.0, -3.0, 0.0) returned `SUCCEEDED`; the true final pose was 0.1358 m from the goal (tolerance 0.30 m), yaw error 0.1895 rad (`results/m0_baseline.json`).
+> - Lidar mount yaw from TF: +90.0° (`base_link` to `rplidar_link`), so forward is scan bearing 270°.
+> - Robot model name: Gazebo lists the robot as `turtlebot4`, not `nav2_turtlebot4`: the stock spawn passes `-entity nav2_turtlebot4`, but `ros_gz_sim create` with `-topic robot_description` takes the URDF's robot name. The Ground_Truth reader, the readiness check, and `config/run.yaml` use `turtlebot4`.
+> - If M0 fails: _the failing step and its observed effect are recorded in `docs/ENVIRONMENT.md`, and later milestones do not run (Requirement 1.5)._ M0 passed.
 
 **Requirements coverage:** Requirement 1 (1.1–1.5), 0.10.
 
@@ -251,7 +252,7 @@ Autonomy-Test-Harness/
 
 ### Ground_Truth reader (`harness/runner/gt_bridge.py`)
 - **Responsibility:** put the robot's true pose into the bag.
-- **Interface:** a ROS 2 node that runs `gz topic -e -t /world/<world>/dynamic_pose/info --json-output` (gz-transport 13 prints one protobuf-JSON message per line) and publishes `geometry_msgs/PoseStamped` on `/ath/ground_truth/robot_pose` for the model named `nav2_turtlebot4`, stamped with the message's simulation time, frame `map`.
+- **Interface:** a ROS 2 node that runs `gz topic -e -t /world/<world>/dynamic_pose/info --json-output` (gz-transport 13 prints one protobuf-JSON message per line) and publishes `geometry_msgs/PoseStamped` on `/ath/ground_truth/robot_pose` for the robot's model, stamped with the message's simulation time, frame `map`.
 - **Contract:** the pose stream comes from Gazebo's `SceneBroadcaster` system, which the arena world loads; it is the simulator's state, not the robot's estimate (Requirement 6.1). In protobuf JSON, 64-bit integers appear as strings and zero values are omitted; the parser treats missing fields as zero. If the JSON path does not work at M0, the fallback is a `ros_gz_bridge` mapping of the same Gazebo topic to `tf2_msgs/TFMessage`, taking the only dynamic model's entry, and the choice is recorded.
 - **Requirements:** 5.5, 6.1.
 
@@ -387,7 +388,7 @@ The values are chosen to be strong enough to plausibly change outcomes while sta
 A suite runs inside **one** `ath-sim` container (`docker run` from `scripts/run_suite.sh` under the simulation lock, with `~/ath-shared/runs/<run_id>/` mounted at `/results`). Inside it, `harness.runner.suite` runs each Scenario in a child Python process with a hard wall-clock limit. Each Scenario's lifecycle (`harness.runner.run_scenario`) is:
 
 1. **Isolate:** a fresh `ROS_DOMAIN_ID` (1 + run index mod 100), `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST`, and `GZ_PARTITION=ath_<run index>`, so a leftover process from an earlier run cannot talk to this one.
-2. **Launch** `tb4_simulation_launch.py` with the arguments in "Platform decision", in a new process group, logging to `launch.log`. Ready means `gz model --list` lists `nav2_turtlebot4` and `/scan` publishes. Not ready within `startup_timeout_s` marks the run errored with step `launch` (Requirement 5.7).
+2. **Launch** `tb4_simulation_launch.py` with the arguments in "Platform decision", in a new process group, logging to `launch.log`. Ready means `gz model --list` lists the robot model (`turtlebot4`, see "M0 outcome") and `/scan` publishes. Not ready within `startup_timeout_s` marks the run errored with step `launch` (Requirement 5.7).
 3. **Spawn** each obstacle with `ros_gz_sim create`; a non-zero exit, or a model missing from `gz model --list`, marks the run errored with step `spawn`.
 4. **Start** the Ground_Truth reader, the Fault_Injector with the Scenario's Faults, and `ros2 bag record --use-sim-time` (MCAP storage, `zstd_fast` preset, so receive times are simulation time) to `bags/<scenario_id>/`, recording `/scan`, `/scan_ath`, `/odom`, `/tf`, `/tf_static`, `/cmd_vel`, `/amcl_pose`, `/plan`, `/ath/ground_truth/robot_pose`, `/ath/goal_dispatch`, `/ath/faults/active`, and `/navigate_to_pose/_action/status`. Camera topics are not recorded (Requirement 5.4).
 5. **Initial pose:** `nav2_simple_commander`'s `BasicNavigator.setInitialPose` with the start pose, then `waitUntilNav2Active()`; a timeout marks the run errored with step `nav2_activate`.
@@ -531,7 +532,7 @@ The experiment reports its total run time as the sum of every run's wall-clock d
 | `grid_resolution_m` | 0.05 | Feasibility grid cell size |
 | `time_limit_s` | 90.0 | Written into every Scenario |
 
-**RunConfig** (`config/run.yaml`): `footprint_radius_m` 0.18, `collision_threshold_m` 0.02, `goal_position_tol_m` 0.30, `goal_orientation_tol_rad` 0.30, `startup_timeout_s` 180, `settle_s` 2.0, `raw_scan_topic` `/scan`, `faulted_scan_topic` `/scan_ath`, `ground_truth_topic` `/ath/ground_truth/robot_pose`, `robot_name` `nav2_turtlebot4`, and the bag topic list.
+**RunConfig** (`config/run.yaml`): `footprint_radius_m` 0.18, `collision_threshold_m` 0.02, `goal_position_tol_m` 0.30, `goal_orientation_tol_rad` 0.30, `startup_timeout_s` 180, `settle_s` 2.0, `raw_scan_topic` `/scan`, `faulted_scan_topic` `/scan_ath`, `ground_truth_topic` `/ath/ground_truth/robot_pose`, `robot_name` `turtlebot4` (the Gazebo model name M0 observed), and the bag topic list.
 
 **Scenario** (schema model): fields and bounds per the Scenario-schema section (Requirements 2.1–2.6).
 

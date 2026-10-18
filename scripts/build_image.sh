@@ -36,4 +36,13 @@ bash scripts/sim_lock.sh docker build \
   --label "ath.commit=$label_commit" \
   -t "$tag" .
 
+if [ "$label_commit" != "dev" ]; then
+  # The build context is the working tree: if it changed while the build ran, the image may hold
+  # files that are not in the commit, so refuse the tag.
+  if ! after="$(bash scripts/require_clean.sh)" || [ "$after" != "$label_commit" ]; then
+    docker image rm "$tag" > /dev/null
+    echo "build_image: the tree changed during the build; removed $tag" >&2
+    exit 1
+  fi
+fi
 echo "build_image: built $tag $(docker image inspect --format 'id={{.Id}} size_bytes={{.Size}}' "$tag")"

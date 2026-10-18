@@ -146,7 +146,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Write `scripts/run_m0.sh`, which runs it under the simulation lock in a container from `ath-sim:<commit>` (with design.md's container options: `--shm-size=1g`, no GPU, no display, output handed back to the calling user), with `~/ath-shared/runs/m0-<timestamp>/` mounted at `/results`, and copies the JSON and the logs it names into `results/` and `docs/evidence/`.
   - _Requirements: 1.2, 1.3, 1.4, 0.1, 0.10_
 
-- [ ] 1.5 Run the M0 baseline and record the environment
+- [x] 1.5 Run the M0 baseline and record the environment
   - Commit, build `ath-sim:<commit>`, then run `scripts/run_m0.sh` detached and poll it.
   - Record in `docs/ENVIRONMENT.md`, each beside its evidence file under `docs/evidence/`: the OS, ROS 2 Jazzy, Gazebo, each Nav2 and minimal-simulation package version, the base image digest, the host's Docker version (`docker version`), uv, Python, and the Python packages from `uv.lock`. Record the rendering method and renderer string in a "Headless rendering" section.
   - Fill the "M0 outcome" block in design.md and in `docs/ENVIRONMENT.md`. Set the image's default `ATH_RENDER_MODE` to the chosen method.
