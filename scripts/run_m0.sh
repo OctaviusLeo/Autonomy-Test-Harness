@@ -18,7 +18,7 @@ mkdir -p "$out"
 echo "run_m0: image $image, output $out"
 
 set +e
-docker run --rm --name "ath-m0-$$" --shm-size=1g \
+docker run --rm --name "ath-m0-$$" ${ATH_WATCHDOG_TAG:+--label "ath.watchdog=$ATH_WATCHDOG_TAG"} --shm-size=1g \
   -e ATH_COMMIT="$commit" -e ATH_COMMAND="bash scripts/run_m0.sh" \
   -v "$out:/results" "$image" python /opt/ath/scripts/m0_baseline.py --out /results
 rc=$?

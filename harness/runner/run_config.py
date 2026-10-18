@@ -27,6 +27,9 @@ class RunConfig(BaseModel):
     ground_truth_topic: str
     robot_name: str
     bag_topics: list[str] = Field(min_length=1)
+    # A Scenario whose run directory and bag stop changing for this long is stalled: the suite stops it early
+    # instead of waiting for the hard limit, and retries it once with the other render method.
+    stall_timeout_s: float = Field(default=180.0, gt=0)
 
     @property
     def thresholds(self) -> Thresholds:

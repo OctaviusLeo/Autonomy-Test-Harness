@@ -16,7 +16,7 @@ shared="${ATH_SHARED:-$HOME/ath-shared}"
 out="$shared/runs/render-check-$(date -u +%Y%m%dT%H%M%SZ)"
 mkdir -p "$out"
 set +e
-docker run --rm --name "ath-render-$$" --shm-size=1g \
+docker run --rm --name "ath-render-$$" ${ATH_WATCHDOG_TAG:+--label "ath.watchdog=$ATH_WATCHDOG_TAG"} --shm-size=1g \
   -e ATH_COMMIT="$commit" -e ATH_COMMAND="bash scripts/check_headless_render.sh" \
   -v "$out:/results" "$image" python -m harness.render_check --out /results
 rc=$?

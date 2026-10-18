@@ -4,8 +4,10 @@ Conditions run in the order of ``config/experiment.yaml`` (``none`` first), and 
 each. Every condition's Scenario files are the base Scenarios with that condition's one Fault added
 (:func:`~harness.experiment.conditions.apply_condition`), so each Fault condition is paired with the no-Fault
 baseline on identical Scenarios. Each run goes through the suite runner (child process, hard wall-clock limit,
-teardown check). An errored run (no Verdict) is retried once and both attempts are kept. Restarted on the same
-output directory, the experiment keeps completed runs and skips them, so an interrupted job resumes.
+teardown check, stall detection). A run without a Verdict of its own (errored, or stopped by the hard limit or a
+stall) is retried once with the other render method (EGL or Xvfb) and both attempts are kept; a run that failed
+its Verdict is never re-run. Restarted on the same output directory, the experiment keeps completed runs and
+skips them, so an interrupted job resumes.
 
 It writes ``<out>/experiment.json`` (stamped with the command, set seed, and commit): per condition n, passes,
 pass rate, 95% Wilson interval, and runs still errored after the retry; the total run time (the sum of every
@@ -19,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any, Callable
@@ -38,12 +41,15 @@ from harness.schema.validate import dump_scenario, load_scenario
 REPO = Path(__file__).resolve().parents[2]
 RUNS_PER_CONDITION_STRIDE = 1000  # run indices: condition k uses k * 1000 + scenario index (+ 500 for a retry)
 
-Runner = Callable[[Path, Path, int, str], dict[str, Any]]
+# runner(path, out_dir, run_index, condition, render_mode="egl") -> RunRecord
+Runner = Callable[..., dict[str, Any]]
 
 
 def suite_runner(cfg: RunConfig, run_config_path: Path, deps: suite_mod.SuiteDeps) -> Runner:
-    def run(path: Path, out_dir: Path, run_index: int, condition: str) -> dict[str, Any]:
-        return suite_mod.run_one(path, cfg, out_dir, run_index, condition, deps, run_config_path)
+    def run(path: Path, out_dir: Path, run_index: int, condition: str, render_mode: str = "egl") -> dict[str, Any]:
+        # One attempt per call: run_with_retry decides about the retry and keeps both attempts.
+        return suite_mod.run_one(path, cfg, out_dir, run_index, condition, deps, run_config_path, retry=False,
+                                 render_mode=render_mode)
     return run
 
 
@@ -61,41 +67,31 @@ def write_condition_scenarios(base_paths: list[Path], condition: Condition, cond
     return paths
 
 
-def move_aside(path: Path, label: str) -> Path | None:
-    """Rename ``path`` (a bag or run directory from an earlier attempt) so a new run can use the name.
-
-    ``ros2 bag record -o`` refuses an existing directory, so a retry or a resumed run needs the name free.
-    """
-    if not path.exists():
-        return None
-    k = 1
-    while (target := path.with_name(f"{path.name}.{label}{k}")).exists():
-        k += 1
-    path.rename(target)
-    return target
+move_aside = suite_mod.move_aside
 
 
 def completed(record_path: Path) -> dict[str, Any] | None:
-    """A finished run's record (a Verdict, or an errored retry), or None if the run must (re)start."""
+    """A finished run's record (a Verdict, or a second attempt), or None if the run must (re)start."""
     if not record_path.exists():
         return None
     record = json.loads(record_path.read_text(encoding="utf-8"))
-    if record.get("status") != "errored" or record.get("attempt") == 2:
+    if not suite_mod.needs_retry(record) or record.get("attempt") == 2:
         return record
     return None
 
 
 def run_with_retry(path: Path, cond_dir: Path, run_index: int, condition: str, runner: Runner,
-                   clock: Callable[[], float]) -> dict[str, Any]:
-    """Run once; if errored, keep that attempt under attempt_1/ and run again (both recorded)."""
+                   clock: Callable[[], float], render_mode: str = "egl") -> dict[str, Any]:
+    """Run once; if errored, hung, or stalled, keep that attempt under attempt_1/ and run again with the other
+    render method (both recorded)."""
     run_dir = cond_dir / "runs" / path.stem
     bag = cond_dir / "bags" / path.stem
     move_aside(bag, "interrupted")  # a partial bag from a run the job was stopped in
     started = clock()
-    record = runner(path, cond_dir, run_index, condition)
+    record = runner(path, cond_dir, run_index, condition, render_mode=render_mode)
     record["run_duration_s"] = round(clock() - started, 1)
     record["attempt"] = 1
-    if record["status"] == "errored":
+    if suite_mod.needs_retry(record):
         first = dict(record)
         moved = move_aside(bag, "attempt")
         if moved is not None:
@@ -104,10 +100,12 @@ def run_with_retry(path: Path, cond_dir: Path, run_index: int, condition: str, r
         attempt_dir.mkdir(parents=True, exist_ok=True)
         repro.write_text_atomic(attempt_dir / "run_record.json", json.dumps(first, indent=2) + "\n")
         started = clock()
-        record = runner(path, cond_dir, run_index + RUNS_PER_CONDITION_STRIDE // 2, condition)
+        record = runner(path, cond_dir, run_index + RUNS_PER_CONDITION_STRIDE // 2, condition,
+                        render_mode=suite_mod.other_render_mode(first.get("render_mode", render_mode)))
         record["run_duration_s"] = round(clock() - started, 1)
         record["attempt"] = 2
-        record["first_attempt"] = {k: first.get(k) for k in ("status", "failing_step", "effect", "run_duration_s")}
+        record["first_attempt"] = {k: first.get(k) for k in ("status", "failing_step", "effect", "render_mode",
+                                                             "run_duration_s")}
     repro.write_text_atomic(run_dir / "run_record.json", json.dumps(record, indent=2) + "\n")
     return record
 
@@ -123,7 +121,7 @@ def condition_row(name: str, records: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def run_paired(base_paths: list[Path], conditions: dict[str, Condition], out_dir: Path, runner: Runner,
-               clock: Callable[[], float] | None = None) -> dict[str, Any]:
+               clock: Callable[[], float] | None = None, render_mode: str = "egl") -> dict[str, Any]:
     """Run (or resume) every condition and return the per-condition records and rows."""
     clock = clock or time.monotonic
     out_dir = Path(out_dir)
@@ -139,7 +137,8 @@ def run_paired(base_paths: list[Path], conditions: dict[str, Condition], out_dir
         for i, path in enumerate(paths):
             record = completed(cond_dir / "runs" / path.stem / "run_record.json")
             if record is None:
-                record = run_with_retry(path, cond_dir, k * RUNS_PER_CONDITION_STRIDE + i, name, runner, clock)
+                record = run_with_retry(path, cond_dir, k * RUNS_PER_CONDITION_STRIDE + i, name, runner, clock,
+                                        render_mode)
             records.append(record)
         by_condition[name] = records
     return {"segments": segments, "records": by_condition,
@@ -223,6 +222,8 @@ def main(argv: list[str] | None = None, runner: Runner | None = None) -> int:
     parser.add_argument("--out", type=Path, default=Path("/results"))
     parser.add_argument("--experiment", type=Path, default=REPO / "config" / "experiment.yaml")
     parser.add_argument("--run-config", type=Path, default=REPO / "config" / "run.yaml")
+    parser.add_argument("--render-mode", choices=("egl", "xvfb"), default=os.environ.get("ATH_RENDER_MODE", "egl"),
+                        help="every run's first render method (a retry uses the other one)")
     args = parser.parse_args(argv)
     spec = yaml.safe_load(args.experiment.read_text(encoding="utf-8"))
     base_set = spec["base_set"]
@@ -230,7 +231,7 @@ def main(argv: list[str] | None = None, runner: Runner | None = None) -> int:
     conditions = load_conditions(args.experiment)
     cfg = load_run_config(args.run_config)
     runner = runner or suite_runner(cfg, args.run_config, suite_mod.SuiteDeps(write_reports=None))
-    result = run_paired(base_paths, conditions, args.out, runner)
+    result = run_paired(base_paths, conditions, args.out, runner, render_mode=args.render_mode)
     report = write_reports(args.out, result, base_set, int(spec["set_seed"]), repro.make_stamp(seed=int(spec["set_seed"])),
                            settings=settings_used(conditions, cfg))
     for row in report["conditions"]:

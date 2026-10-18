@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -39,6 +40,10 @@ class FakeSession:
 
     def start(self, name, cmd):
         self.started.append([name, *cmd])
+
+    def ensure_xvfb(self):
+        self.started.append(["xvfb"])
+        return self.world.xvfb_ok
 
     def models(self):
         return list(self.world.models) + [f"obs_{k}" for k in range(self.world.spawned)]
@@ -110,6 +115,8 @@ class World:
         self.spawn_invisible = False
         self.scan = self.recorder = self.active = self.accept = True
         self.boom = False
+        self.xvfb_ok = True
+        self.sessions: list[FakeSession] = []
         self.status = "SUCCEEDED"
         self.leftovers: list[str] = []
         self.torn_down = 0
@@ -124,9 +131,13 @@ class World:
                 raise OSError("no metadata.yaml")
             return self.trace
 
-        return rs.RunnerDeps(make_session=lambda out, env: FakeSession(self, out, env),
+        def make_session(out, env):
+            self.sessions.append(FakeSession(self, out, env))
+            return self.sessions[-1]
+
+        return rs.RunnerDeps(make_session=make_session,
                              make_client=lambda topic: FakeClient(self), read_trace=read_trace,
-                             env=lambda: {"ATH_HOST_RESULTS": "/home/u/ath-shared/runs/x"},
+                             env=lambda: {"ATH_HOST_RESULTS": "/home/u/ath-shared/runs/x", "DISPLAY": ":0"},
                              monotonic=lambda: next(clock), sleep=lambda s: None)
 
 
@@ -140,10 +151,10 @@ def smoke_scenario(repo_root):
     return path, load_scenario(path)
 
 
-def run(world, scenario_pair, tmp_path, wiring=False, out=None):
+def run(world, scenario_pair, tmp_path, wiring=False, out=None, render_mode="egl"):
     path, scenario = scenario_pair
     return rs.run_scenario(scenario, path, CFG, out or tmp_path / "results", 3, "none", world.deps(), STAMP,
-                           wiring=wiring)
+                           wiring=wiring, render_mode=render_mode)
 
 
 def test_successful_run_writes_record_and_verdict(smoke_scenario, tmp_path):
@@ -184,6 +195,38 @@ def test_failing_steps_are_errored_and_torn_down(smoke_scenario, tmp_path, chang
     assert (tmp_path / "results" / "runs" / "fixed10-000" / "run_record.json").exists()
 
 
+def test_render_modes(smoke_scenario, tmp_path):
+    _, s = smoke_scenario
+    trace = RunTrace([gt(s.start.x, s.start.y, 5.0), gt(s.goal.x, s.goal.y, 12.0, s.goal.yaw)], 5.0)
+    egl = World(trace=trace)
+    assert run(egl, smoke_scenario, tmp_path)["render_mode"] == "egl"
+    assert "DISPLAY" not in egl.sessions[0].env and ["xvfb"] not in egl.sessions[0].started
+    xvfb = World(trace=trace)
+    rec = run(xvfb, smoke_scenario, tmp_path / "x", render_mode="xvfb")
+    assert rec["status"] == "ok" and rec["render_mode"] == "xvfb"
+    assert xvfb.sessions[0].env["DISPLAY"] == ":99" and xvfb.sessions[0].started[0] == ["xvfb"]
+    broken = World(xvfb_ok=False)
+    rec = run(broken, smoke_scenario, tmp_path / "b", render_mode="xvfb")
+    assert rec["status"] == "errored" and rec["failing_step"] == "launch" and "Xvfb" in rec["effect"]
+    with pytest.raises(ValueError):
+        run(World(), smoke_scenario, tmp_path / "c", render_mode="glx")
+
+
+def test_session_starts_xvfb_only_when_nothing_serves_the_display(tmp_path):
+    from harness.runner.session import Session
+
+    now = [0.0]
+    api = ProcessApi(monotonic=lambda: now[0], sleep=lambda s: now.__setitem__(0, now[0] + s))
+    started = []
+    session = Session(tmp_path, {}, api=api)
+    session.start_xvfb = lambda: started.append("xvfb")
+    socket = tmp_path / "X99"
+    socket.touch()
+    assert session.ensure_xvfb(socket) and started == []
+    socket.unlink()
+    assert not session.ensure_xvfb(socket, timeout_s=2.0) and started == ["xvfb"] and now[0] >= 2.0
+
+
 def test_leftovers_are_recorded(smoke_scenario, tmp_path):
     _, s = smoke_scenario
     world = World(leftovers=["gz sim -r -s /tmp/w.sdf"], trace=RunTrace([gt(s.goal.x, s.goal.y, 9.0)], 5.0))
@@ -213,8 +256,10 @@ class FakeChild:
         self.behaviour = behaviour
         self.pid = 4242
         self.returncode = None
+        scenario_id = cmd[cmd.index("--scenario") + 1].rsplit("/", 1)[-1].removesuffix(".yaml")
+        if behaviour != "crash":
+            (rdir.parents[1] / "bags" / scenario_id).mkdir(parents=True, exist_ok=True)  # the recorder started
         if behaviour in ("ok", "fail"):
-            scenario_id = cmd[cmd.index("--scenario") + 1].rsplit("/", 1)[-1].removesuffix(".yaml")
             passed = behaviour == "ok"
             rdir.joinpath("run_record.json").write_text(json.dumps({
                 "scenario_id": scenario_id, "seed": 1, "fault_condition": "none", "status": "ok",
@@ -232,7 +277,10 @@ class FakeChild:
         return self.returncode
 
 
-def suite_deps(behaviours: dict[str, str], leftovers_after: dict[str, list[str]] | None = None):
+def suite_deps(behaviours: dict[str, str | list[str]], leftovers_after: dict[str, list[str]] | None = None,
+               moving: bool = False):
+    """Fake children per Scenario id: one behaviour, or a list (one per attempt). ``moving`` makes the run's files
+    look busy (a hung child keeps logging), so only the hard limit stops it; otherwise nothing changes (a stall)."""
     now = [0.0]
     children = []
     table: list[ProcInfo] = []
@@ -241,7 +289,8 @@ def suite_deps(behaviours: dict[str, str], leftovers_after: dict[str, list[str]]
     def popen(cmd, **kwargs):
         scenario_id = cmd[cmd.index("--scenario") + 1].rsplit("/", 1)[-1].removesuffix(".yaml")
         rdir = Path(kwargs["stdout"].name).parent
-        child = FakeChild(behaviours[scenario_id], cmd, rdir)
+        behaviour = behaviours[scenario_id]
+        child = FakeChild(behaviour.pop(0) if isinstance(behaviour, list) else behaviour, cmd, rdir)
         children.append((scenario_id, child, cmd))
         for line in (leftovers_after or {}).get(scenario_id, []):
             table.append(ProcInfo(900 + len(table), line))
@@ -263,7 +312,8 @@ def suite_deps(behaviours: dict[str, str], leftovers_after: dict[str, list[str]]
                      protected_pids=set, monotonic=lambda: now[0], sleep=sleep)
     reports = []
     deps = suite.SuiteDeps(api=api, python="python3", clean_shm=lambda: 0,
-                           write_reports=lambda records, out, name: reports.append((name, len(records))))
+                           write_reports=lambda records, out, name: reports.append((name, len(records))),
+                           newest_mtime=lambda paths: now[0] if moving else 0.0)
     return deps, children, killed, now, reports
 
 
@@ -278,8 +328,9 @@ def three_scenarios(tmp_path, repo_root):
 
 def test_hung_scenario_is_killed_at_the_hard_limit_and_the_suite_continues(three_scenarios, tmp_path, monkeypatch):
     monkeypatch.setenv("ATH_COMMIT", HASH)
-    deps, children, _, now, _ = suite_deps({"fixed10-000": "hang", "fixed10-001": "ok", "fixed10-002": "crash"})
-    records = suite.run_suite(suite.scenario_files([three_scenarios]), CFG, tmp_path / "out", deps=deps)
+    deps, children, _, now, _ = suite_deps({"fixed10-000": "hang", "fixed10-001": "ok", "fixed10-002": "crash"},
+                                           moving=True)
+    records = suite.run_suite(suite.scenario_files([three_scenarios]), CFG, tmp_path / "out", deps=deps, retry=False)
     assert [c[0] for c in children] == ["fixed10-000", "fixed10-001", "fixed10-002"]
     hung = records[0]
     assert hung["status"] == "timed_out" and hung["verdict"]["reason"] == "timeout"
@@ -292,6 +343,62 @@ def test_hung_scenario_is_killed_at_the_hard_limit_and_the_suite_continues(three
     assert records[0]["stamp"]["commit"] == HASH and records[2]["stamp"]["seed"] == records[2]["seed"]
     assert json.loads((tmp_path / "out" / "runs" / "fixed10-000" / "run_record.json").read_text())["status"] == "timed_out"
     assert children[1][2][children[1][2].index("--run-index") + 1] == "1"
+
+
+def arg(cmd, flag):
+    return cmd[cmd.index(flag) + 1]
+
+
+def test_runs_without_a_result_are_retried_once_with_the_other_render_method(three_scenarios, tmp_path, monkeypatch):
+    monkeypatch.setenv("ATH_COMMIT", HASH)
+    deps, children, _, now, _ = suite_deps({"fixed10-000": ["hang", "ok"], "fixed10-001": ["fail", "ok"],
+                                            "fixed10-002": ["crash", "crash"]})
+    out = tmp_path / "out"
+    (out / "bags" / "fixed10-000").mkdir(parents=True)  # a partial bag from an earlier, stopped suite
+    records = suite.run_suite(suite.scenario_files([three_scenarios]), CFG, out, deps=deps)
+    assert [c[0] for c in children] == ["fixed10-000", "fixed10-000", "fixed10-001", "fixed10-002", "fixed10-002"]
+    assert [arg(c[2], "--render-mode") for c in children] == ["egl", "xvfb", "egl", "egl", "xvfb"]
+    assert [arg(c[2], "--run-index") for c in children] == ["0", "500", "1", "2", "502"]
+    stalled, failed, crashed = records
+    assert stalled["status"] == "ok" and stalled["attempt"] == 2 and stalled["render_mode"] == "xvfb"
+    assert stalled["first_attempt"]["status"] == "timed_out" and "stalled" in stalled["first_attempt"]["effect"]
+    first = json.loads((out / "runs" / "fixed10-000" / "attempt_1" / "run_record.json").read_text())
+    assert first["verdict"]["detail"].startswith("stalled: no change") and first["render_mode"] == "egl"
+    assert first["bag_path"].endswith("fixed10-000.attempt1") and (out / "bags" / "fixed10-000.attempt1").is_dir()
+    assert (out / "bags" / "fixed10-000.interrupted1").is_dir() and (out / "bags" / "fixed10-000").is_dir()
+    assert now[0] < 2 * CFG.hard_limit_s(90.0)  # stopped after stall_timeout_s, not the hard limit
+    assert failed["attempt"] == 1 and not failed["verdict"]["passed"]  # a real result is never re-run
+    assert crashed["status"] == "errored" and crashed["attempt"] == 2
+    assert crashed["first_attempt"]["status"] == "errored"
+    s = suite.summarize(records)
+    assert [r["scenario_id"] for r in s["retried"]] == ["fixed10-000", "fixed10-002"] and s["errored"] == 1
+
+
+def test_suite_main_render_mode_and_no_retry(three_scenarios, tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("ATH_COMMIT", HASH)
+    monkeypatch.setenv("ATH_RENDER_MODE", "xvfb")
+    deps, children, _, _, _ = suite_deps({"fixed10-000": "crash", "fixed10-001": "ok", "fixed10-002": "ok"})
+    assert suite.main(["--name", "n", "--scenarios", str(three_scenarios), "--out", str(tmp_path / "o"),
+                       "--no-retry", "--fail-on", "errors"], deps=deps) == 1
+    assert len(children) == 3 and {arg(c[2], "--render-mode") for c in children} == {"xvfb"}
+    assert "1 errored, 0 timed out, 0 retried" in capsys.readouterr().out
+
+
+def test_newest_mtime_and_move_aside(tmp_path):
+    (tmp_path / "a" / "b").mkdir(parents=True)
+    for k, name in enumerate(("a/b/old", "a/new")):
+        (tmp_path / name).touch()
+        os.utime(tmp_path / name, (1000 + k, 1000 + k))
+    os.utime(tmp_path / "a" / "b", (900, 900))
+    os.utime(tmp_path / "a", (900, 900))
+    assert suite.newest_mtime([tmp_path / "a", tmp_path / "missing"]) == 1001
+    assert suite.newest_mtime([tmp_path / "missing"]) == 0.0
+    assert suite.move_aside(tmp_path / "missing", "attempt") is None
+    (tmp_path / "bag").mkdir()
+    assert suite.move_aside(tmp_path / "bag", "attempt").name == "bag.attempt1"
+    (tmp_path / "bag").mkdir()
+    assert suite.move_aside(tmp_path / "bag", "attempt").name == "bag.attempt2"
+    assert suite.other_render_mode("egl") == "xvfb" and suite.other_render_mode("xvfb") == "egl"
 
 
 def test_leftovers_after_a_scenario_are_killed_and_recorded(three_scenarios, tmp_path, monkeypatch):

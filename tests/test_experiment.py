@@ -27,30 +27,35 @@ BASE = sorted(Path("scenarios/experiment30").glob("*.yaml"))
 class FakeRunner:
     """Stands in for suite.run_one: writes and returns a RunRecord; outcomes and failures are scripted."""
 
-    def __init__(self, errored=(), crash_after=None, fail=()):
+    def __init__(self, errored=(), crash_after=None, fail=(), hung=()):
         self.calls: list[tuple[str, str, int]] = []
+        self.modes: list[str] = []
         self.errored = dict.fromkeys(errored, 0)
+        self.hung = set(hung)  # stopped by the suite (hard limit or stall) on the first attempt only
         self.crash_after = crash_after
         self.fail = set(fail)
 
-    def __call__(self, path, out_dir, run_index, condition):
+    def __call__(self, path, out_dir, run_index, condition, render_mode="egl"):
         if self.crash_after is not None and len(self.calls) >= self.crash_after:
             raise KeyboardInterrupt("job stopped")
         scenario = load_scenario(path)
         self.calls.append((condition, scenario.scenario_id, run_index))
+        self.modes.append(render_mode)
         key = (condition, scenario.scenario_id)
         status = "ok"
         if key in self.errored and self.errored[key] < (2 if key[1].endswith("9") else 1):
             self.errored[key] += 1
             status = "errored"
-        passed = key not in self.fail
+        elif key in self.hung and render_mode == "egl":
+            status = "timed_out"
+        passed = key not in self.fail and status == "ok"
         record = {"scenario_id": scenario.scenario_id, "seed": scenario.seed, "fault_condition": condition,
                   "status": status, "failing_step": "spawn" if status == "errored" else None, "effect": "x",
                   "generator_config": "config/generator.yaml", "bag_path": f"/h/{condition}/bags/{scenario.scenario_id}",
                   "faults": [f.type for f in scenario.faults],
                   "verdict": None if status == "errored" else {"passed": passed, "reason": "" if passed else "timeout",
                                                                "detail": "d"},
-                  "stamp": STAMP}
+                  "render_mode": render_mode, "stamp": STAMP}
         run_dir = Path(out_dir) / "runs" / scenario.scenario_id
         run_dir.mkdir(parents=True, exist_ok=True)
         (Path(out_dir) / "bags" / scenario.scenario_id).mkdir(parents=True, exist_ok=True)
@@ -144,6 +149,24 @@ def test_errored_runs_are_retried_once_and_both_attempts_kept(tmp_path):
     again = FakeRunner()
     paired.run_paired(base, conditions, tmp_path, again, ticking())
     assert again.calls == []  # an errored second attempt counts as done
+
+
+def test_hung_runs_are_retried_with_the_other_render_method_and_failed_verdicts_are_not(tmp_path):
+    conditions = {"none": CONDITIONS["none"]}
+    base = [BASE[0], BASE[1], BASE[2]]
+    runner = FakeRunner(hung=[("none", "exp30-000")], fail=[("none", "exp30-001")])
+    result = paired.run_paired(base, conditions, tmp_path, runner, ticking())
+    retried, failed, ok = result["records"]["none"]
+    assert [c[2] for c in runner.calls] == [0, 500, 1, 2] and runner.modes == ["egl", "xvfb", "egl", "egl"]
+    assert retried["status"] == "ok" and retried["attempt"] == 2 and retried["render_mode"] == "xvfb"
+    assert retried["first_attempt"]["status"] == "timed_out" and retried["first_attempt"]["render_mode"] == "egl"
+    assert failed["attempt"] == 1 and not failed["verdict"]["passed"] and "first_attempt" not in failed
+    assert ok["attempt"] == 1 and result["rows"][0]["passes"] == 2
+    leftover = tmp_path / "none" / "runs" / "exp30-002" / "run_record.json"
+    leftover.write_text(json.dumps({**ok, "status": "timed_out", "attempt": 1}))  # a job stopped mid-retry
+    again = FakeRunner()
+    paired.run_paired(base, conditions, tmp_path, again, ticking())
+    assert again.calls == [("none", "exp30-002", 2)]
 
 
 def test_reports_and_main(tmp_path, monkeypatch, capsys):

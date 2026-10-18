@@ -265,7 +265,7 @@ def test_m4_gate_reports_problems(m4_repo):
     assert "does not parse" in "\n".join(gates.check_m4(m4_repo))
 
 
-def _fake_runner(path, out_dir, run_index, condition):
+def _fake_runner(path, out_dir, run_index, condition, render_mode="egl"):
     from harness.schema.validate import load_scenario
 
     s = load_scenario(path)

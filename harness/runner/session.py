@@ -23,6 +23,8 @@ from harness.runner.processes import ProcessApi
 
 RunFn = Callable[..., subprocess.CompletedProcess]
 XVFB_DISPLAY = ":99"
+XVFB_SOCKET = Path("/tmp/.X11-unix/X99")
+RENDER_MODES = ("egl", "xvfb")
 
 
 def run_command(cmd: Sequence[str], timeout: float, env: dict | None = None) -> subprocess.CompletedProcess:
@@ -132,6 +134,16 @@ class Session:
 
     def start_xvfb(self) -> subprocess.Popen:
         return self.start("xvfb", ["Xvfb", XVFB_DISPLAY, "-screen", "0", "1280x1024x24", "-nolisten", "tcp"])
+
+    def ensure_xvfb(self, socket: Path = XVFB_SOCKET, timeout_s: float = 10.0) -> bool:
+        """Start Xvfb on :99 unless something already serves it (the entrypoint does when ATH_RENDER_MODE=xvfb);
+        True once the display's socket exists."""
+        if not Path(socket).exists():
+            self.start_xvfb()
+            end = self.api.monotonic() + timeout_s
+            while not Path(socket).exists() and self.api.monotonic() < end:
+                self.api.sleep(0.2)
+        return Path(socket).exists()
 
     def models(self, timeout: float = 30.0) -> list[str]:
         result = self.run(["gz", "model", "--list"], timeout=timeout, env=self.env)

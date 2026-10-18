@@ -23,5 +23,5 @@ while [ $# -gt 0 ]; do
 done
 [ -n "${ATH_COMMIT:-}" ] && envs+=(-e "ATH_COMMIT=$ATH_COMMIT")
 [ -n "${ATH_COMMAND:-}" ] && envs+=(-e "ATH_COMMAND=$ATH_COMMAND")
-exec docker run --rm --name "ath-cmd-$$" --shm-size=1g -u "$(id -u):$(id -g)" "${envs[@]}" \
+exec docker run --rm --name "ath-cmd-$$" ${ATH_WATCHDOG_TAG:+--label "ath.watchdog=$ATH_WATCHDOG_TAG"} --shm-size=1g -u "$(id -u):$(id -g)" "${envs[@]}" \
   "${mounts[@]}" -w /opt/ath "$image" "$@"

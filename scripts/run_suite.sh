@@ -8,6 +8,8 @@
 #   full   scenarios/fixed10 and scenarios/experiment30, no Faults (the nightly Full_Suite)
 #   <dir>  every *.yaml in a host directory (copied into the output directory for the container)
 # Image: ath-sim:<commit>, where the commit is ATH_COMMIT (Jenkins sets it) or the clean HEAD.
+# ATH_RENDER_MODE=xvfb makes Xvfb every run's first render method (EGL is then the retry's); scripts/robust.sh
+# sets it for a suite's second attempt.
 # Output: --out, default ~/ath-shared/runs/<suite>-<UTC time>/ (bags, logs, RunRecords, junit.xml, summary.md).
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")/.."
@@ -51,8 +53,9 @@ echo "run_suite: $name with $image -> $out"
 envs=(-e ATH_COMMIT="$commit" -e ATH_COMMAND="$command" -e ATH_HOST_RESULTS="$out")
 # In Jenkins the summary links failed runs' bags to the build's archived artifacts.
 [ -n "${ATH_BAG_LINK_BASE:-}" ] && envs+=(-e ATH_BAG_LINK_BASE="$ATH_BAG_LINK_BASE")
+[ -n "${ATH_RENDER_MODE:-}" ] && envs+=(-e ATH_RENDER_MODE="$ATH_RENDER_MODE")
 set +e
-docker run --rm --name "ath-suite-$$" --shm-size=1g "${envs[@]}" -v "$out:/results" "$image" \
+docker run --rm --name "ath-suite-$$" ${ATH_WATCHDOG_TAG:+--label "ath.watchdog=$ATH_WATCHDOG_TAG"} --shm-size=1g "${envs[@]}" -v "$out:/results" "$image" \
   python -m harness.runner.suite --name "$name" --scenarios "${scenarios[@]}" --out /results \
     --repeat "$repeat" --condition "$condition" "${extra[@]}"
 rc=$?

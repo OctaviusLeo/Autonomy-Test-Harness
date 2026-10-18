@@ -3,6 +3,8 @@
 Steps (design.md, "Runner design"):
 
 1. **Isolate:** ``ROS_DOMAIN_ID`` 1 + run index mod 100, localhost-only discovery, ``GZ_PARTITION=ath_<index>``.
+   Render with headless EGL (``--render-mode egl``, the default) or through Xvfb on :99 (``--render-mode xvfb``,
+   the suite's second method when a run hangs, stalls, or errors).
 2. **Launch** the stock ``tb4_simulation_launch.py`` with the arena world and map, ``config/nav2_params_ath.yaml``,
    and the start pose. Ready means ``gz model --list`` lists the robot and ``/scan`` publishes; otherwise the
    run is errored at step ``launch``.
@@ -21,6 +23,7 @@ Steps (design.md, "Runner design"):
 
 Usage (inside the image; the suite runs it in a child process):
   python -m harness.runner.run_scenario --scenario <yaml> --out <dir> --run-index <n> [--condition <name>]
+         [--render-mode egl|xvfb]
 """
 
 from __future__ import annotations
@@ -122,7 +125,11 @@ def bag_command(out: Path, topics: list[str]) -> list[str]:
 
 class ScenarioRun:
     def __init__(self, scenario, scenario_path: Path, cfg: RunConfig, out_dir: Path, run_index: int,
-                 condition: str, deps: RunnerDeps, repo: Path = REPO, wiring: bool = False) -> None:
+                 condition: str, deps: RunnerDeps, repo: Path = REPO, wiring: bool = False,
+                 render_mode: str = "egl") -> None:
+        if render_mode not in session_mod.RENDER_MODES:
+            raise ValueError(f"unknown render mode {render_mode!r}")
+        self.render_mode = render_mode
         self.scenario = scenario
         self.scenario_path = Path(scenario_path)
         self.cfg = cfg
@@ -142,8 +149,10 @@ class ScenarioRun:
 
     def launch(self) -> None:
         s = self.scenario
-        env = session_mod.isolation_env(self.deps.env(), self.run_index)
+        env = session_mod.render_env(session_mod.isolation_env(self.deps.env(), self.run_index), self.render_mode)
         self.session = self.deps.make_session(self.scenario_dir(), env)
+        if self.render_mode == "xvfb" and not self.session.ensure_xvfb():
+            raise StepFailed("launch", f"Xvfb did not start on {session_mod.XVFB_DISPLAY}")
         spec = LaunchSpec(str(self.repo / "worlds" / f"{s.world}.sdf"), str(self.repo / "maps" / f"{s.world}.yaml"),
                           str(self.repo / "config" / "nav2_params_ath.yaml"), s.start.x, s.start.y, s.start.yaw)
         self.session.start_launch(spec)
@@ -232,7 +241,7 @@ class ScenarioRun:
     def teardown(self) -> list[str]:
         if self.session is None:
             return []
-        leftovers = self.session.teardown(order=("bag", "injector", "gt_bridge", "launch"))
+        leftovers = self.session.teardown(order=("bag", "injector", "gt_bridge", "launch", "xvfb"))
         self.session = None
         return leftovers
 
@@ -285,6 +294,7 @@ class ScenarioRun:
             "nav2_result": self.nav2_result,
             "wall_time_s": round(self.deps.monotonic() - started, 1),
             "leftover_processes": leftovers,
+            "render_mode": self.render_mode,
             "verdict": None if verdict is None else verdict.to_dict(),
             **self.extra,
             "stamp": stamp.to_dict(),
@@ -299,11 +309,11 @@ class ScenarioRun:
 
 def run_scenario(scenario, scenario_path: Path, run_config: RunConfig, out_dir: Path, run_index: int,
                  condition: str = "none", deps: RunnerDeps | None = None, stamp: repro.Stamp | None = None,
-                 repo: Path = REPO, wiring: bool = False) -> dict[str, Any]:
+                 repo: Path = REPO, wiring: bool = False, render_mode: str = "egl") -> dict[str, Any]:
     """Run one Scenario end to end and return its RunRecord (also written to disk)."""
     stamp = stamp or repro.make_stamp(seed=scenario.seed)
     return ScenarioRun(scenario, scenario_path, run_config, out_dir, run_index, condition, deps or RunnerDeps(),
-                       repo, wiring).run(stamp)
+                       repo, wiring, render_mode).run(stamp)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -314,6 +324,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--condition", default="none")
     parser.add_argument("--run-config", type=Path, default=REPO / "config" / "run.yaml")
     parser.add_argument("--wiring", action="store_true", help="also save who subscribes to the scan topics")
+    parser.add_argument("--render-mode", choices=session_mod.RENDER_MODES,
+                        default=os.environ.get("ATH_RENDER_MODE", "egl"))
     args = parser.parse_args(argv)
     os.environ.update(session_mod.isolation_env(os.environ, args.run_index))  # before rclpy reads ROS_DOMAIN_ID
 
@@ -324,7 +336,7 @@ def main(argv: list[str] | None = None) -> int:
     deps = RunnerDeps(make_client=lambda topic: nav_client.HarnessClient(scan_topic=topic),
                       read_trace=bag_reader.read_trace)
     record = run_scenario(load_scenario(args.scenario), args.scenario, load_run_config(args.run_config), args.out,
-                          args.run_index, args.condition, deps, wiring=args.wiring)
+                          args.run_index, args.condition, deps, wiring=args.wiring, render_mode=args.render_mode)
     nav_client.shutdown_ros()
     print(f"run_scenario: {record['scenario_id']} status={record['status']} "
           f"verdict={(record['verdict'] or {}).get('passed')} nav2={record['nav2_result']}", flush=True)

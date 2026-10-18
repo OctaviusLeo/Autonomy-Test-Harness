@@ -4,22 +4,29 @@
 // Every heavy stage holds ~/ath-shared/sim.lock through the repository's scripts, so builds never
 // overlap with the agent's runs. The build fails if a unit test fails, a Scenario errors, or (for the
 // Smoke_Suite) a Scenario fails its Verdict.
+// Each stage runs under scripts/robust.sh (design.md, "Stall and crash handling"): an attempt that crashes,
+// stalls, or hangs is retried with the step's next method, and a real failure fails the stage as before. The
+// attempt logs and any blocker entry are archived under ci-out/.
 pipeline {
     agent any
     options {
         disableConcurrentBuilds()
         timeout(time: 24, unit: 'HOURS')
     }
+    environment {
+        ATH_WATCHDOG_LOGS = 'ci-out/watchdog'
+        ATH_BLOCKERS_FILE = 'ci-out/BLOCKERS.md'
+    }
     stages {
         stage('Build image') {
             steps {
                 // The workspace persists between builds; drop the last build's reports first.
-                sh 'rm -rf ci-out && ATH_COMMIT="$GIT_COMMIT" bash scripts/build_image.sh --tag "ath-sim:$GIT_COMMIT"'
+                sh 'rm -rf ci-out && ATH_COMMIT="$GIT_COMMIT" bash scripts/robust.sh build --tag "ath-sim:$GIT_COMMIT"'
             }
         }
         stage('Unit tests') {
             steps {
-                sh 'ATH_COMMIT="$GIT_COMMIT" bash scripts/test_unit.sh --image "ath-sim:$GIT_COMMIT" --baked --junit ci-out/unit-junit.xml'
+                sh 'ATH_COMMIT="$GIT_COMMIT" bash scripts/robust.sh unit --image "ath-sim:$GIT_COMMIT" --baked --junit ci-out/unit-junit.xml'
             }
             post {
                 always {
@@ -37,7 +44,7 @@ pipeline {
                 sh '''
                     export ATH_COMMIT="$GIT_COMMIT"
                     export ATH_BAG_LINK_BASE="${BUILD_URL}artifact/ci-out/suite/"
-                    bash scripts/run_suite.sh "$ATH_SUITE" --image "ath-sim:$GIT_COMMIT" \
+                    bash scripts/robust.sh suite "$ATH_SUITE" --image "ath-sim:$GIT_COMMIT" \
                         --out "$ATH_SHARED/jenkins/$BUILD_TAG/$ATH_SUITE" --fail-on "$ATH_FAIL_ON"
                 '''
             }
@@ -48,6 +55,11 @@ pipeline {
                     archiveArtifacts artifacts: 'ci-out/suite/**', allowEmptyArchive: true
                 }
             }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'ci-out/watchdog/**, ci-out/BLOCKERS.md', allowEmptyArchive: true
         }
     }
 }

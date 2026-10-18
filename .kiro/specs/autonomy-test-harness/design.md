@@ -401,7 +401,7 @@ A suite runs inside **one** `ath-sim` container (`docker run` from `scripts/run_
 
 **Re-run one Scenario (Requirement 5.6):** `bash scripts/rerun_one.sh --config <generator config> --seed <scenario seed> [--condition <name>]` regenerates the Scenario with `generate_one`, confirms it equals the stored file, and runs it alone with the same Runner.
 
-**Errored runs in the experiment:** an errored run (no Verdict) is retried once and both attempts are recorded. Gate A requires that every experiment run has a Verdict.
+**Errored, hung, or stalled runs:** a run without a Verdict of its own (errored, or stopped by the hard limit or by a stall) is retried once with the other render method, and both attempts are recorded; a run that failed its Verdict is never re-run (see "Stall and crash handling"). Gate A requires that every experiment run has a Verdict.
 
 **Requirements coverage:** Requirement 5 (5.1–5.7).
 
@@ -483,7 +483,7 @@ Missing or unparsable input stops generation without writing a partial file (out
 3. **Scenario suite:** `smoke` (the 10 `fixed10` Scenarios) for a change build, or `full` (all 40 committed Scenarios: `fixed10` and `experiment30`, no Faults) when the build cause is the timer, through `scripts/run_suite.sh` (Requirements 9.1, 9.2).
 4. **Publish** the scenario JUnit report and the summary, and archive failed runs' bags (Requirement 9.4).
 
-Every heavy stage holds the simulation lock. The build fails if any unit test fails, any Scenario errors, or any Smoke_Suite Scenario fails its Verdict (Requirement 9.3). One green build's console log is committed under `ci/jenkins_run_log/` (Requirement 9.5).
+Every stage runs through `scripts/robust.sh`, which retries an attempt that crashed, stalled, or hung with the step's next method (see "Stall and crash handling") and archives the attempt logs under `ci-out/`. Every heavy stage holds the simulation lock. The build fails if any unit test fails, any Scenario errors, or any Smoke_Suite Scenario fails its Verdict (Requirement 9.3). One green build's console log is committed under `ci/jenkins_run_log/` (Requirement 9.5).
 
 **Smoke_Suite stability.** The Smoke_Suite guards the harness, not Nav2's limits, so it uses the easier `generator_smoke.yaml` settings (0–2 obstacles, 0.40 m extra clearance, 3–6 m start-to-goal). If an M2 run shows a `fixed10` Scenario failing because of Nav2's behavior rather than a harness defect, that result is kept and reported, and the Smoke_Suite becomes the `fixed10` Scenarios that passed all three M2 repeats (at least 8). The excluded ids and the reason are recorded here and in the README.
 
@@ -652,7 +652,8 @@ The following properties cover the pure, input-varying logic of the system (sche
 
 - **M0 failure (Requirement 1.5):** the baseline script records the failing step (`image`, `render`, `launch`, `nav2_activate`, `goal`, `ground_truth`) and its observed effect in `docs/ENVIRONMENT.md` and exits non-zero; the M0 gate fails, and later milestones do not run.
 - **Errored Scenario (Requirement 5.7):** recorded with its failing step; the suite continues.
-- **Hung Scenario (Requirement 5.3):** killed at the hard wall-clock limit, marked `timed_out`, teardown checked, suite continues.
+- **Hung or stalled Scenario (Requirement 5.3):** killed at the hard wall-clock limit, or earlier when its logs and bag stop changing for `stall_timeout_s`; marked `timed_out`, teardown checked, retried once with the other render method, and the suite continues.
+- **Crashed, stalled, or hung step:** retried with the step's next method under `scripts/watchdog.sh`, and recorded in `docs/BLOCKERS.md` when every method fails (see "Stall and crash handling").
 - **Leftover processes (Requirement 5.2):** killed, recorded, and the next Scenario waits until none remain.
 - **Bad Scenario file (Requirements 2.3, 2.4):** rejected with a field-level error before anything launches.
 - **Bad report input (Requirement 7.5):** no partial report; the error names the input.
@@ -661,10 +662,53 @@ The following properties cover the pure, input-varying logic of the system (sche
 
 ---
 
+## Stall and crash handling
+
+A long step can end without a result: a process crashes, stalls with no output, or runs on past any reasonable time. Each of these is detected, retried with a different method, and recorded, at two levels. A result is never re-run to get a different answer: a failing unit test, a Scenario that fails its Verdict, and a finished Jenkins build of any result are reported as they are. Only an attempt that ended without a result is retried, and the number of attempts is bounded.
+
+**Inside a suite (`harness/runner/suite.py`).**
+
+- **Stall:** besides the hard limit, the suite watches the newest modification time under the run's directory (its logs and records) and its bag directory. No change for `stall_timeout_s` (180 s of wall-clock time, `config/run.yaml`) stops the child early as `timed_out`, with detail "stalled: no change in the run's logs or bag for 180 s". In a working run, the launch log and the bag recorder change far more often than that.
+- **Retry with the other render method:** a run that is `errored` or `timed_out` (hard limit or stall) runs once more with the other render method: headless EGL first by default, then Xvfb on :99 (`run_scenario --render-mode`), with run index + 500 so that it gets its own Gazebo partition. The first attempt's RunRecord stays in `runs/<id>/attempt_1/run_record.json`, and its bag is renamed `bags/<id>.attempt1`. The final RunRecord carries `attempt: 2` and a `first_attempt` summary, and `suite.json` lists every retried run under `retried`. Before any run starts, a partial bag left by a stopped earlier run is renamed `bags/<id>.interrupted<k>`, because `ros2 bag record` refuses an existing directory. `--no-retry` turns retries off, and `--render-mode` (or `ATH_RENDER_MODE`) picks the first method.
+- **Paired_Experiment:** the same rule. An errored, hung, or stalled run is retried once with the other render method, both attempts are kept, and a resumed job reruns a run whose only record is such a first attempt.
+
+**Around a step (`scripts/watchdog.sh`, `scripts/robust.sh`).** `watchdog.sh` runs each attempt in its own process group and classifies it:
+
+| Outcome | Meaning | Retried? |
+|---|---|---|
+| PASS | exit 0, outputs complete | no |
+| FAILED | clean non-zero exit, outputs complete: a real result | only for idempotent steps (image build, Jenkins wait) |
+| INCOMPLETE | outputs missing or stale | yes |
+| CRASHED | killed by a signal | yes |
+| TIMEOUT | more active time than the step's limit | yes |
+| STALLED | no new output and no change under the step's progress paths | yes |
+
+Time spent waiting for `sim.lock` counts neither as active time nor as a stall. When an attempt is stopped, its process group gets SIGTERM and then SIGKILL after 15 s, and its containers are stopped too: every `docker run` in `scripts/` labels its container `ath.watchdog=<attempt tag>`. A signal to the watchdog itself (a stopped job, an aborted Jenkins build) stops the running attempt the same way. Each attempt's output goes to `runs/logs/<name>.attempt<k>.log` and to the console, and each attempt adds one line to `runs/logs/<name>.attempts.jsonl`. When every attempt ends without a result, the step is appended to `docs/BLOCKERS.md` and the exit status is 1.
+
+`robust.sh` gives each long step its ladder of methods (the last one repeats):
+
+| Step | Method 1 | Method 2 | Method 3 | Complete when |
+|---|---|---|---|---|
+| `build` | `build_image.sh` | with `--pull` | with `--no-cache` | the image imports `rclpy`, `rosbag2_py`, and `harness` |
+| `unit` | `test_unit.sh` | ROS 2 tests in a second pytest process (`ATH_TEST_SPLIT=1`) | as 2 | this attempt wrote `runs/coverage.json` |
+| `suite` | `run_suite.sh` | Xvfb as every run's first render method | EGL again | `suite.json` and `junit.xml` are in `--out` (earlier attempts kept as `<out>.attempt<k>`) |
+| `experiment` | `run_experiment.sh` (resumes) | again | Xvfb first | this attempt wrote `results/experiment/experiment.json` |
+| `m0`, `render-check` | the script | again | – | this attempt wrote the result file |
+| `gate <m>` | `verify_<m>.sh` | again | – | – |
+| `jenkins-build <commit>` | wait for the commit's build | `jenkins_up.sh`, start a build, wait | stop the stuck build, start another, wait | a build of the commit finished (exit 0 only if SUCCESS) |
+
+Limits per attempt (active time / stall): build 2 h / 30 min; unit 1 h / 20 min; suite 3 h (full suite 16 h) / 20 min; experiment 6 h / 30 min; M0 1 h / 15 min; render check 40 min / 15 min; gates 4 h / 1 h; Jenkins wait 2 h / 15 min. The headless-render check is not switched to Xvfb, because what it checks is EGL rendering with no display.
+
+**Detached jobs (`scripts/bg_ensure.sh`).** Called repeatedly to poll a `bg.sh` job, it starts the job once and restarts it when it is LOST, crashed (exit 124, or 128 and above), or stalled (its log and progress paths unchanged for `--stall` seconds while it is not waiting for the lock). It keeps each earlier log as `<name>.log.<k>`, restarts at most `--max-restarts` times (default 2), and then records a blocker. A job that finished with a clean failure is reported, not restarted. Only steps that are safe to start again go through it: the experiment resumes, and suites, gates, and `robust.sh` steps start over.
+
+**Requirements coverage:** Requirements 5.3, 5.7, 9.3, 10.4.
+
+---
+
 ## Testing Strategy
 
 - **Property-based tests (pytest + Hypothesis, `@settings(max_examples=100, derandomize=True)`):** Properties 1–19 over the pure logic (schema, generator and feasibility, fault models and schedule, Oracle, reporting, experiment statistics), each tagged `Feature: autonomy-test-harness, Property {n}`. These need no simulator. Properties 6 and 7 draw at least 1,000 rays per example and Property 8 at least 100 messages.
-- **Unit tests (pytest):** one per Fault showing the republished output matches the configured effect (Requirement 4.11); Oracle collision, goal-reached, and timeout decisions on constructed Ground_Truth with known answers, including exact-threshold and tolerance-edge cases (Requirement 6.7); schema error messages (Requirement 2.4); the parameter-file diff; the arena's map and world agreeing; the Dockerfile pin check; the Wilson interval against known values; the Runner's lifecycle with fake processes (a hung child is killed and the suite continues; a spawn failure is errored with step `spawn`; leftovers are detected).
+- **Unit tests (pytest):** one per Fault showing the republished output matches the configured effect (Requirement 4.11); Oracle collision, goal-reached, and timeout decisions on constructed Ground_Truth with known answers, including exact-threshold and tolerance-edge cases (Requirement 6.7); schema error messages (Requirement 2.4); the parameter-file diff; the arena's map and world agreeing; the Dockerfile pin check; the Wilson interval against known values; the Runner's lifecycle with fake processes (a hung child is killed and the suite continues; a stalled child is stopped early and retried with the other render method, while a failed Verdict is not; a spawn failure is errored with step `spawn`; leftovers are detected); the watchdog, the method ladders, and the job supervisor on short real processes (stall, timeout, crash, incomplete output, lock wait, signal, giving up).
 - **Coverage (Requirement 0.9):** every module in `harness/` or `scripts/` with more than one public function or more than 50 source lines keeps at least 80% statement coverage under `bash scripts/test_unit.sh`, checked by `scripts/check_coverage.py`. Code that drives processes or ROS is written behind small injectable interfaces so it is tested with fakes.
 - **Markers:** `ros` (needs `rclpy` but not the simulator; runs in the image) and `sim` (needs the running simulator). `scripts/test_unit.sh` runs `pytest -m "not sim"` inside the `ath-sim` image, so `ros` tests run there.
 - **Integration runs (simulator, in the container):** the M0 baseline (Requirements 1.3, 1.4); the 10 fixed Scenarios three times (M2); one run per Fault type with the bag check (M3); the headless-render check (Requirement 8.3); the Smoke_Suite (Requirements 8.5, 9.1).

@@ -4,6 +4,8 @@
 #   default tag ath-sim:dev (the working tree as it is)
 #   --tag ath-sim:<40-character commit> builds a reported-run image; it refuses a dirty tree
 #   (scripts/require_clean.sh) and a commit that is not HEAD.
+# ATH_BUILD_PULL=1 also pulls the (digest-pinned) base image again, and ATH_BUILD_NO_CACHE=1 ignores the layer
+# cache: scripts/robust.sh's second and third methods when a build crashes, stalls, or fails.
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")/.."
 
@@ -30,8 +32,11 @@ if [ "$tag" != "ath-sim:dev" ]; then
   label_commit="$head"
 fi
 
-echo "build_image: building $tag (commit label $label_commit)"
-bash scripts/sim_lock.sh docker build \
+build_flags=()
+[ "${ATH_BUILD_PULL:-0}" = "1" ] && build_flags+=(--pull)
+[ "${ATH_BUILD_NO_CACHE:-0}" = "1" ] && build_flags+=(--no-cache)
+echo "build_image: building $tag (commit label $label_commit${build_flags[*]:+, ${build_flags[*]}})"
+bash scripts/sim_lock.sh docker build "${build_flags[@]}" \
   -f docker/Dockerfile \
   --label "ath.commit=$label_commit" \
   -t "$tag" .

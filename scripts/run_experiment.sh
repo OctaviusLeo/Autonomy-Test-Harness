@@ -3,6 +3,7 @@
 # experiment.json, the per-condition JUnit files, and summary.md into results/experiment/ and the summary to
 # results/summary.md. Output: ~/ath-shared/runs/experiment-<commit>/ (re-running resumes there).
 # Usage: bash scripts/run_experiment.sh   (commit and build ath-sim:<HEAD> first)
+# ATH_RENDER_MODE=xvfb makes Xvfb every run's first render method (scripts/robust.sh's last method).
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")/.."
 if [ "${ATH_LOCK_HELD:-0}" != "1" ]; then exec bash scripts/sim_lock.sh bash scripts/run_experiment.sh "$@"; fi
@@ -19,8 +20,9 @@ mkdir -p "$out"
 echo "run_experiment: $image -> $out"
 
 set +e
-docker run --rm --name "ath-experiment-$$" --shm-size=1g \
+docker run --rm --name "ath-experiment-$$" ${ATH_WATCHDOG_TAG:+--label "ath.watchdog=$ATH_WATCHDOG_TAG"} --shm-size=1g \
   -e ATH_COMMIT="$commit" -e ATH_COMMAND="bash scripts/run_experiment.sh" -e ATH_HOST_RESULTS="$out" \
+  ${ATH_RENDER_MODE:+-e "ATH_RENDER_MODE=$ATH_RENDER_MODE"} \
   -v "$out:/results" "$image" python -m harness.experiment.paired --out /results
 rc=$?
 set -e

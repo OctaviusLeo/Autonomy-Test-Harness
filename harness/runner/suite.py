@@ -8,8 +8,15 @@ RunRecord is ``errored`` at step ``harness``. After every Scenario the suite kil
 process, waits until none remain, and removes Fast DDS shared-memory files before starting the next one
 (Requirement 5.2). It writes a stamped ``suite.json`` and the reports (``junit.xml``, ``summary.md``).
 
+Stalls and crashes (design.md, "Stall and crash handling"): a child whose run directory and bag stop changing
+for ``stall_timeout_s`` is stopped early as ``timed_out`` (detail "stalled: ..."). A run without a real result
+(``errored``, or ``timed_out`` by the hard limit or a stall) is run once more with the other render method
+(EGL or Xvfb); the first attempt's record stays in ``runs/<id>/attempt_1/`` and its bag is renamed
+``bags/<id>.attempt1``. A run that failed its Verdict is a result about Nav2 and is never re-run.
+
 Usage (inside the image):
   python -m harness.runner.suite --name smoke --scenarios /opt/ath/scenarios/fixed10 --out /results [--repeat 3]
+         [--render-mode egl|xvfb] [--no-retry]
 """
 
 from __future__ import annotations
@@ -33,6 +40,7 @@ from harness.schema.validate import load_scenario
 
 REPO = Path(__file__).resolve().parents[2]
 HARD_LIMIT_DETAIL = "hard wall-clock limit"
+RETRY_INDEX_OFFSET = 500  # a retried run uses run index + 500 (its own Gazebo partition)
 
 
 def write_reports(records: list[dict], out_dir: Path, name: str, seed: int = 0) -> None:
@@ -45,12 +53,29 @@ def write_reports(records: list[dict], out_dir: Path, name: str, seed: int = 0) 
                   bag_link_base=os.environ.get("ATH_BAG_LINK_BASE"), run_root=os.environ.get("ATH_HOST_RESULTS"))
 
 
+def newest_mtime(paths: Sequence[Path]) -> float:
+    """The newest modification time of anything under ``paths`` (0 when none exists)."""
+    newest = 0.0
+    for top in paths:
+        if not Path(top).exists():
+            continue
+        newest = max(newest, Path(top).stat().st_mtime)
+        for root, dirs, files in os.walk(top):
+            for name in (*dirs, *files):
+                try:
+                    newest = max(newest, os.stat(os.path.join(root, name)).st_mtime)
+                except OSError:
+                    pass
+    return newest
+
+
 @dataclasses.dataclass
 class SuiteDeps:
     api: ProcessApi = dataclasses.field(default_factory=ProcessApi)
     python: str = sys.executable
     clean_shm: Callable[[], int] = processes.clean_shm
     write_reports: Callable[[list[dict], Path, str], None] | None = write_reports
+    newest_mtime: Callable[[Sequence[Path]], float] = newest_mtime
 
 
 def scenario_files(paths: Sequence[str | Path]) -> list[Path]:
@@ -65,21 +90,52 @@ def run_dir(out_dir: Path, scenario_id: str) -> Path:
     return Path(out_dir) / "runs" / scenario_id
 
 
-def wait_with_limit(api: ProcessApi, proc: subprocess.Popen, limit_s: float) -> bool:
-    """True if ``proc`` exited within ``limit_s`` wall-clock seconds."""
-    deadline = api.monotonic() + limit_s
+def wait_with_limit(api: ProcessApi, proc: subprocess.Popen, limit_s: float, stall_s: float | None = None,
+                    progress: Callable[[], float] | None = None) -> str:
+    """Wait for ``proc``: "exited", "timeout" after ``limit_s`` wall-clock seconds, or "stalled" when
+    ``progress()`` (a newest-modification-time signature) has not changed for ``stall_s`` seconds."""
+    start = api.monotonic()
+    deadline = start + limit_s
+    last_signature, last_change = None, start
     while proc.poll() is None:
-        if api.monotonic() >= deadline:
-            return False
+        now = api.monotonic()
+        if now >= deadline:
+            return "timeout"
+        if stall_s is not None and progress is not None:
+            signature = progress()
+            if signature != last_signature:
+                last_signature, last_change = signature, now
+            elif now - last_change >= stall_s:
+                return "stalled"
         api.sleep(1.0)
-    return True
+    return "exited"
+
+
+def other_render_mode(mode: str) -> str:
+    return "xvfb" if mode == "egl" else "egl"
+
+
+def move_aside(path: Path, label: str) -> Path | None:
+    """Rename ``path`` (a bag or record from an earlier attempt) so a new attempt can use the name.
+
+    ``ros2 bag record -o`` refuses an existing directory, so a retry or a resumed run needs the name free.
+    """
+    path = Path(path)
+    if not path.exists():
+        return None
+    k = 1
+    while (target := path.with_name(f"{path.name}.{label}{k}")).exists():
+        k += 1
+    path.rename(target)
+    return target
 
 
 def synthetic_record(scenario, out_dir: Path, condition: str, run_index: int, status: str, step: str | None,
-                     effect: str, wall_time_s: float, leftovers: list[str], stamp: repro.Stamp) -> dict[str, Any]:
+                     effect: str, wall_time_s: float, leftovers: list[str], stamp: repro.Stamp,
+                     detail: str = HARD_LIMIT_DETAIL) -> dict[str, Any]:
     verdict = None
     if status == "timed_out":
-        verdict = {"passed": False, "reason": "timeout", "detail": HARD_LIMIT_DETAIL, "time_to_goal_s": None,
+        verdict = {"passed": False, "reason": "timeout", "detail": detail, "time_to_goal_s": None,
                    "min_clearance_m": None}
     return {
         "scenario_id": scenario.scenario_id, "seed": scenario.seed, "fault_condition": condition,
@@ -89,44 +145,86 @@ def synthetic_record(scenario, out_dir: Path, condition: str, run_index: int, st
     }
 
 
-def run_one(path: Path, cfg: RunConfig, out_dir: Path, run_index: int, condition: str, deps: SuiteDeps,
-            run_config_path: Path, extra_args: Sequence[str] = ()) -> dict[str, Any]:
+def run_attempt(path: Path, cfg: RunConfig, out_dir: Path, run_index: int, condition: str, deps: SuiteDeps,
+                run_config_path: Path, extra_args: Sequence[str] = (), render_mode: str = "egl") -> dict[str, Any]:
+    """One child process for one Scenario: its RunRecord, or a synthetic one if it hung, stalled, or crashed."""
     scenario = load_scenario(path)
     rdir = run_dir(out_dir, scenario.scenario_id)
     rdir.mkdir(parents=True, exist_ok=True)
     record_path = rdir / "run_record.json"
     record_path.unlink(missing_ok=True)
+    move_aside(bag_dir(out_dir, scenario.scenario_id), "interrupted")  # a partial bag from a run that was stopped
     cmd = [deps.python, "-m", "harness.runner.run_scenario", "--scenario", str(path), "--out", str(out_dir),
-           "--run-index", str(run_index), "--condition", condition, "--run-config", str(run_config_path), *extra_args]
+           "--run-index", str(run_index), "--condition", condition, "--run-config", str(run_config_path),
+           "--render-mode", render_mode, *extra_args]
     started = deps.api.monotonic()
     proc = processes.start_group(deps.api, cmd, rdir / "child.log")
-    finished = wait_with_limit(deps.api, proc, cfg.hard_limit_s(scenario.time_limit_s))
-    if not finished:
+    watched = (rdir, bag_dir(out_dir, scenario.scenario_id))
+    ended = wait_with_limit(deps.api, proc, cfg.hard_limit_s(scenario.time_limit_s), cfg.stall_timeout_s,
+                            lambda: deps.newest_mtime(watched))
+    if ended != "exited":
         processes.stop_group(deps.api, proc)
     leftovers = [p.cmdline for p in processes.kill_leftovers(deps.api)]
     deps.clean_shm()
     stamp = repro.make_stamp(seed=scenario.seed)
-    if not finished:
+    elapsed = deps.api.monotonic() - started
+    if ended == "timeout":
         record = synthetic_record(scenario, out_dir, condition, run_index, "timed_out", None,
-                                  f"killed after {cfg.hard_limit_s(scenario.time_limit_s):.0f} s",
-                                  deps.api.monotonic() - started, leftovers, stamp)
+                                  f"killed after {cfg.hard_limit_s(scenario.time_limit_s):.0f} s", elapsed, leftovers,
+                                  stamp)
+    elif ended == "stalled":
+        detail = f"stalled: no change in the run's logs or bag for {cfg.stall_timeout_s:.0f} s"
+        record = synthetic_record(scenario, out_dir, condition, run_index, "timed_out", None,
+                                  f"stopped after {elapsed:.0f} s ({detail})", elapsed, leftovers, stamp, detail)
     elif record_path.exists():
         record = json.loads(record_path.read_text(encoding="utf-8"))
         record["leftover_processes"] = [*record.get("leftover_processes", []), *leftovers]
     else:
         record = synthetic_record(scenario, out_dir, condition, run_index, "errored", "harness",
-                                  f"run_scenario exited {proc.returncode} without a RunRecord",
-                                  deps.api.monotonic() - started, leftovers, stamp)
+                                  f"run_scenario exited {proc.returncode} without a RunRecord", elapsed, leftovers,
+                                  stamp)
+    record["render_mode"] = render_mode
     repro.write_text_atomic(record_path, json.dumps(record, indent=2) + "\n")
+    return record
+
+
+def needs_retry(record: dict[str, Any]) -> bool:
+    """Only runs without a real result are retried: errored (no Verdict) or stopped by the hard limit or a stall.
+    A run that failed its Verdict is a result about Nav2 and is never re-run to get a pass."""
+    return record["status"] in ("errored", "timed_out")
+
+
+def run_one(path: Path, cfg: RunConfig, out_dir: Path, run_index: int, condition: str, deps: SuiteDeps,
+            run_config_path: Path, extra_args: Sequence[str] = (), retry: bool = True,
+            render_mode: str = "egl") -> dict[str, Any]:
+    """Run one Scenario; if it errored, hung, or stalled, keep that attempt and run it once more with the other
+    render method (EGL or Xvfb), recording both attempts."""
+    record = run_attempt(path, cfg, out_dir, run_index, condition, deps, run_config_path, extra_args, render_mode)
+    record["attempt"] = 1
+    if not (retry and needs_retry(record)):
+        return record
+    rdir = run_dir(out_dir, record["scenario_id"])
+    first = dict(record)
+    moved = move_aside(bag_dir(out_dir, record["scenario_id"]), "attempt")
+    if moved is not None:
+        first["bag_path"] = host_path(moved)
+    (rdir / "attempt_1").mkdir(parents=True, exist_ok=True)
+    repro.write_text_atomic(rdir / "attempt_1" / "run_record.json", json.dumps(first, indent=2) + "\n")
+    record = run_attempt(path, cfg, out_dir, run_index + RETRY_INDEX_OFFSET, condition, deps, run_config_path,
+                         extra_args, other_render_mode(render_mode))
+    record["attempt"] = 2
+    record["first_attempt"] = {k: first.get(k) for k in ("status", "failing_step", "effect", "render_mode",
+                                                         "wall_time_s")}
+    repro.write_text_atomic(rdir / "run_record.json", json.dumps(record, indent=2) + "\n")
     return record
 
 
 def run_suite(paths: Sequence[Path], cfg: RunConfig, out_dir: Path, condition: str = "none", first_index: int = 0,
               deps: SuiteDeps | None = None, run_config_path: Path = REPO / "config" / "run.yaml",
-              extra_args: Sequence[str] = ()) -> list[dict[str, Any]]:
+              extra_args: Sequence[str] = (), retry: bool = True, render_mode: str = "egl") -> list[dict[str, Any]]:
     """Run every Scenario file in ``paths`` and return their RunRecords."""
     deps = deps or SuiteDeps()
-    return [run_one(p, cfg, out_dir, first_index + k, condition, deps, run_config_path, extra_args)
+    return [run_one(p, cfg, out_dir, first_index + k, condition, deps, run_config_path, extra_args, retry, render_mode)
             for k, p in enumerate(paths)]
 
 
@@ -138,6 +236,7 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         "failed": sum(1 for r, v in zip(records, verdicts) if r["status"] != "errored" and not v.get("passed")),
         "errored": sum(1 for r in records if r["status"] == "errored"),
         "timed_out": sum(1 for r in records if r["status"] == "timed_out"),
+        "retried": [{"scenario_id": r["scenario_id"], **r["first_attempt"]} for r in records if r.get("first_attempt")],
         "failures": [{"scenario_id": r["scenario_id"], "status": r["status"], "reason": v.get("reason"),
                       "failing_step": r.get("failing_step")}
                      for r, v in zip(records, verdicts) if not v.get("passed")],
@@ -170,6 +269,9 @@ def main(argv: list[str] | None = None, deps: SuiteDeps | None = None) -> int:
     parser.add_argument("--wiring", action="store_true")
     parser.add_argument("--fail-on", choices=("nothing", "errors", "failures"), default="nothing",
                         help="exit 1 if any run errored or hit the hard limit (errors), or also failed its Verdict")
+    parser.add_argument("--render-mode", choices=("egl", "xvfb"), default=os.environ.get("ATH_RENDER_MODE", "egl"),
+                        help="the first render method of every run (the retry uses the other one)")
+    parser.add_argument("--no-retry", action="store_true", help="do not re-run errored, hung, or stalled runs")
     args = parser.parse_args(argv)
     deps = deps or SuiteDeps()
     cfg = load_run_config(args.run_config)
@@ -181,7 +283,8 @@ def main(argv: list[str] | None = None, deps: SuiteDeps | None = None) -> int:
     for k in range(args.repeat):
         out = args.out if args.repeat == 1 else args.out / f"repeat_{k + 1}"
         repeat_started = time.monotonic()
-        records = run_suite(paths, cfg, out, args.condition, k * len(paths), deps, args.run_config, extra_args)
+        records = run_suite(paths, cfg, out, args.condition, k * len(paths), deps, args.run_config, extra_args,
+                            not args.no_retry, args.render_mode)
         write_suite(args.name, out, [(out, r) for r in records], time.monotonic() - repeat_started,
                     repro.make_stamp(seed=0), deps, {"repeat": k + 1, "condition": args.condition, "scenario_ids": selection})
         entries.extend((out, r) for r in records)
@@ -191,7 +294,7 @@ def main(argv: list[str] | None = None, deps: SuiteDeps | None = None) -> int:
                     {"repeats": args.repeat, "condition": args.condition, "scenario_ids": selection})
     s = summarize([r for _, r in entries])
     print(f"suite {args.name}: {s['runs']} runs, {s['passed']} passed, {s['failed']} failed, "
-          f"{s['errored']} errored, {s['timed_out']} timed out", flush=True)
+          f"{s['errored']} errored, {s['timed_out']} timed out, {len(s['retried'])} retried", flush=True)
     return exit_status(s, args.fail_on)
 
 

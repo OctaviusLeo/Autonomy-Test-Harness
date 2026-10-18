@@ -33,7 +33,7 @@ out="${out:-$shared/runs/rerun-$seed-$condition-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$out"
 
 set +e
-docker run --rm --name "ath-rerun-$$" --shm-size=1g \
+docker run --rm --name "ath-rerun-$$" ${ATH_WATCHDOG_TAG:+--label "ath.watchdog=$ATH_WATCHDOG_TAG"} --shm-size=1g \
   -e ATH_COMMIT="$commit" -e ATH_COMMAND="$command" -e ATH_HOST_RESULTS="$out" \
   -v "$out:/results" "$image" \
   python -m harness.runner.rerun --config "$config" --seed "$seed" --condition "$condition" --out /results
