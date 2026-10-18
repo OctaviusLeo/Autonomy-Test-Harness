@@ -1,5 +1,5 @@
 # Compose project ath-jenkins: the local Jenkins controller (started by scripts/jenkins_up.sh, which sets
-# ATH_SHARED, ATH_REPO, DOCKER_GID, and ATH_JENKINS_ENV_FILE). It listens only on 127.0.0.1:8090.
+# ATH_SHARED, ATH_REPO, DOCKER_GID, and ATH_JENKINS_ENV_FILE). It listens only on 127.0.0.1:8091.
 name: ath-jenkins
 services:
   jenkins:
@@ -8,7 +8,7 @@ services:
     container_name: ath-jenkins
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8090:8080"
+      - "127.0.0.1:8091:8080"
     environment:
       # The Git plugin refuses file:// checkouts unless allowed (SECURITY-2478); acceptable because the
       # controller listens only on 127.0.0.1 and builds only this repository.

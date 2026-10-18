@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and start the local Jenkins controller (Compose project ath-jenkins, http://127.0.0.1:8090).
+# Build and start the local Jenkins controller (Compose project ath-jenkins, http://127.0.0.1:8091).
 # Creates ~/.config/ath/jenkins.env (mode 600) with a random 32-character admin password if it is missing;
 # the password is never printed. Waits until /login answers 200.
 # Usage: bash scripts/jenkins_up.sh
@@ -32,9 +32,9 @@ mkdir -p "$ATH_SHARED/jenkins"
 docker compose -p ath-jenkins -f ci/jenkins/docker-compose.yml up -d --build
 
 for _ in $(seq 120); do
-  code="$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8090/login || true)"
+  code="$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8091/login || true)"
   if [ "$code" = "200" ]; then
-    echo "jenkins_up: http://127.0.0.1:8090/login answers 200"
+    echo "jenkins_up: http://127.0.0.1:8091/login answers 200"
     exit 0
   fi
   sleep 5
