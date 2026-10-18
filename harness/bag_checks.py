@@ -5,6 +5,7 @@ header of the stored pre-window scan), so outputs are paired with inputs by head
 simulation seconds: header stamps and the bag's receive times (recorded with ``--use-sim-time``).
 
 - :func:`passthrough_report` (M2): with no Fault, every paired output equals its input.
+- :func:`fault_report` (M3): a Fault's effect stays inside its window (see its docstring for each type).
 """
 
 from __future__ import annotations
@@ -65,6 +66,82 @@ def passthrough_report(raw: list[ScanMsg], out: list[ScanMsg], edge: int = 2) ->
         "differing": differing, "unmatched_raw": len(unmatched), "unmatched_raw_inside": len(inner_unmatched),
         "ok": len(raw) > 0 and differing == 0 and not inner_unmatched,
     }
+
+
+GUARD_S = 0.05  # scans this close to a window boundary are skipped: the injector and the recorder see slightly different times
+
+
+def fault_report(raw: list[ScanMsg], out: list[ScanMsg], fault_type: str, window: tuple[float, float],
+                 dispatch: float, params: dict[str, Any] | None = None, edge: int = 2) -> dict[str, Any]:
+    """Are a Fault's effects confined to its window (simulation seconds after ``dispatch``)?
+
+    Inputs are classified by their bag receive time. Outside the window every input must have exactly
+    its own unchanged output. Inside it: range noise, ray dropout, and sector blackout change the ranges;
+    whole-scan dropout publishes nothing; a frozen scan publishes only repeats of the last pre-window
+    scan; latency publishes each input unchanged, later by the configured delay (within 20%).
+    """
+    params = params or {}
+    start, end = dispatch + window[0], dispatch + window[1]
+
+    def zone(t: float) -> str:
+        if start + GUARD_S <= t < end - GUARD_S:
+            return "inside"
+        if t < start - GUARD_S or t >= end + GUARD_S:
+            return "outside"
+        return "edge"
+
+    pairs = pair_by_stamp(raw, out)
+    outside_scans = outside_changed = outside_missing = 0
+    inside_scans = inside_changed = inside_published = 0
+    delays: list[float] = []
+    for i, (r, outs) in enumerate(pairs):
+        where = zone(r.received)
+        if where == "outside":
+            outside_scans += 1
+            own = [o for o in outs if not start <= o.received < end]  # not a frozen repeat made inside the window
+            if not own:
+                outside_missing += int(edge <= i < len(pairs) - edge)
+            elif not same_ranges(r.ranges, own[0].ranges):
+                outside_changed += 1
+        elif where == "inside":
+            inside_scans += 1
+            inside_published += len(outs)
+            if fault_type == "latency" and outs:
+                delays.append(outs[0].received - r.received)
+                inside_changed += int(not same_ranges(r.ranges, outs[0].ranges))
+            elif outs:
+                inside_changed += int(not same_ranges(r.ranges, outs[0].ranges))
+    report: dict[str, Any] = {
+        "fault": fault_type, "window_s": list(window), "dispatch_sim_time_s": round(dispatch, 3),
+        "raw_scans": len(raw), "out_scans": len(out),
+        "outside_scans": outside_scans, "outside_changed": outside_changed, "outside_missing": outside_missing,
+        "inside_scans": inside_scans, "inside_changed": inside_changed,
+    }
+    ok = outside_changed == 0 and outside_missing == 0 and inside_scans > 0
+    if fault_type == "scan_dropout":
+        published = sum(1 for o in out if zone(o.received) == "inside")
+        report["outputs_published_inside"] = published
+        ok = ok and published == 0 and inside_published == 0
+    elif fault_type == "freeze":
+        before = [r for r in raw if r.received < start]
+        anchor = round(before[-1].stamp, 6) if before else None
+        inside_outputs = [o for o in out if zone(o.received) == "inside"]
+        repeats = sum(1 for o in inside_outputs if round(o.stamp, 6) == anchor)
+        report.update(frozen_repeats=repeats, other_outputs_inside=len(inside_outputs) - repeats,
+                      outputs_with_inside_stamps=inside_published)
+        ok = ok and repeats > 0 and repeats == len(inside_outputs) and inside_published == 0
+    elif fault_type == "latency":
+        expected = float(params.get("latency_ms", 0.0)) / 1000.0
+        measured = float(np.mean(delays)) if delays else float("nan")
+        within = bool(delays) and abs(measured - expected) <= 0.2 * expected
+        report.update(delayed_messages=len(delays), configured_delay_s=expected,
+                      measured_delay_s=round(measured, 4) if delays else None,
+                      min_delay_s=round(min(delays), 4) if delays else None, within_20_percent=within)
+        ok = ok and within and inside_changed == 0
+    else:
+        ok = ok and inside_changed > 0
+    report["confined_to_window"] = ok
+    return report
 
 
 def ground_truth_count(bag_path: str | Path) -> int:
