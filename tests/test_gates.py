@@ -138,3 +138,58 @@ def test_m1_gate_reports_problems(m1_repo):
                      "rejection counts by reason missing", "40-character", "regenerated record differs",
                      "regenerating fixed10-000 from seed"):
         assert fragment in problems
+
+
+@pytest.fixture
+def m2_repo(tmp_path, repo_root) -> tuple[Path, Path]:
+    repo, shared = tmp_path / "repo", tmp_path / "shared" / "runs"
+    shutil.copytree(repo_root / "scenarios" / "fixed10", repo / "scenarios" / "fixed10")
+    _write(repo, "config/smoke_suite.yaml", "ids: all\n")
+    ids = sorted(p.stem for p in (repo / "scenarios" / "fixed10").glob("*.yaml"))
+    per_scenario = []
+    for sid in ids:
+        per_scenario.append({"scenario_id": sid, "outcomes": ["pass"] * 3, "changed_between_repeats": False,
+                             "passed_all_repeats": True})
+        for k in (1, 2, 3):
+            bag = shared / "m2" / f"repeat_{k}" / "bags" / sid
+            bag.mkdir(parents=True)
+            d = repo / "results" / "m2_fixed10" / f"repeat_{k}" / "runs" / sid
+            verdict = {"passed": True, "reason": ""}
+            _write(repo, str((d / "run_record.json").relative_to(repo)), json.dumps({
+                "scenario_id": sid, "status": "ok", "verdict": verdict, "leftover_processes": [], "bag_path": str(bag),
+                "stamp": {"command": "bash scripts/run_suite.sh smoke --repeat 3", "seed": 1, "commit": HASH}}))
+            _write(repo, str((d / "verdict.json").relative_to(repo)), json.dumps(verdict))
+    _write(repo, "results/m2_fixed10/summary.json", json.dumps({
+        "repeats": 3, "per_scenario": per_scenario, "stamp": {"command": "c", "seed": 0, "commit": HASH}}))
+    _write(repo, "docs/evidence/m2_wiring/wiring_check.json", json.dumps({"ok": True, "checks": {"nav2_reads_scan_ath": True}}))
+    return repo, shared
+
+
+def test_m2_gate_passes(m2_repo):
+    repo, shared = m2_repo
+    assert gates.check_m2(repo, shared_runs=shared) == []
+
+
+def test_m2_gate_reports_problems(m2_repo, monkeypatch):
+    repo, shared = m2_repo
+    rec_path = repo / "results/m2_fixed10/repeat_2/runs/fixed10-003/run_record.json"
+    rec = json.loads(rec_path.read_text())
+    rec.update(status="errored", failing_step="spawn", leftover_processes=["gz sim"])
+    rec_path.write_text(json.dumps(rec))
+    (rec_path.parent / "verdict.json").unlink()
+    shutil.rmtree(shared / "m2" / "repeat_1" / "bags" / "fixed10-001")
+    (repo / "results/m2_fixed10/repeat_3/runs/fixed10-009/run_record.json").unlink()
+    summary = json.loads((repo / "results/m2_fixed10/summary.json").read_text())
+    summary["per_scenario"][4]["passed_all_repeats"] = False
+    (repo / "results/m2_fixed10/summary.json").write_text(json.dumps(summary))
+    _write(repo, "docs/evidence/m2_wiring/wiring_check.json", json.dumps({"ok": False, "checks": {}}))
+    text = "\n".join(gates.check_m2(repo, shared_runs=shared))
+    for fragment in ("29 RunRecords", "status errored (spawn", "fixed10-003: no Verdict", "leftover processes",
+                     "fixed10-001: bag", "not passing all three repeats: ['fixed10-004']", "m2_wiring"):
+        assert fragment in text
+    _write(repo, "config/smoke_suite.yaml", "ids: [fixed10-000]\n")
+    assert "fewer than 8" in "\n".join(gates.check_m2(repo, shared_runs=shared))
+    monkeypatch.delenv("ATH_SHARED", raising=False)
+    assert "ATH_SHARED is not set" in "\n".join(gates.check_m2(repo))
+    monkeypatch.setenv("ATH_SHARED", str(shared.parent))
+    assert gates.shared_runs_dir() == shared

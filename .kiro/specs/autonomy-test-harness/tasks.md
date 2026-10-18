@@ -249,7 +249,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - If a Scenario errored or was timed out by the hard limit, treat it as a harness defect and fix it within the retry cap. If a Scenario failed its Verdict because of Nav2's behavior (the bag shows Nav2 driving as commanded), keep the result and apply design.md's Smoke_Suite stability rule: record the selected ids, the excluded ids, and the reason in design.md ("CI design").
   - _Requirements: 5.1, 5.5, 6.4, 0.1, 0.4_
 
-- [ ] 3.9 **Automated gate (M2):** run `bash scripts/verify_m2.sh`, which runs `bash scripts/test_unit.sh` and checks:
+- [x] 3.9 **Automated gate (M2):** run `bash scripts/verify_m2.sh`, which runs `bash scripts/test_unit.sh` and checks:
   - `results/m2_fixed10/` holds 30 RunRecords (10 Scenarios × 3 repeats), each with a Verdict and a stamp, none `errored` or `timed_out`, and none with unresolved leftover processes;
   - every RunRecord's bag exists under `~/ath-shared/runs/`;
   - the Smoke_Suite (all of `fixed10`, or the recorded selection of at least 8) passed in all three repeats;

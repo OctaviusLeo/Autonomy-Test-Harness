@@ -185,6 +185,67 @@ def check_m1(repo: Path, regenerated_root: Path | None = None) -> list[str]:
     return problems
 
 
+def smoke_selection(repo: Path) -> list[str]:
+    """The Smoke_Suite's Scenario ids: config/smoke_suite.yaml's ids, or every fixed10 Scenario for 'all'."""
+    import yaml
+
+    ids = (yaml.safe_load((repo / "config" / "smoke_suite.yaml").read_text(encoding="utf-8")) or {}).get("ids", "all")
+    if ids == "all":
+        return sorted(p.stem for p in (repo / "scenarios" / "fixed10").glob("*.yaml"))
+    return list(ids)
+
+
+def check_run_records(records: list[tuple[Path, dict]], shared_runs: Path | None, where: str,
+                      problems: list[str], allow_failed_verdicts: bool = True) -> None:
+    for path, record in records:
+        name = f"{where}/{path.parent.name}"
+        check_stamp(record, name, problems)
+        if record.get("status") != "ok":
+            problems.append(f"{name}: status {record.get('status')} ({record.get('failing_step')}: {record.get('effect')})")
+        if not record.get("verdict") or not (path.parent / "verdict.json").exists():
+            problems.append(f"{name}: no Verdict")
+        if record.get("leftover_processes"):
+            problems.append(f"{name}: leftover processes {record['leftover_processes']}")
+        if shared_runs is not None:
+            bag = Path(str(record.get("bag_path", "")))
+            if not bag.is_relative_to(shared_runs) or not bag.exists():
+                problems.append(f"{name}: bag {bag} does not exist under {shared_runs}")
+
+
+def shared_runs_dir() -> Path | None:
+    import os
+
+    shared = os.environ.get("ATH_SHARED")
+    return Path(shared) / "runs" if shared else None
+
+
+def check_m2(repo: Path, shared_runs: Path | None = None) -> list[str]:
+    problems: list[str] = []
+    shared_runs = shared_runs if shared_runs is not None else shared_runs_dir()
+    if shared_runs is None:
+        problems.append("ATH_SHARED is not set, so the bags cannot be checked (run through verify_m2.sh)")
+    out = repo / "results" / "m2_fixed10"
+    paths = sorted(out.glob("repeat_*/runs/*/run_record.json"))
+    if len(paths) != 30:
+        problems.append(f"results/m2_fixed10: {len(paths)} RunRecords, expected 30 (10 Scenarios x 3 repeats)")
+    records = [(p, load_json(p, problems)) for p in paths]
+    check_run_records([(p, r) for p, r in records if isinstance(r, dict)], shared_runs, "results/m2_fixed10", problems)
+    summary = load_json(out / "summary.json", problems)
+    if isinstance(summary, dict):
+        check_stamp(summary, "results/m2_fixed10/summary.json", problems)
+        selection = smoke_selection(repo)
+        if len(selection) < 8:
+            problems.append(f"Smoke_Suite selection has {len(selection)} Scenarios, fewer than 8")
+        passed = {s["scenario_id"] for s in summary.get("per_scenario", []) if s.get("passed_all_repeats")}
+        failing = [sid for sid in selection if sid not in passed]
+        if failing or summary.get("repeats") != 3:
+            problems.append(f"Smoke_Suite Scenarios not passing all three repeats: {failing}")
+    wiring = load_json(repo / "docs" / "evidence" / "m2_wiring" / "wiring_check.json", problems)
+    if isinstance(wiring, dict) and not (wiring.get("ok") and wiring.get("checks", {}).get("nav2_reads_scan_ath")):
+        problems.append("docs/evidence/m2_wiring: Nav2 is not shown subscribed to /scan_ath")
+    return problems
+
+
 def _read(path: Path, problems: list[str]) -> str:
     try:
         return path.read_text(encoding="utf-8")
@@ -193,4 +254,4 @@ def _read(path: Path, problems: list[str]) -> str:
         return ""
 
 
-CHECKS: dict[str, Callable[[Path], list[str]]] = {"m0": check_m0, "m1": check_m1}
+CHECKS: dict[str, Callable[[Path], list[str]]] = {"m0": check_m0, "m1": check_m1, "m2": check_m2}
