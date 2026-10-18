@@ -1,0 +1,151 @@
+{
+  "suite": "smoke",
+  "repeats": 3,
+  "scenario_ids": [
+    "fixed10-000",
+    "fixed10-001",
+    "fixed10-002",
+    "fixed10-003",
+    "fixed10-004",
+    "fixed10-005",
+    "fixed10-006",
+    "fixed10-007",
+    "fixed10-008",
+    "fixed10-009"
+  ],
+  "per_repeat": [
+    {
+      "repeat": 1,
+      "runs": 10,
+      "passes": 10,
+      "failures": [],
+      "errored": [],
+      "timed_out": []
+    },
+    {
+      "repeat": 2,
+      "runs": 10,
+      "passes": 10,
+      "failures": [],
+      "errored": [],
+      "timed_out": []
+    },
+    {
+      "repeat": 3,
+      "runs": 10,
+      "passes": 10,
+      "failures": [],
+      "errored": [],
+      "timed_out": []
+    }
+  ],
+  "per_scenario": [
+    {
+      "scenario_id": "fixed10-000",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-001",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-002",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-003",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-004",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-005",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-006",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-007",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-008",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    },
+    {
+      "scenario_id": "fixed10-009",
+      "outcomes": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "changed_between_repeats": false,
+      "passed_all_repeats": true
+    }
+  ],
+  "outcome_changed": [],
+  "suite_wall_time_s": 1123.9,
+  "stamp": {
+    "command": "bash scripts/run_suite.sh smoke --repeat 3 --out /home/octaviusleo/ath-shared/runs/m2-fixed10",
+    "seed": 0,
+    "commit": "73a0d036dd438fe3616569ed31eac9b999c0b74a"
+  }
+}

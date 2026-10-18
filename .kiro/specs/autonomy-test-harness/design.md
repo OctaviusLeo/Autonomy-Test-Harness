@@ -487,6 +487,8 @@ Every heavy stage holds the simulation lock. The build fails if any unit test fa
 
 **Smoke_Suite stability.** The Smoke_Suite guards the harness, not Nav2's limits, so it uses the easier `generator_smoke.yaml` settings (0–2 obstacles, 0.40 m extra clearance, 3–6 m start-to-goal). If an M2 run shows a `fixed10` Scenario failing because of Nav2's behavior rather than a harness defect, that result is kept and reported, and the Smoke_Suite becomes the `fixed10` Scenarios that passed all three M2 repeats (at least 8). The excluded ids and the reason are recorded here and in the README.
 
+**M2 outcome (task 3.8):** all 10 `fixed10` Scenarios passed in all three repeats (30 of 30 runs; no errored or timed-out run, no outcome changed between repeats; `results/m2_fixed10/summary.json`, `bash scripts/run_suite.sh smoke --repeat 3`, commit `73a0d036dd438fe3616569ed31eac9b999c0b74a`). The stability rule was not needed: the Smoke_Suite is all of `fixed10` (`config/smoke_suite.yaml`: `ids: all`).
+
 **Requirements coverage:** Requirement 9 (9.1–9.6).
 
 ---

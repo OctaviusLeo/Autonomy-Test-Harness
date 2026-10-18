@@ -243,7 +243,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Commit, build `ath-sim:<commit>`, and run the first `fixed10` Scenario with `scripts/run_suite.sh` (a one-Scenario directory under `runs/`). From its bag and logs confirm: Nav2's AMCL, costmaps, and collision monitor subscribe to `/scan_ath` (save `ros2 topic info /scan_ath -v` captured during the run); `/scan_ath` equals `/scan` (no Faults); Ground_Truth samples exist; teardown left no process. Fix the Runner within the retry cap if any check fails. Save the evidence under `docs/evidence/m2_wiring/`.
   - _Requirements: 5.1, 5.2, 5.5, 4.1_
 
-- [ ] 3.8 Run the 10 fixed no-Fault Scenarios three times
+- [x] 3.8 Run the 10 fixed no-Fault Scenarios three times
   - Commit, build `ath-sim:<commit>`, then run `bash scripts/run_suite.sh smoke --repeat 3` detached and poll it.
   - Copy the RunRecords, Verdicts, and a stamped `results/m2_fixed10/summary.json` (per repeat: passes, failures with reasons, errored, timed out; per Scenario: whether the outcome changed between repeats) into `results/m2_fixed10/`. Report the real results; never loosen a threshold or time limit.
   - If a Scenario errored or was timed out by the hard limit, treat it as a harness defect and fix it within the retry cap. If a Scenario failed its Verdict because of Nav2's behavior (the bag shows Nav2 driving as commanded), keep the result and apply design.md's Smoke_Suite stability rule: record the selected ids, the excluded ids, and the reason in design.md ("CI design").
