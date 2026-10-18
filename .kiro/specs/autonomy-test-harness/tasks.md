@@ -154,7 +154,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - If any step fails, record the failing step and its observed effect in `docs/ENVIRONMENT.md`; the M0 gate then fails and later milestones do not run.
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 0.5, 0.6, 0.7, 8.2_
 
-- [ ] 1.6 **Automated gate (M0):** run `bash scripts/verify_m0.sh`, which runs `bash scripts/test_unit.sh` and checks:
+- [x] 1.6 **Automated gate (M0):** run `bash scripts/verify_m0.sh`, which runs `bash scripts/test_unit.sh` and checks:
   - `results/m0_baseline.json` shows action result `SUCCEEDED`, a true-pose-to-goal distance at most 0.30 m, a render method, and a stamp with a 40-character commit hash;
   - `docs/ENVIRONMENT.md` has no `TBD` in its versions table or M0 sections, and every evidence path it cites exists;
   - design.md's "M0 outcome" block has no `TBD`;
