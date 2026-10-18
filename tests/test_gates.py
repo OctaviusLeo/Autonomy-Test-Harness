@@ -263,3 +263,83 @@ def test_m4_gate_reports_problems(m4_repo):
         assert fragment in text
     (m4_repo / "results/smoke/junit.xml").write_text("<testsuite")
     assert "does not parse" in "\n".join(gates.check_m4(m4_repo))
+
+
+def _fake_runner(path, out_dir, run_index, condition):
+    from harness.schema.validate import load_scenario
+
+    s = load_scenario(path)
+    passed = not (condition == "freeze" and s.scenario_id.endswith("7"))
+    record = {"scenario_id": s.scenario_id, "seed": s.seed, "fault_condition": condition, "status": "ok",
+              "generator_config": "config/generator.yaml", "bag_path": f"/b/{condition}/{s.scenario_id}",
+              "verdict": {"passed": passed, "reason": "" if passed else "timeout", "detail": "d"},
+              "stamp": {"command": "bash scripts/run_experiment.sh", "seed": 303, "commit": HASH}}
+    (Path(out_dir) / "runs" / s.scenario_id).mkdir(parents=True, exist_ok=True)
+    (Path(out_dir) / "runs" / s.scenario_id / "run_record.json").write_text(json.dumps(record))
+    return record
+
+
+@pytest.fixture
+def m5_repo(docs_repo, tmp_path, repo_root, monkeypatch) -> tuple[Path, Path]:
+    from harness import docs
+    from harness.experiment import paired
+
+    repo, shared = docs_repo, tmp_path / "shared" / "runs"
+    monkeypatch.setenv("ATH_COMMIT", HASH)
+    monkeypatch.setenv("ATH_COMMAND", "bash scripts/run_experiment.sh")
+    monkeypatch.chdir(repo_root)  # paired.main reads config/ and scenarios/ from the repository
+    ticks = iter(range(0, 10**6, 7))
+    monkeypatch.setattr(paired.time, "monotonic", lambda: float(next(ticks)))
+    run_dir = shared / f"experiment-{HASH}"
+    assert paired.main(["--out", str(run_dir)], runner=_fake_runner) == 0
+    shutil.copy(run_dir / "experiment.json", repo / "results" / "experiment" / "experiment.json")
+    shutil.copy(run_dir / "summary.md", repo / "results" / "summary.md")
+    log = repo / "ci" / "jenkins_run_log"
+    _write(repo, "ci/jenkins_run_log/verification.json", json.dumps({
+        "green": {"build": 7, "commit": "c" * 40, "result": "SUCCESS", "failed_tests": ""},
+        "red": {"build": 8, "commit": "d" * 40, "result": "FAILURE",
+                "failed_tests": "tests.test_ci_red_check::test_ci_turns_red_on_a_failing_unit_test"},
+        "revert": {"build": 9, "commit": "e" * 40, "result": "SUCCESS", "failed_tests": ""}}))
+    _write(repo, "ci/jenkins_run_log/build-7-console.txt",
+           "[Pipeline] { (Build image)\n[Pipeline] { (Unit tests)\n[Pipeline] { (Scenario suite)\n"
+           "+ bash scripts/run_suite.sh smoke --image x\nFinished: SUCCESS\n")
+    _write(repo, "ci/jenkins_run_log/job-config.xml", "<spec>H/5 * * * *</spec><spec>H 2 * * *</spec>")
+    for rel in ("docs/ENVIRONMENT.md", "THIRD_PARTY.md"):
+        shutil.copy(repo_root / rel, repo / rel)
+    (repo / "README.md").write_text(docs.build(repo))
+    assert log.exists()
+    return repo, shared
+
+
+def test_m5_gate_passes(m5_repo):
+    repo, shared = m5_repo
+    assert gates.check_m5(repo, shared_runs=shared) == []
+
+
+def test_m5_gate_reports_problems(m5_repo, monkeypatch):
+    repo, shared = m5_repo
+    v = json.loads((repo / "ci/jenkins_run_log/verification.json").read_text())
+    v["red"]["failed_tests"] = "other"
+    v["revert"]["result"] = "FAILURE"
+    v["green"]["result"] = "UNSTABLE"
+    (repo / "ci/jenkins_run_log/verification.json").write_text(json.dumps(v))
+    (repo / "ci/jenkins_run_log/job-config.xml").write_text("<spec>H/5 * * * *</spec>")
+    report = json.loads((repo / "results/experiment/experiment.json").read_text())
+    report["conditions"][2]["ci95"]["low"] = 0.0
+    report["conditions"][3]["scenario_ids"] = report["conditions"][3]["scenario_ids"][:29]
+    report["conditions"][4]["errored_after_retry"] = 1
+    (repo / "results/experiment/experiment.json").write_text(json.dumps(report))
+    (repo / "results/summary.md").write_text((repo / "results/summary.md").read_text() + "edited\n")
+    (repo / "README.md").write_text("old README\n")
+    (repo / "THIRD_PARTY.md").write_text("nothing\n")
+    text = "\n".join(gates.check_m5(repo, shared_runs=shared))
+    for fragment in ("green build result 'UNSTABLE'", "not a FAILURE caused by test_ci_red_check",
+                     "revert build result 'FAILURE'", "lacks the trigger <spec>H 2 * * *</spec>",
+                     "is not the 95% Wilson interval", "do not share the same 30 Scenario ids",
+                     "runs errored after the retry", "results/summary.md differs", "README.md differs",
+                     "THIRD_PARTY.md does not list"):
+        assert fragment in text
+    (repo / "ci/jenkins_run_log/build-7-console.txt").write_text("Finished: FAILURE\n")
+    assert "console log lacks" in "\n".join(gates.check_m5(repo, shared_runs=shared))
+    monkeypatch.delenv("ATH_SHARED", raising=False)
+    assert "ATH_SHARED is not set" in "\n".join(gates.check_m5(repo))

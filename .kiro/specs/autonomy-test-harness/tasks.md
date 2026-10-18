@@ -367,7 +367,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Write `scripts/check_traceability.py` (with unit tests): it fails if any number in `README.md` or `results/summary.md` (URLs and version strings excluded) does not appear in a generated file under `results/`. Run `scripts/build_docs.py`, then the check, which must pass.
   - _Requirements: 11.1, 11.2, 11.3, 9.6, 0.1, 0.9_
 
-- [ ] 6.8 **Automated gate (end to end, Gate A):** run `bash scripts/verify_m5.sh`, which runs `bash scripts/test_unit.sh` and `scripts/check_traceability.py`, and checks:
+- [x] 6.8 **Automated gate (end to end, Gate A):** run `bash scripts/verify_m5.sh`, which runs `bash scripts/test_unit.sh` and `scripts/check_traceability.py`, and checks:
   - `ci/jenkins_run_log/` holds a green build's console log showing the build, unit-test, and Smoke_Suite stages and `Finished: SUCCESS`, plus `verification.json` with the red build and the green revert, and the trigger configuration with both timers;
   - `results/experiment/experiment.json` has seven conditions with the same 30 Scenario ids each, every run with a Verdict (no errored run after retry), valid Wilson intervals, a total run time, and a stamp;
   - regenerating `results/summary.md` and `README.md` gives identical files;

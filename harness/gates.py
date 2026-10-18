@@ -328,6 +328,101 @@ def check_m4(repo: Path) -> list[str]:
     return problems
 
 
+CI_STAGES = ("(Build image)", "(Unit tests)", "(Scenario suite)", "scripts/run_suite.sh smoke", "Finished: SUCCESS")
+
+
+def check_ci_evidence(repo: Path, problems: list[str]) -> None:
+    log_dir = repo / "ci" / "jenkins_run_log"
+    verification = load_json(log_dir / "verification.json", problems)
+    if not isinstance(verification, dict):
+        return
+    green, red, revert = (verification.get(k) or {} for k in ("green", "red", "revert"))
+    if green.get("result") != "SUCCESS":
+        problems.append(f"verification.json: green build result {green.get('result')!r}")
+    if red.get("result") != "FAILURE" or "test_ci_red_check" not in str(red.get("failed_tests")):
+        problems.append(f"verification.json: red build is not a FAILURE caused by test_ci_red_check ({red})")
+    if revert.get("result") != "SUCCESS":
+        problems.append(f"verification.json: revert build result {revert.get('result')!r}")
+    console = _read(log_dir / f"build-{green.get('build')}-console.txt", problems)
+    missing = [s for s in CI_STAGES if s not in console]
+    if missing:
+        problems.append(f"green build console log lacks {missing}")
+    config = _read(log_dir / "job-config.xml", problems)
+    for spec in ("<spec>H/5 * * * *</spec>", "<spec>H 2 * * *</spec>"):
+        if spec not in config:
+            problems.append(f"job-config.xml lacks the trigger {spec}")
+
+
+def check_experiment(repo: Path, shared_runs: Path | None, problems: list[str]) -> None:
+    from harness.experiment.paired import regenerate_summary
+    from harness.experiment.stats import wilson_interval
+
+    report = load_json(repo / "results" / "experiment" / "experiment.json", problems)
+    if not isinstance(report, dict):
+        return
+    check_stamp(report, "results/experiment/experiment.json", problems)
+    rows = report.get("conditions", [])
+    if [r.get("condition") for r in rows] != CONDITION_ORDER:
+        problems.append(f"experiment.json: conditions {[r.get('condition') for r in rows]}, expected {CONDITION_ORDER}")
+    ids = [r.get("scenario_ids") for r in rows]
+    if not ids or len(ids[0] or []) != 30 or any(i != ids[0] for i in ids):
+        problems.append("experiment.json: the conditions do not share the same 30 Scenario ids")
+    for row in rows:
+        if row.get("errored_after_retry"):
+            problems.append(f"experiment.json: {row['condition']} has runs errored after the retry")
+        low, high = wilson_interval(row["passes"], row["n"])
+        ci = row.get("ci95", {})
+        if not (0 <= ci.get("low", -1) <= row["pass_rate"] <= ci.get("high", 2) <= 1) or \
+                abs(ci["low"] - low) > 1e-4 or abs(ci["high"] - high) > 1e-4:
+            problems.append(f"experiment.json: {row['condition']} interval {ci} is not the 95% Wilson interval")
+    if not report.get("total_run_time_s", 0) > 0:
+        problems.append("experiment.json: no total run time")
+    if shared_runs is not None and isinstance(report.get("stamp"), dict):
+        run_dir = shared_runs / f"experiment-{report['stamp'].get('commit')}"
+        try:
+            if regenerate_summary(run_dir) != _read(repo / "results" / "summary.md", problems):
+                problems.append("results/summary.md differs from the summary regenerated from the run records")
+        except (OSError, KeyError, ValueError) as exc:
+            problems.append(f"cannot regenerate results/summary.md from {run_dir}: {exc}")
+
+
+def third_party_names(environment: str) -> set[str]:
+    """Packages and images named in docs/ENVIRONMENT.md's tables and pin list."""
+    names = set(re.findall(r"ros-jazzy-[a-z0-9-]+", environment))
+    # Images as name:tag (the project's own ath-* images are not third-party).
+    names |= {m for m in re.findall(r"`([a-z0-9][a-z0-9./-]*:[a-z0-9][a-z0-9.-]*)(?:@sha256:[0-9a-f]{64})?`", environment)
+              if not m.startswith(("ath", "sha256:"))}
+    names |= set(re.findall(r"`([a-z0-9][a-z0-9.+-]*)=[^`]+`", environment))  # apt pins
+    for heading in ("Python packages",):
+        for line in markdown_section(environment, heading).splitlines():
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if len(cells) >= 2 and cells[0] not in ("Package", "---") and re.match(r"^[A-Za-z0-9._-]+$", cells[0]):
+                names.add(cells[0])
+    return names
+
+
+def check_m5(repo: Path, shared_runs: Path | None = None) -> list[str]:
+    problems: list[str] = []
+    shared_runs = shared_runs if shared_runs is not None else shared_runs_dir()
+    if shared_runs is None:
+        problems.append("ATH_SHARED is not set, so results/summary.md cannot be regenerated (run through verify_m5.sh)")
+    check_ci_evidence(repo, problems)
+    check_experiment(repo, shared_runs, problems)
+    try:
+        from harness import docs
+
+        if docs.build(repo) != _read(repo / "README.md", problems):
+            problems.append("README.md differs from the one scripts/build_docs.py generates")
+    except (OSError, KeyError, ValueError) as exc:
+        problems.append(f"cannot regenerate README.md: {exc}")
+    third_party = _read(repo / "THIRD_PARTY.md", problems).lower()
+    missing = sorted(n for n in third_party_names(_read(repo / "docs" / "ENVIRONMENT.md", problems))
+                     if n.lower() not in third_party)
+    if missing:
+        problems.append(f"THIRD_PARTY.md does not list {missing}")
+    return problems
+
+
 def _read(path: Path, problems: list[str]) -> str:
     try:
         return path.read_text(encoding="utf-8")
@@ -337,4 +432,4 @@ def _read(path: Path, problems: list[str]) -> str:
 
 
 CHECKS: dict[str, Callable[[Path], list[str]]] = {
-    "m0": check_m0, "m1": check_m1, "m2": check_m2, "m3": check_m3, "m4": check_m4}
+    "m0": check_m0, "m1": check_m1, "m2": check_m2, "m3": check_m3, "m4": check_m4, "m5": check_m5}
