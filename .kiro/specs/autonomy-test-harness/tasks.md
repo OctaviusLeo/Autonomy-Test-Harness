@@ -271,7 +271,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Plus one unit test per Fault type, including whole-scan dropout publishing nothing in its window, showing the output matches the configured effect.
   - **Validates: Requirements 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.11**
 
-- [ ] 4.3 Apply the scheduled faults in the injector node
+- [x] 4.3 Apply the scheduled faults in the injector node
   - Extend `injector_node.py` to apply each active Fault from the Scenario with its own seeded RNG, in Scenario order, from the dispatch time on; outside every window the scan passes through unchanged. Whole-scan dropout publishes nothing; latency releases from the queue on a 200 Hz simulation-time timer; freeze republishes the stored pre-window scan.
   - _Requirements: 4.1, 4.2, 4.3_
 
