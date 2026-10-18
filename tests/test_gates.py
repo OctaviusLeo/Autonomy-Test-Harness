@@ -193,3 +193,34 @@ def test_m2_gate_reports_problems(m2_repo, monkeypatch):
     assert "ATH_SHARED is not set" in "\n".join(gates.check_m2(repo))
     monkeypatch.setenv("ATH_SHARED", str(shared.parent))
     assert gates.shared_runs_dir() == shared
+
+
+@pytest.fixture
+def m3_repo(tmp_path, repo_root) -> Path:
+    repo = tmp_path / "repo"
+    for rel in ("config/experiment.yaml", "config/faults.yaml", ".kiro/specs/autonomy-test-harness/design.md"):
+        _write(repo, rel, (repo_root / rel).read_text() if (repo_root / rel).exists() else gates.ODOM_DECISION)
+    faults = [{"fault": t, "confined_to_window": True, "verdict": {"passed": True}}
+              for t in ("range_noise", "ray_dropout", "scan_dropout", "latency", "freeze", "sector_blackout")]
+    _write(repo, "results/m3_fault_check.json", json.dumps({"faults": faults, "stamp": {"command": "c", "seed": 0, "commit": HASH}}))
+    return repo
+
+
+def test_m3_gate_passes(m3_repo):
+    assert gates.check_m3(m3_repo) == []
+
+
+def test_m3_gate_reports_problems(m3_repo):
+    data = json.loads((m3_repo / "results/m3_fault_check.json").read_text())
+    data["faults"] = data["faults"][:5]
+    data["faults"][0]["confined_to_window"] = False
+    data["faults"][1]["verdict"] = None
+    (m3_repo / "results/m3_fault_check.json").write_text(json.dumps(data))
+    (m3_repo / ".kiro/specs/autonomy-test-harness/design.md").write_text("no decision here")
+    (m3_repo / "config/experiment.yaml").write_text("conditions:\n  - name: none\n")
+    text = "\n".join(gates.check_m3(m3_repo))
+    for fragment in ("no entry for ['sector_blackout']", "range_noise is not confined", "ray_dropout has no Verdict",
+                     "odometry-drift decision", "conditions ['none']"):
+        assert fragment in text
+    (m3_repo / "config/experiment.yaml").unlink()
+    assert "config/experiment.yaml" in "\n".join(gates.check_m3(m3_repo))

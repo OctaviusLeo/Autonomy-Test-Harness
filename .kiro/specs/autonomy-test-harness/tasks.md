@@ -291,7 +291,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - From each bag compute, for every scan pair, whether `/scan_ath` differs from `/scan`, and confirm differences occur only inside the Fault's window (scan dropout: no `/scan_ath` messages inside it; latency: measured delay within ±20% of the setting). Write a stamped `results/m3_fault_check.json` with one entry per Fault type and each run's Verdict.
   - _Requirements: 4.1, 4.2, 4.6, 4.7, 0.1_
 
-- [ ] 4.7 **Automated gate (M3):** run `bash scripts/verify_m3.sh`, which runs `bash scripts/test_unit.sh` and checks:
+- [x] 4.7 **Automated gate (M3):** run `bash scripts/verify_m3.sh`, which runs `bash scripts/test_unit.sh` and checks:
   - `results/m3_fault_check.json` has all six Fault types, each confined to its window, with a Verdict and a stamp;
   - design.md records the odometry-drift decision and the schema rejects `odom_drift`;
   - `config/experiment.yaml` has the seven conditions with values inside the schema's bounds.

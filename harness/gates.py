@@ -246,6 +246,49 @@ def check_m2(repo: Path, shared_runs: Path | None = None) -> list[str]:
     return problems
 
 
+CONDITION_ORDER = ["none", "range_noise", "ray_dropout", "scan_dropout", "latency", "freeze", "sector_blackout"]
+ODOM_DECISION = "**Odometry drift (Requirement 4.10): not implemented.**"
+
+
+def check_m3(repo: Path) -> list[str]:
+    from harness.experiment.conditions import load_conditions
+    from harness.schema.scenario import FAULT_TYPES
+    from harness.schema.validate import ScenarioValidationError, parse_scenario
+
+    problems: list[str] = []
+    result = load_json(repo / "results" / "m3_fault_check.json", problems)
+    if isinstance(result, dict):
+        check_stamp(result, "results/m3_fault_check.json", problems)
+        entries = {e.get("fault"): e for e in result.get("faults", [])}
+        missing = [t for t in FAULT_TYPES if t not in entries]
+        if missing:
+            problems.append(f"results/m3_fault_check.json: no entry for {missing}")
+        for kind, entry in entries.items():
+            if not entry.get("confined_to_window"):
+                problems.append(f"results/m3_fault_check.json: {kind} is not confined to its window")
+            if not isinstance(entry.get("verdict"), dict):
+                problems.append(f"results/m3_fault_check.json: {kind} has no Verdict")
+    design = _read(repo / ".kiro" / "specs" / "autonomy-test-harness" / "design.md", problems)
+    if ODOM_DECISION not in design:
+        problems.append("design.md does not record the odometry-drift decision")
+    example = {"schema_version": 1, "scenario_id": "g-000", "seed": 0, "world": "empty_10x10", "time_limit_s": 90.0,
+               "start": {"x": 0.0, "y": 0.0, "yaw": 0.0}, "goal": {"x": 1.0, "y": 1.0, "yaw": 0.0}, "obstacles": [],
+               "faults": [{"type": "odom_drift", "window": {"start_s": 1.0, "end_s": 2.0}, "params": {}}]}
+    try:
+        parse_scenario(example)
+        problems.append("the schema accepts odom_drift")
+    except ScenarioValidationError as exc:
+        if "faults.0.type" not in str(exc):
+            problems.append(f"the odom_drift rejection does not name the type field: {exc}")
+    try:
+        conditions = load_conditions(repo / "config" / "experiment.yaml")
+        if list(conditions) != CONDITION_ORDER:
+            problems.append(f"config/experiment.yaml: conditions {list(conditions)}, expected {CONDITION_ORDER}")
+    except (OSError, ValueError, KeyError) as exc:
+        problems.append(f"config/experiment.yaml: {exc}")
+    return problems
+
+
 def _read(path: Path, problems: list[str]) -> str:
     try:
         return path.read_text(encoding="utf-8")
@@ -254,4 +297,4 @@ def _read(path: Path, problems: list[str]) -> str:
         return ""
 
 
-CHECKS: dict[str, Callable[[Path], list[str]]] = {"m0": check_m0, "m1": check_m1, "m2": check_m2}
+CHECKS: dict[str, Callable[[Path], list[str]]] = {"m0": check_m0, "m1": check_m1, "m2": check_m2, "m3": check_m3}
