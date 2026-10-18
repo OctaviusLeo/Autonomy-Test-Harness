@@ -1,0 +1,24 @@
+# The Paired_Experiment (design.md, "Paired experiment and confidence intervals"): the 30 base Scenarios in
+# scenarios/experiment30/ (set seed 303) run under each condition below, in this order. Each Fault condition
+# adds one Fault to every base Scenario; params default to config/faults.yaml. Windows are simulation
+# seconds after goal dispatch. Fixed before any run; never changed to alter a result (Requirement 10.5).
+base_set: scenarios/experiment30
+set_seed: 303
+# The sector condition blacks out the robot's forward direction. M0 measured the lidar's mount yaw from TF
+# as +90.0 deg (results/m0_baseline.json, lidar_mount_yaw_deg), so forward is bearing 360 - 90 = 270 deg.
+lidar_mount_yaw_deg: 90.0
+conditions:
+  - name: none
+  - name: range_noise
+    window: {start_s: 5.0, end_s: 65.0}
+  - name: ray_dropout
+    window: {start_s: 5.0, end_s: 65.0}
+  - name: scan_dropout
+    window: {start_s: 5.0, end_s: 15.0}
+  - name: latency
+    window: {start_s: 5.0, end_s: 65.0}
+  - name: freeze
+    window: {start_s: 5.0, end_s: 15.0}
+  - name: sector_blackout
+    window: {start_s: 5.0, end_s: 65.0}
+    params: {center_deg: 270.0, width_deg: 90.0}

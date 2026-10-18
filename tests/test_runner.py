@@ -203,6 +203,7 @@ def test_bag_path_and_commands_follow_the_scenario_id(smoke_scenario, tmp_path):
     assert rs.host_path(Path("/results/bags/a"), {"ATH_HOST_RESULTS": "/h/run"}) == "/h/run/bags/a"
     assert rs.host_path(Path("/elsewhere/a"), {"ATH_HOST_RESULTS": "/h/run"}) == "/elsewhere/a"
     assert rs.generator_config_for("exp30-003") == "config/generator.yaml"
+    assert rs.generator_config_for("exp30-003.latency") == "config/generator.yaml"
     assert rs.generator_config_for("nope-000") is None
 
 
@@ -335,6 +336,14 @@ def test_rerun_prepares_the_committed_scenario(tmp_path, repo_root):
     seed = record["scenarios"][4]["seed"]
     dest = rerun.prepare("config/generator_smoke.yaml", seed, tmp_path)
     assert dest.read_text() == (repo_root / "scenarios" / "fixed10" / "fixed10-004.yaml").read_text()
+
+
+def test_rerun_applies_a_condition(tmp_path, repo_root):
+    record = json.loads((repo_root / "scenarios" / "experiment30" / "generation.json").read_text())
+    seed = record["scenarios"][0]["seed"]
+    dest = rerun.prepare("config/generator.yaml", seed, tmp_path, condition="sector_blackout")
+    faulted = load_scenario(dest)
+    assert faulted.scenario_id == "exp30-000" and [f.type for f in faulted.faults] == ["sector_blackout"]
 
 
 def test_rerun_refuses_a_changed_committed_file(tmp_path, repo_root):

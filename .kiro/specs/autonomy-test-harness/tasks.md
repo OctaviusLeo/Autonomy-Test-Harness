@@ -280,7 +280,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - A `ros`-marked test publishes a synthetic scan stream and a dispatch time to the node and checks the republished stream inside and outside one window per Fault type.
   - **Validates: Requirements 4.2, 4.11**
 
-- [ ] 4.5 Record the odometry-drift decision and write the fault conditions
+- [x] 4.5 Record the odometry-drift decision and write the fault conditions
   - Confirm design.md's "Fault models" records that odometry drift is not implemented and why, and that the schema rejects it.
   - Write `config/faults.yaml` (defaults and bounds per type) and `config/experiment.yaml` (the seven conditions in design.md, with the sector center taken from the lidar mount yaw recorded at M0: forward = 360° − mount yaw in degrees, expected 270°).
   - Write `harness/experiment/conditions.py` with `apply_condition(scenario, condition) -> Scenario` (adds the condition's one Fault; `none` returns the Scenario unchanged) and a CLI that writes one file per condition for a base Scenario, with unit tests. Task 4.6 and the experiment use it.

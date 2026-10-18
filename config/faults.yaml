@@ -1,15 +1,20 @@
-# Fault parameter default placeholders, keyed by fault type.
-# These are starting defaults; a scenario's own fault params override them.
-# Bounds enforced by the schema: sigma_m >= 0; prob in [0,1];
-# latency_ms in [0,1000]; sector width_deg in (0,360].
+# Fault parameter defaults and bounds, per Fault type (design.md, "Fault models").
+# `params` are the defaults the experiment conditions use (config/experiment.yaml); `bounds` restate the
+# Scenario schema's bounds (harness/schema/scenario.py enforces them; harness/experiment/conditions.py
+# validates every condition against the schema on load). Fixed before any run (Requirement 10.5).
 range_noise:
-  sigma_m: 0.05
+  params: {sigma_m: 0.10}            # standard deviation of the added Gaussian noise, meters
+  bounds: {sigma_m: ">= 0"}
 ray_dropout:
-  prob: 0.1
-scan_dropout: {}
+  params: {prob: 0.5}                # probability that each ray becomes no-return (+inf)
+  bounds: {prob: "[0, 1]"}
+scan_dropout:
+  params: {}                         # no parameters: nothing is published in the window
 latency:
-  latency_ms: 100
-freeze: {}
+  params: {latency_ms: 300.0}        # added delay; released by a 200 Hz simulation-time check
+  bounds: {latency_ms: "[0, 1000]"}
+freeze:
+  params: {}                         # no parameters: the last pre-window scan is repeated
 sector_blackout:
-  center_deg: 0.0
-  width_deg: 60.0
+  params: {center_deg: 270.0, width_deg: 90.0}   # center in the scan's frame; 270 deg is the robot's forward
+  bounds: {center_deg: "[0, 360)", width_deg: "(0, 360]"}

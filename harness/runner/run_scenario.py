@@ -70,10 +70,14 @@ def bag_dir(out_dir: Path, scenario_id: str) -> Path:
 
 
 def generator_config_for(scenario_id: str, root: Path = REPO / "scenarios") -> str | None:
-    """The generator config of the committed set that holds ``scenario_id`` (for its re-run command)."""
+    """The generator config of the committed set that holds ``scenario_id`` (for its re-run command).
+
+    A condition variant written with ``--suffix-ids`` (``exp30-000.latency``) maps to its base Scenario.
+    """
+    base_id = scenario_id.split(".", 1)[0]
     for generation in sorted(Path(root).glob("*/generation.json")):
         record = json.loads(generation.read_text(encoding="utf-8"))
-        if any(e["scenario_id"] == scenario_id for e in record.get("scenarios", [])):
+        if any(e["scenario_id"] == base_id for e in record.get("scenarios", [])):
             return record["config"]
     return None
 
