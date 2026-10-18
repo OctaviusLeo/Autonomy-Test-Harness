@@ -1,0 +1,12 @@
+schema_version: 1
+scenario_id: exp30-006
+seed: 587816745
+world: empty_10x10
+time_limit_s: 90.0
+start: {x: -3.4226, y: 1.3745, yaw: -2.3069}
+goal: {x: -0.3258, y: -0.9029, yaw: 2.9188}
+obstacles:
+- shape: cylinder
+  size: {radius: 0.3554, height: 0.6022}
+  pose: {x: -3.6885, y: 4.4833, yaw: 0.0}
+faults: []

@@ -1,0 +1,21 @@
+schema_version: 1
+scenario_id: exp30-015
+seed: 1801378468
+world: empty_10x10
+time_limit_s: 90.0
+start: {x: -1.2683, y: -3.8714, yaw: -2.9439}
+goal: {x: 3.4134, y: -2.7039, yaw: -0.4237}
+obstacles:
+- shape: cylinder
+  size: {radius: 0.3851, height: 0.8817}
+  pose: {x: 3.9255, y: -2.1016, yaw: 0.0}
+- shape: box
+  size: {x: 0.5536, y: 0.7695, z: 0.6962}
+  pose: {x: -1.6541, y: 4.4897, yaw: 1.8583}
+- shape: box
+  size: {x: 0.5881, y: 0.7243, z: 0.8024}
+  pose: {x: -1.5016, y: 1.1648, yaw: -0.7032}
+- shape: cylinder
+  size: {radius: 0.2282, height: 0.9713}
+  pose: {x: 4.1018, y: -3.9653, yaw: 0.0}
+faults: []

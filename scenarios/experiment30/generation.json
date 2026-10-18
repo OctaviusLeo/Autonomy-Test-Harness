@@ -1,0 +1,138 @@
+{
+  "config": "config/generator.yaml",
+  "set_seed": 303,
+  "n": 30,
+  "prefix": "exp30",
+  "scenarios": [
+    {
+      "scenario_id": "exp30-000",
+      "seed": 883193502
+    },
+    {
+      "scenario_id": "exp30-001",
+      "seed": 460490113
+    },
+    {
+      "scenario_id": "exp30-002",
+      "seed": 1874405553
+    },
+    {
+      "scenario_id": "exp30-003",
+      "seed": 895118044
+    },
+    {
+      "scenario_id": "exp30-004",
+      "seed": 1023865560
+    },
+    {
+      "scenario_id": "exp30-005",
+      "seed": 1734512320
+    },
+    {
+      "scenario_id": "exp30-006",
+      "seed": 587816745
+    },
+    {
+      "scenario_id": "exp30-007",
+      "seed": 588245755
+    },
+    {
+      "scenario_id": "exp30-008",
+      "seed": 1678250669
+    },
+    {
+      "scenario_id": "exp30-009",
+      "seed": 1751873203
+    },
+    {
+      "scenario_id": "exp30-010",
+      "seed": 2145293912
+    },
+    {
+      "scenario_id": "exp30-011",
+      "seed": 231140244
+    },
+    {
+      "scenario_id": "exp30-012",
+      "seed": 1391146725
+    },
+    {
+      "scenario_id": "exp30-013",
+      "seed": 937167134
+    },
+    {
+      "scenario_id": "exp30-014",
+      "seed": 1926788023
+    },
+    {
+      "scenario_id": "exp30-015",
+      "seed": 1801378468
+    },
+    {
+      "scenario_id": "exp30-016",
+      "seed": 975032298
+    },
+    {
+      "scenario_id": "exp30-017",
+      "seed": 426629323
+    },
+    {
+      "scenario_id": "exp30-018",
+      "seed": 1183638039
+    },
+    {
+      "scenario_id": "exp30-019",
+      "seed": 649952284
+    },
+    {
+      "scenario_id": "exp30-020",
+      "seed": 39028674
+    },
+    {
+      "scenario_id": "exp30-021",
+      "seed": 736918177
+    },
+    {
+      "scenario_id": "exp30-022",
+      "seed": 1494695488
+    },
+    {
+      "scenario_id": "exp30-023",
+      "seed": 454983394
+    },
+    {
+      "scenario_id": "exp30-024",
+      "seed": 1580830950
+    },
+    {
+      "scenario_id": "exp30-025",
+      "seed": 1977508728
+    },
+    {
+      "scenario_id": "exp30-026",
+      "seed": 1026499398
+    },
+    {
+      "scenario_id": "exp30-027",
+      "seed": 1196390024
+    },
+    {
+      "scenario_id": "exp30-028",
+      "seed": 1994742899
+    },
+    {
+      "scenario_id": "exp30-029",
+      "seed": 1816132997
+    }
+  ],
+  "rejections": {
+    "start_inside_obstacle": 0,
+    "off_map": 0,
+    "unreachable": 0
+  },
+  "stamp": {
+    "command": "python -m harness.generator.cli generate --config config/generator.yaml --out scenarios/experiment30 --prefix exp30",
+    "seed": 303,
+    "commit": "9802096a254218a45ab504ce255bd789b6a793e0"
+  }
+}

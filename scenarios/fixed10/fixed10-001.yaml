@@ -1,0 +1,15 @@
+schema_version: 1
+scenario_id: fixed10-001
+seed: 2026220627
+world: empty_10x10
+time_limit_s: 90.0
+start: {x: -4.0424, y: 0.4345, yaw: -1.4145}
+goal: {x: -2.2546, y: 3.697, yaw: -1.8208}
+obstacles:
+- shape: cylinder
+  size: {radius: 0.207, height: 0.6834}
+  pose: {x: 0.9641, y: -2.3991, yaw: 0.0}
+- shape: cylinder
+  size: {radius: 0.3655, height: 0.7234}
+  pose: {x: 1.213, y: -2.9451, yaw: 0.0}
+faults: []

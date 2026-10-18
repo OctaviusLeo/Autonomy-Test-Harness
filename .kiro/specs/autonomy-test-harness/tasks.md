@@ -195,7 +195,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - **Property 19: Scenario re-run from seed reproduces the scenario** — `generate_one` on a Scenario's stored seed gives an equal Scenario.
   - **Validates: Requirements 3.2, 3.5, 5.6, 0.3**
 
-- [ ] 2.7 Generate and commit the scenario sets
+- [x] 2.7 Generate and commit the scenario sets
   - Commit, then generate `scenarios/fixed10/` from `config/generator_smoke.yaml` (prefix `fixed10`) and `scenarios/experiment30/` from `config/generator.yaml` (prefix `exp30`) inside the image, and commit both with their `generation.json`.
   - _Requirements: 3.1, 3.2, 3.4, 0.1_
 

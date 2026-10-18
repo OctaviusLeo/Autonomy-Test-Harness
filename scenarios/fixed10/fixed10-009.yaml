@@ -1,0 +1,12 @@
+schema_version: 1
+scenario_id: fixed10-009
+seed: 632065772
+world: empty_10x10
+time_limit_s: 90.0
+start: {x: -3.298, y: 2.5585, yaw: 3.0856}
+goal: {x: 0.0526, y: 4.1011, yaw: 2.5838}
+obstacles:
+- shape: box
+  size: {x: 0.3296, y: 0.523, z: 0.9456}
+  pose: {x: -1.9732, y: -1.4641, yaw: 2.6487}
+faults: []

@@ -1,0 +1,58 @@
+{
+  "config": "config/generator_smoke.yaml",
+  "set_seed": 101,
+  "n": 10,
+  "prefix": "fixed10",
+  "scenarios": [
+    {
+      "scenario_id": "fixed10-000",
+      "seed": 666291129
+    },
+    {
+      "scenario_id": "fixed10-001",
+      "seed": 2026220627
+    },
+    {
+      "scenario_id": "fixed10-002",
+      "seed": 1495899629
+    },
+    {
+      "scenario_id": "fixed10-003",
+      "seed": 771850791
+    },
+    {
+      "scenario_id": "fixed10-004",
+      "seed": 289607015
+    },
+    {
+      "scenario_id": "fixed10-005",
+      "seed": 1685356789
+    },
+    {
+      "scenario_id": "fixed10-006",
+      "seed": 855888411
+    },
+    {
+      "scenario_id": "fixed10-007",
+      "seed": 1269760234
+    },
+    {
+      "scenario_id": "fixed10-008",
+      "seed": 1330455186
+    },
+    {
+      "scenario_id": "fixed10-009",
+      "seed": 632065772
+    }
+  ],
+  "rejections": {
+    "start_inside_obstacle": 1,
+    "off_map": 0,
+    "unreachable": 1
+  },
+  "stamp": {
+    "command": "python -m harness.generator.cli generate --config config/generator_smoke.yaml --out scenarios/fixed10 --prefix fixed10",
+    "seed": 101,
+    "commit": "9802096a254218a45ab504ce255bd789b6a793e0"
+  }
+}
