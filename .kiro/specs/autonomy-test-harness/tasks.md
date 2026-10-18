@@ -258,7 +258,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
 
 ## M3 — Fault injection
 
-- [ ] 4.1 Implement the fault models
+- [x] 4.1 Implement the fault models
   - `harness/faults/models.py` implements the six pure fault functions exactly as design.md's "Fault models" describes (bearing in the scan's own frame in [0, 360), no-return as `+inf`, range-noise clipping, the latency queue checked at 200 Hz of simulation time, freeze state, circular sector test), each with an RNG seeded from `[scenario.seed, fault_index]`.
   - _Requirements: 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 0.2, 0.3_
 
