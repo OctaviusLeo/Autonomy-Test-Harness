@@ -116,7 +116,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
 
 ## M0 — Arena, ground truth, and the headless single-goal baseline
 
-- [ ] 1.1 Build the arena world and its map
+- [x] 1.1 Build the arena world and its map
   - `harness/world/arena.py` defines the `empty_10x10` arena exactly as design.md describes ("World and map") and writes the world SDF (with the stock world's systems plus `SceneBroadcaster`, and the `xacro` `headless` argument) and the map PGM/YAML whose origin makes map coordinates equal world coordinates. It also exposes the walls as shapes for the Generator and the Oracle.
   - Write `scripts/build_world.py`, which writes `worlds/empty_10x10.sdf` and `maps/empty_10x10.{pgm,yaml}`; commit the outputs.
   - Unit tests: wall cells in the map match the wall shapes; the interior is free; a map cell's center converts to the same world coordinate the arena uses; the SDF parses and names the world `empty_10x10`; regenerating gives identical bytes.
