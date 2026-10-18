@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import json
+import os
 import subprocess
 import sys
 import time
@@ -34,12 +35,22 @@ REPO = Path(__file__).resolve().parents[2]
 HARD_LIMIT_DETAIL = "hard wall-clock limit"
 
 
+def write_reports(records: list[dict], out_dir: Path, name: str, seed: int = 0) -> None:
+    """``junit.xml`` and ``summary.md`` in ``out_dir`` (bag links use ATH_BAG_LINK_BASE when Jenkins sets it)."""
+    from harness.reporting.junit import write_junit
+    from harness.reporting.summary import write_summary
+
+    write_junit(records, Path(out_dir) / "junit.xml", name)
+    write_summary(records, Path(out_dir) / "summary.md", f"Summary: {name}", repro.make_stamp(seed=seed).to_dict(),
+                  bag_link_base=os.environ.get("ATH_BAG_LINK_BASE"), run_root=os.environ.get("ATH_HOST_RESULTS"))
+
+
 @dataclasses.dataclass
 class SuiteDeps:
     api: ProcessApi = dataclasses.field(default_factory=ProcessApi)
     python: str = sys.executable
     clean_shm: Callable[[], int] = processes.clean_shm
-    write_reports: Callable[[list[dict], Path, str], None] | None = None
+    write_reports: Callable[[list[dict], Path, str], None] | None = write_reports
 
 
 def scenario_files(paths: Sequence[str | Path]) -> list[Path]:

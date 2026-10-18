@@ -299,7 +299,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
 
 ## M4 — Reports and Docker
 
-- [ ] 5.1 Implement the JUnit and summary writers
+- [x] 5.1 Implement the JUnit and summary writers
   - `harness/reporting/junit.py` (`write_junit`) and `harness/reporting/summary.py` (`write_summary`) exactly as design.md's "Reports" section describes: one test case per Scenario, failures carrying reason and detail, errored cases as errors, pass rate per Fault type, a bag link and the exact `scripts/rerun_one.sh` command with seed for every failure, the stamp, write-to-temporary-then-rename, and a clear error naming any missing or unparsable input.
   - Wire both into `suite.py` so every suite writes `junit.xml` and `summary.md`.
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
