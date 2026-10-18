@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="smoke" tests="10" failures="0" errors="0" time="339.2">
+  <testcase classname="ath.smoke" name="fixed10-000" time="28.9">
+    <system-out>seed=666291129 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-000 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-001" time="34.2">
+    <system-out>seed=2026220627 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-001 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-002" time="33.2">
+    <system-out>seed=1495899629 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-002 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-003" time="32.8">
+    <system-out>seed=771850791 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-003 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-004" time="31.2">
+    <system-out>seed=289607015 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-004 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-005" time="35.7">
+    <system-out>seed=1685356789 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-005 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-006" time="34.0">
+    <system-out>seed=855888411 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-006 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-007" time="38.7">
+    <system-out>seed=1269760234 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-007 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-008" time="36.5">
+    <system-out>seed=1330455186 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-008 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+  <testcase classname="ath.smoke" name="fixed10-009" time="34.0">
+    <system-out>seed=632065772 bag=/home/octaviusleo/ath-shared/runs/m4-smoke/bags/fixed10-009 nav2_result=SUCCEEDED</system-out>
+  </testcase>
+</testsuite>

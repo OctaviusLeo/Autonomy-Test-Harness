@@ -1,0 +1,41 @@
+{
+  "suite": "smoke",
+  "repeat": 1,
+  "condition": "none",
+  "scenario_ids": [
+    "fixed10-000",
+    "fixed10-001",
+    "fixed10-002",
+    "fixed10-003",
+    "fixed10-004",
+    "fixed10-005",
+    "fixed10-006",
+    "fixed10-007",
+    "fixed10-008",
+    "fixed10-009"
+  ],
+  "wall_time_s": 350.1,
+  "runs": 10,
+  "passed": 10,
+  "failed": 0,
+  "errored": 0,
+  "timed_out": 0,
+  "failures": [],
+  "records": [
+    "runs/fixed10-000/run_record.json",
+    "runs/fixed10-001/run_record.json",
+    "runs/fixed10-002/run_record.json",
+    "runs/fixed10-003/run_record.json",
+    "runs/fixed10-004/run_record.json",
+    "runs/fixed10-005/run_record.json",
+    "runs/fixed10-006/run_record.json",
+    "runs/fixed10-007/run_record.json",
+    "runs/fixed10-008/run_record.json",
+    "runs/fixed10-009/run_record.json"
+  ],
+  "stamp": {
+    "command": "bash scripts/run_suite.sh smoke --out /home/octaviusleo/ath-shared/runs/m4-smoke",
+    "seed": 0,
+    "commit": "06c1e056bc5df774b9211563ac368ff397cccebc"
+  }
+}

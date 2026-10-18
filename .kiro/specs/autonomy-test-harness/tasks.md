@@ -318,7 +318,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Commit, build `ath-sim:<commit>`, run it, and fill design.md's "Headless-rendering outcome" block and the "Headless rendering" section of `docs/ENVIRONMENT.md`.
   - _Requirements: 8.2, 8.3_
 
-- [ ] 5.5 Run the Smoke_Suite in the container with reports
+- [x] 5.5 Run the Smoke_Suite in the container with reports
   - Commit, build `ath-sim:<commit>`, then run `env -u DISPLAY -u WAYLAND_DISPLAY bash scripts/run_suite.sh smoke` detached (WSLg sets those variables; the container also gets no X socket mount), and copy `junit.xml`, `summary.md`, and `suite.json` into `results/smoke/`.
   - _Requirements: 8.5, 7.1, 7.2, 9.1_
 
