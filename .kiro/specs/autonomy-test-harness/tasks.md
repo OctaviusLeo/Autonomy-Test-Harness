@@ -308,7 +308,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - **Property 14: JUnit report has one case per scenario**, **Property 15: Summary links a bag and a re-run command for every failure**, and **Property 16: Missing or unparsable report input is rejected** — one Hypothesis test each; the JUnit test also parses the output with a standard XML parser.
   - **Validates: Requirements 7.1, 7.2, 7.3, 7.5**
 
-- [ ] 5.3 Check the image's pins and document them
+- [x] 5.3 Check the image's pins and document them
   - Write `scripts/check_dockerfile_pins.py` (with unit tests): it fails if the base image is not pinned by digest or if any `apt-get install` in the Dockerfile installs a package without an exact version from `docker/apt-pins.txt`, and it confirms the Python dependencies come only from `uv.lock`.
   - Record in `docs/ENVIRONMENT.md` the base image digest, every line of `docker/apt-pins.txt`, and the reproducibility limit from design.md.
   - _Requirements: 8.1, 8.4, 0.5, 0.6_

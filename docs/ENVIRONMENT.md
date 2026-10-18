@@ -63,6 +63,31 @@ copies `uv` from its digest-pinned image, creates `/opt/venv` with system site p
 with `uv sync --frozen` from `uv.lock`. Reported runs use `ath-sim:<40-character commit>`
 built by `bash scripts/build_image.sh --tag ath-sim:<commit>` from a clean tree.
 
+Pins (resolved by `bash scripts/resolve_apt_pins.sh` on 2026-10-17; checked by
+`python scripts/check_dockerfile_pins.py`, which fails if a base is not digest-pinned, if any
+`apt-get install` lacks an exact version from `docker/apt-pins.txt`, or if Python packages come
+from anywhere but `uv.lock`):
+
+- Base image (`docker/base-image.txt`): `ros:jazzy-ros-base-noble@sha256:103b6c417973394659af6804d4917cd489b91e5ed22eb7bef263025a3bed2410`
+- uv build stage (`docker/uv-image.txt`): `ghcr.io/astral-sh/uv:0.13.1@sha256:4a1f3666816dafadd20ceb71eac9a7d56d7ef30279f7d64048519ab901ada336`
+- `docker/apt-pins.txt` (every top-level apt package and its exact version):
+  - `ros-jazzy-navigation2=1.3.13-1noble.20260921.033624`
+  - `ros-jazzy-nav2-bringup=1.3.13-1noble.20261006.042503`
+  - `ros-jazzy-nav2-minimal-tb4-sim=1.0.1-1noble.20261006.041301`
+  - `ros-jazzy-nav2-minimal-tb4-description=1.0.1-1noble.20260915.195305`
+  - `ros-jazzy-nav2-simple-commander=1.3.13-1noble.20260921.030016`
+  - `ros-jazzy-rosbag2-storage-mcap=0.26.11-1noble.20260911.143733`
+  - `git=1:2.43.0-1ubuntu7.3`
+  - `procps=2:4.0.4-4ubuntu3.3`
+  - `xvfb=2:21.1.12-1ubuntu1.8`
+  - `libegl1=1.7.0-1build1`
+  - `libegl-mesa0=25.2.8-0ubuntu0.24.04.4`
+  - `libgl1-mesa-dri=25.2.8-0ubuntu0.24.04.4`
+  - `mesa-utils=9.0.0-2`
+
+Dependencies of these packages are installed at the versions the ROS and Ubuntu repositories held
+at build time; `docs/evidence/image_dpkg.txt` records the ones the harness relies on directly.
+
 ## Python packages
 
 From `uv.lock`, installed in the image (`docs/evidence/image_python_packages.txt`;
