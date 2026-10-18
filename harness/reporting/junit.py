@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Iterable
 
-from harness.reporting.records import outcome, validate_records, write_atomic
+from harness.reporting.records import outcome, validate_records, write_atomic, xml_text
 
 
 def case_name(record: dict[str, Any]) -> str:
@@ -35,14 +35,14 @@ def junit_xml(records: Iterable[dict[str, Any]], suite_name: str, sources: Itera
         result = outcome(record)
         if result == "errored":
             errors += 1
-            error = ET.SubElement(case, "error", message=f"errored: {record.get('failing_step')}")
-            error.text = str(record.get("effect") or "")
+            error = ET.SubElement(case, "error", message=xml_text(f"errored: {record.get('failing_step')}"))
+            error.text = xml_text(record.get("effect") or "")
         elif result in ("fail", "timed_out"):
             failures += 1
             verdict = record["verdict"]
-            failure = ET.SubElement(case, "failure", message=str(verdict["reason"]))
-            failure.text = str(verdict.get("detail") or "")
-        ET.SubElement(case, "system-out").text = (
+            failure = ET.SubElement(case, "failure", message=xml_text(verdict["reason"]))
+            failure.text = xml_text(verdict.get("detail") or "")
+        ET.SubElement(case, "system-out").text = xml_text(
             f"seed={record['seed']} bag={record.get('bag_path', '')} nav2_result={record.get('nav2_result', '')}")
     suite.set("failures", str(failures))
     suite.set("errors", str(errors))

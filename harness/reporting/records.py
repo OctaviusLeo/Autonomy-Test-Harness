@@ -78,3 +78,18 @@ def write_atomic(path: str | Path, text: str) -> Path:
     tmp.write_text(text, encoding="utf-8")
     os.replace(tmp, path)
     return path
+
+
+def xml_text(value: Any) -> str:
+    """``value`` as text that XML 1.0 allows: characters it forbids (most control characters) become '?'."""
+    out = []
+    for ch in str(value):
+        code = ord(ch)
+        allowed = (ch in "\t\n\r" or 0x20 <= code <= 0xD7FF or 0xE000 <= code <= 0xFFFD or 0x10000 <= code <= 0x10FFFF)
+        out.append(ch if allowed else "?")
+    return "".join(out)
+
+
+def one_line(value: Any) -> str:
+    """``value`` on a single line: every line break (including the ones str.splitlines honors) becomes a space."""
+    return " ".join(xml_text(part).replace("\t", " ") for part in str(value).splitlines())

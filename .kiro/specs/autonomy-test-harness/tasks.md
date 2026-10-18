@@ -304,7 +304,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Wire both into `suite.py` so every suite writes `junit.xml` and `summary.md`.
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 5.2 Write property tests for the reports
+- [x] 5.2 Write property tests for the reports
   - **Property 14: JUnit report has one case per scenario**, **Property 15: Summary links a bag and a re-run command for every failure**, and **Property 16: Missing or unparsable report input is rejected** — one Hypothesis test each; the JUnit test also parses the output with a standard XML parser.
   - **Validates: Requirements 7.1, 7.2, 7.3, 7.5**
 

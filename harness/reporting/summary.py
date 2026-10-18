@@ -12,7 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Iterable
 
-from harness.reporting.records import outcome, validate_records, write_atomic
+from harness.reporting.records import one_line, outcome, validate_records, write_atomic
 
 
 def rerun_command(record: dict[str, Any]) -> str:
@@ -42,7 +42,8 @@ def pass_rates(records: list[dict[str, Any]]) -> list[tuple[str, int, int, float
 
 
 def _cell(text: Any) -> str:
-    return str(text).replace("|", "\\|").replace("\n", " ")
+    """A Markdown table cell: one line, pipes escaped."""
+    return one_line(text).replace("|", "\\|")
 
 
 def summary_markdown(records: Iterable[dict[str, Any]], title: str, stamp: dict[str, Any],
