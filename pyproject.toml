@@ -3,7 +3,7 @@ requires = ["setuptools==84.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-# Private portfolio project: no public license, no packaging, no public releases.
+# Licensed under MIT (see LICENSE); no packaging, no public releases.
 name = "autonomy-test-harness"
 version = "0.1.0"
 description = "Scenario-based test harness that drives Nav2 under scheduled sensor faults."
