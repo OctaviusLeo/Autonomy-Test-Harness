@@ -1,0 +1,122 @@
+"""Derive config/nav2_params_ath.yaml from Nav2's stock nav2_params.yaml.
+
+Nav2's stock parameter file reads the lidar in exactly four places. To put the Fault_Injector
+between the simulated sensor (which publishes ``/scan``) and Nav2 without touching Nav2's code or
+the simulation, those four values change to ``/scan_ath``, where the injector publishes. Nothing
+else changes: the edit is made line by line on the stock text so even formatting and comments are
+kept, and :func:`value_diff` proves on the parsed files that only these four values differ
+(Requirement 0.10, 4.1).
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+SCAN_TOPIC_PATHS: tuple[tuple[str, ...], ...] = (
+    ("amcl", "ros__parameters", "scan_topic"),
+    ("local_costmap", "local_costmap", "ros__parameters", "voxel_layer", "scan", "topic"),
+    ("global_costmap", "global_costmap", "ros__parameters", "obstacle_layer", "scan", "topic"),
+    ("collision_monitor", "ros__parameters", "scan", "topic"),
+)
+STOCK_TOPICS = ("scan", "/scan")
+ATH_TOPIC = "/scan_ath"
+
+_KEY_LINE = re.compile(r'^(?P<indent>\s*)(?P<key>"[^"]+"|[A-Za-z0-9_.\-]+):(?P<rest>.*)$')
+
+
+def retarget_text(stock_text: str, header: str = "") -> str:
+    """Return the stock text with the four lidar topics changed to ``/scan_ath``."""
+    targets = set(SCAN_TOPIC_PATHS)
+    stack: list[tuple[int, str]] = []
+    out_lines = []
+    replaced = set()
+    for line in stock_text.splitlines(keepends=True):
+        match = _KEY_LINE.match(line.rstrip("\n"))
+        stripped = line.strip()
+        if match and not stripped.startswith("#") and not stripped.startswith("-"):
+            indent = len(match["indent"])
+            key = match["key"].strip('"')
+            while stack and stack[-1][0] >= indent:
+                stack.pop()
+            path = tuple(k for _, k in stack) + (key,)
+            stack.append((indent, key))
+            if path in targets:
+                value = match["rest"].strip()
+                if value.strip('"') not in STOCK_TOPICS:
+                    raise ValueError(f"{'.'.join(path)} is {value!r}, expected one of {STOCK_TOPICS}")
+                quote = '"' if value.startswith('"') else ""
+                newline = "\n" if line.endswith("\n") else ""
+                line = f"{match['indent']}{match['key']}: {quote}{ATH_TOPIC}{quote}{newline}"
+                replaced.add(path)
+        out_lines.append(line)
+    missing = targets - replaced
+    if missing:
+        raise ValueError(f"stock file lacks: {', '.join('.'.join(p) for p in sorted(missing))}")
+    return header + "".join(out_lines)
+
+
+def _leaves(data: Any, prefix: tuple[str, ...] = ()) -> dict[tuple[str, ...], Any]:
+    if isinstance(data, dict):
+        result: dict[tuple[str, ...], Any] = {}
+        for key, value in data.items():
+            result.update(_leaves(value, prefix + (str(key),)))
+        return result
+    return {prefix: data}
+
+
+def value_diff(stock: dict, derived: dict) -> dict[tuple[str, ...], tuple[Any, Any]]:
+    """Every leaf path whose value differs between the two parsed files: {path: (stock, derived)}."""
+    a, b = _leaves(stock), _leaves(derived)
+    return {p: (a.get(p), b.get(p)) for p in sorted(set(a) | set(b)) if a.get(p) != b.get(p)}
+
+
+def remaining_scan_refs(data: dict) -> list[tuple[str, ...]]:
+    """Leaf paths that still name the raw ``/scan`` topic under a topic key."""
+    return [p for p, v in _leaves(data).items()
+            if p and p[-1] in ("topic", "scan_topic") and isinstance(v, str) and v in STOCK_TOPICS]
+
+
+def expected_diff() -> dict[tuple[str, ...], str]:
+    return {path: ATH_TOPIC for path in SCAN_TOPIC_PATHS}
+
+
+def check(stock_text: str, derived_text: str) -> None:
+    """Raise ValueError unless the derived file differs from the stock one in exactly the four topics."""
+    stock, derived = yaml.safe_load(stock_text), yaml.safe_load(derived_text)
+    diff = value_diff(stock, derived)
+    if set(diff) != set(SCAN_TOPIC_PATHS) or any(new != ATH_TOPIC for _, new in diff.values()):
+        raise ValueError(f"unexpected differences: {diff}")
+    refs = remaining_scan_refs(derived)
+    if refs:
+        raise ValueError(f"derived file still reads the raw scan at {refs}")
+
+
+def stock_share_dir() -> Path:
+    from ament_index_python.packages import get_package_share_directory  # only in the image
+
+    return Path(get_package_share_directory("nav2_bringup"))
+
+
+def package_version(share_dir: Path) -> str:
+    match = re.search(r"<version>([^<]+)</version>", (share_dir / "package.xml").read_text(encoding="utf-8"))
+    return match.group(1) if match else "unknown"
+
+
+def make(share_dir: Path, out_path: Path, evidence_path: Path) -> None:
+    """Write the derived parameter file and a copy of the stock one (the diff's evidence)."""
+    stock_text = (share_dir / "params" / "nav2_params.yaml").read_text(encoding="utf-8")
+    header = (
+        "# Generated by scripts/make_nav2_params.py from nav2_bringup "
+        f"{package_version(share_dir)} params/nav2_params.yaml.\n"
+        "# Identical to the stock file except the four lidar topics, which read /scan_ath (the Fault_Injector).\n"
+    )
+    derived_text = retarget_text(stock_text, header)
+    check(stock_text, derived_text)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    evidence_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(derived_text, encoding="utf-8")
+    evidence_path.write_text(stock_text, encoding="utf-8")

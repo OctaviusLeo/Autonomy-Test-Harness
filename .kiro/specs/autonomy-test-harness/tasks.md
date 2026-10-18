@@ -122,7 +122,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Unit tests: wall cells in the map match the wall shapes; the interior is free; a map cell's center converts to the same world coordinate the arena uses; the SDF parses and names the world `empty_10x10`; regenerating gives identical bytes.
   - _Requirements: 2.6, 3.6_
 
-- [ ] 1.2 Generate the Nav2 parameter file
+- [x] 1.2 Generate the Nav2 parameter file
   - `scripts/make_nav2_params.py` (logic in `harness/nav2_params.py`) runs inside the image, reads the installed stock `nav2_params.yaml` from `nav2_bringup`'s share directory, and writes `config/nav2_params_ath.yaml` with exactly the four lidar topics design.md names changed to `/scan_ath`. It also saves a copy of the stock file as `docs/evidence/nav2_params_stock.yaml` for the diff.
   - Unit test: load both files and assert the only differences are those four values.
   - _Requirements: 0.10, 4.1_
