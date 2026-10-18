@@ -1,0 +1,5 @@
+# The Smoke_Suite: which scenarios/fixed10 Scenarios `bash scripts/run_suite.sh smoke` runs.
+# "all" keeps every fixed10 Scenario. If an M2 run shows a fixed10 Scenario failing because of Nav2's
+# behavior rather than a harness defect, the stability rule (design.md, "CI design") replaces this with
+# the ids that passed all three M2 repeats (at least 8), recorded with the excluded ids and the reason.
+ids: all

@@ -69,6 +69,25 @@ def bag_dir(out_dir: Path, scenario_id: str) -> Path:
     return Path(out_dir) / "bags" / scenario_id
 
 
+def generator_config_for(scenario_id: str, root: Path = REPO / "scenarios") -> str | None:
+    """The generator config of the committed set that holds ``scenario_id`` (for its re-run command)."""
+    for generation in sorted(Path(root).glob("*/generation.json")):
+        record = json.loads(generation.read_text(encoding="utf-8"))
+        if any(e["scenario_id"] == scenario_id for e in record.get("scenarios", [])):
+            return record["config"]
+    return None
+
+
+def host_path(path: Path, env: dict | None = None) -> str:
+    """``path`` as the host sees it: the container's /results is ATH_HOST_RESULTS on the host, when set."""
+    env = os.environ if env is None else env
+    host = env.get("ATH_HOST_RESULTS")
+    path = Path(path)
+    if host and path.is_relative_to("/results"):
+        return str(Path(host) / path.relative_to("/results"))
+    return str(path)
+
+
 def obstacle_sdf(obstacle, name: str) -> str:
     """A static model for one obstacle (box or cylinder), standing on the ground."""
     if obstacle.shape == "box":
@@ -252,9 +271,10 @@ class ScenarioRun:
         record = {
             "scenario_id": self.scenario.scenario_id,
             "seed": self.scenario.seed,
+            "generator_config": generator_config_for(self.scenario.scenario_id, self.repo / "scenarios"),
             "fault_condition": self.condition,
             "run_index": self.run_index,
-            "bag_path": str(bag_dir(self.out_dir, self.scenario.scenario_id)),
+            "bag_path": host_path(bag_dir(self.out_dir, self.scenario.scenario_id), self.deps.env()),
             "status": status,
             "failing_step": failing_step,
             "effect": effect,
