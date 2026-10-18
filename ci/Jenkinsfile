@@ -1,0 +1,52 @@
+// Autonomy Test Harness pipeline (design.md, "CI design"; Requirements 9.1-9.4).
+// On every change: build ath-sim:<commit>, run the unit tests in it, run the Smoke_Suite.
+// Nightly (timer trigger): the same, with the Full_Suite (all 40 committed Scenarios, no Faults).
+// Every heavy stage holds ~/ath-shared/sim.lock through the repository's scripts, so builds never
+// overlap with the agent's runs. The build fails if a unit test fails, a Scenario errors, or (for the
+// Smoke_Suite) a Scenario fails its Verdict.
+pipeline {
+    agent any
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 24, unit: 'HOURS')
+    }
+    stages {
+        stage('Build image') {
+            steps {
+                sh 'ATH_COMMIT="$GIT_COMMIT" bash scripts/build_image.sh --tag "ath-sim:$GIT_COMMIT"'
+            }
+        }
+        stage('Unit tests') {
+            steps {
+                sh 'ATH_COMMIT="$GIT_COMMIT" bash scripts/test_unit.sh --image "ath-sim:$GIT_COMMIT" --baked --junit ci-out/unit-junit.xml'
+            }
+            post {
+                always {
+                    junit testResults: 'ci-out/unit-junit.xml', allowEmptyResults: true
+                }
+            }
+        }
+        stage('Scenario suite') {
+            steps {
+                script {
+                    def nightly = !currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').isEmpty()
+                    env.ATH_SUITE = nightly ? 'full' : 'smoke'
+                    env.ATH_FAIL_ON = nightly ? 'errors' : 'failures'
+                }
+                sh '''
+                    export ATH_COMMIT="$GIT_COMMIT"
+                    export ATH_BAG_LINK_BASE="${BUILD_URL}artifact/ci-out/suite/"
+                    bash scripts/run_suite.sh "$ATH_SUITE" --image "ath-sim:$GIT_COMMIT" \
+                        --out "$ATH_SHARED/jenkins/$BUILD_TAG/$ATH_SUITE" --fail-on "$ATH_FAIL_ON"
+                '''
+            }
+            post {
+                always {
+                    sh 'bash scripts/ci_collect.sh "$ATH_SHARED/jenkins/$BUILD_TAG/$ATH_SUITE" ci-out/suite'
+                    junit testResults: 'ci-out/suite/junit.xml', allowEmptyResults: true
+                    archiveArtifacts artifacts: 'ci-out/suite/**', allowEmptyArchive: true
+                }
+            }
+        }
+    }
+}

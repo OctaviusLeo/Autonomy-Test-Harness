@@ -321,6 +321,15 @@ def test_suite_main_with_repeats_and_selection(three_scenarios, tmp_path, monkey
     assert "4 runs, 2 passed, 2 failed" in capsys.readouterr().out
 
 
+def test_exit_status_rules():
+    clean = {"errored": 0, "timed_out": 0, "failed": 0}
+    failed = {**clean, "failed": 1}
+    hung = {**clean, "timed_out": 1}
+    assert suite.exit_status(failed, "nothing") == 0
+    assert suite.exit_status(failed, "errors") == 0 and suite.exit_status(hung, "errors") == 1
+    assert suite.exit_status(failed, "failures") == 1 and suite.exit_status(clean, "failures") == 0
+
+
 def test_select_all_and_scenario_files(three_scenarios, tmp_path):
     files = suite.scenario_files([three_scenarios, three_scenarios / "fixed10-001.yaml"])
     assert [f.name for f in files] == ["fixed10-000.yaml", "fixed10-001.yaml", "fixed10-002.yaml", "fixed10-001.yaml"]

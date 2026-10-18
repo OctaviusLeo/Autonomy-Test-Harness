@@ -330,7 +330,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
 
 ## M5 — Jenkins, paired experiment, README (Gate A)
 
-- [ ] 6.1 Write the Jenkins pipeline
+- [x] 6.1 Write the Jenkins pipeline
   - Write `ci/Jenkinsfile` exactly as design.md's "Pipeline" describes: build `ath-sim:${GIT_COMMIT}`; unit tests with `scripts/test_unit.sh --image ath-sim:${GIT_COMMIT} --baked` and their JUnit file published; `smoke` for change builds or `full` when `currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause')` is not empty, through `scripts/run_suite.sh` with output under `${ATH_SHARED}/jenkins/${BUILD_TAG}/`; publish the scenario JUnit report and the summary; archive failed runs' bags; `disableConcurrentBuilds()` and a 24-hour timeout. The build fails if any unit test fails, any Scenario errors, or any Smoke_Suite Scenario fails its Verdict. Commit it before the controller starts (task 6.2), so Jenkins's first poll builds a commit that has `ci/Jenkinsfile`.
   - _Requirements: 9.1, 9.2, 9.3, 9.4_
 

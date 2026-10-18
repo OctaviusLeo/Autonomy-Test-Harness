@@ -168,6 +168,8 @@ def main(argv: list[str] | None = None, deps: SuiteDeps | None = None) -> int:
     parser.add_argument("--select", type=Path, help="YAML with 'ids': the Scenario ids to keep (or 'all')")
     parser.add_argument("--run-config", type=Path, default=REPO / "config" / "run.yaml")
     parser.add_argument("--wiring", action="store_true")
+    parser.add_argument("--fail-on", choices=("nothing", "errors", "failures"), default="nothing",
+                        help="exit 1 if any run errored or hit the hard limit (errors), or also failed its Verdict")
     args = parser.parse_args(argv)
     deps = deps or SuiteDeps()
     cfg = load_run_config(args.run_config)
@@ -190,6 +192,16 @@ def main(argv: list[str] | None = None, deps: SuiteDeps | None = None) -> int:
     s = summarize([r for _, r in entries])
     print(f"suite {args.name}: {s['runs']} runs, {s['passed']} passed, {s['failed']} failed, "
           f"{s['errored']} errored, {s['timed_out']} timed out", flush=True)
+    return exit_status(s, args.fail_on)
+
+
+def exit_status(summary: dict[str, Any], fail_on: str) -> int:
+    """1 when the summary breaks the ``fail_on`` rule (errors: errored or timed out; failures: also failed)."""
+    errors = summary["errored"] + summary["timed_out"]
+    if fail_on == "errors" and errors:
+        return 1
+    if fail_on == "failures" and (errors or summary["failed"]):
+        return 1
     return 0
 
 
