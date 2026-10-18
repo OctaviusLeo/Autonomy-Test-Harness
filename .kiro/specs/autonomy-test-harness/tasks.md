@@ -220,7 +220,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
   - Write `config/run.yaml` with design.md's RunConfig values.
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
 
-- [ ] 3.3 Write property and unit tests for the Oracle
+- [x] 3.3 Write property and unit tests for the Oracle
   - **Property 11: Oracle collision decision**, **Property 12: Oracle goal-and-timeout decision**, and **Property 13: Oracle ignores the robot's own estimate** — one Hypothesis test each.
   - Unit tests with known answers: clearance exactly at the threshold, goal reached exactly at each tolerance, goal reached exactly at the time limit, a wall collision, and a run where Nav2 reports `SUCCEEDED` but the true pose is outside tolerance (fails with reason `"timeout"`, detail shows `SUCCEEDED`). A `ros`-marked test reads a small bag written in the test.
   - **Validates: Requirements 6.1, 6.2, 6.3, 6.4, 6.5, 6.7**
