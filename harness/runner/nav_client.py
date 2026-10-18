@@ -26,9 +26,8 @@ from rosgraph_msgs.msg import Clock
 from sensor_msgs.msg import LaserScan
 from std_srvs.srv import Trigger
 
+from harness.faults.schedule import DISPATCH_TOPIC
 from harness.runner.gt_bridge import GT_TOPIC, PoseSample, from_pose_stamped
-
-DISPATCH_TOPIC = "/ath/goal_dispatch"
 LIFECYCLE_MANAGERS = ("lifecycle_manager_localization", "lifecycle_manager_navigation")
 STATUS_NAMES = {
     GoalStatus.STATUS_SUCCEEDED: "SUCCEEDED",

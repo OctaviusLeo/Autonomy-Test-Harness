@@ -207,7 +207,7 @@ Every wave holds one task, so tasks run strictly in this order: no two tasks edi
 
 ## M2 — Runner and oracle (10 fixed scenarios, no faults)
 
-- [ ] 3.1 Implement the injector node with passthrough and scheduling hooks
+- [x] 3.1 Implement the injector node with passthrough and scheduling hooks
   - `harness/faults/schedule.py` (pure) decides which Faults are active at t seconds after dispatch (`start_s ≤ t < end_s`).
   - `harness/faults/injector_node.py` subscribes to `/scan` and publishes `/scan_ath`, passing every scan through unchanged until `/ath/goal_dispatch` arrives and whenever no Fault is active; it publishes the active Fault types on `/ath/faults/active`. Task 4.3 adds the fault models.
   - Tests (`ros` marker for the node): with no Faults, every output equals its input; the schedule's boundaries behave as stated.
