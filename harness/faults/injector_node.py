@@ -10,7 +10,8 @@ Active Faults apply in Scenario order, each with its own seeded RNG (``harness.f
 range noise, per-ray dropout, and sector blackout rewrite the ranges; a frozen scan replaces the
 incoming scan with the last one seen before its window (same header); whole-scan dropout publishes
 nothing; added latency queues the scan and a 200 Hz simulation-time timer releases it once
-``arrival + L <= now``.
+``arrival + L <= now``. While a latency queue still holds scans (up to L after its window closes), every
+other scan joins that queue with no added delay, so scans always leave in arrival order.
 
 :class:`FaultPipeline` is the pure core (no ROS imports), so the scheduling and fault logic is unit-tested
 without a middleware; :func:`make_node` wraps it in an ``rclpy`` node.
@@ -73,8 +74,12 @@ class FaultPipeline:
         for i, state in self.freeze.items():
             if i not in active:
                 state.observe(msg)
+        draining = next((q for q in self.latency.values() if len(q)), None)
         if not active:
-            return [msg]
+            if draining is None:
+                return [msg]
+            draining.push(msg, now, delayed=False)
+            return []
         current, queue = msg, None
         for i in active:
             fault = self.faults[i]
@@ -98,6 +103,9 @@ class FaultPipeline:
                 current = self.rebuild(current, ranges)
         if queue is not None:
             queue.push(current, now)
+            return []
+        if draining is not None:
+            draining.push(current, now, delayed=False)
             return []
         return [current]
 

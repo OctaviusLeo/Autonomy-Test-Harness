@@ -67,21 +67,24 @@ def scan_dropout_publishes() -> bool:
 
 
 class LatencyQueue:
-    """Hold scans and release each at the first check where ``arrival + delay <= now`` (in arrival order)."""
+    """Hold scans and release each at the first check where ``arrival + delay <= now`` (in arrival order).
+
+    ``push(..., delayed=False)`` queues a scan with no added delay: it leaves as soon as the scans ahead of it
+    have, so a scan arriving after the window cannot overtake the ones still held from inside it."""
 
     def __init__(self, delay_s: float) -> None:
         self.delay_s = delay_s
-        self._queue: deque[tuple[float, Any]] = deque()
+        self._queue: deque[tuple[float, Any]] = deque()  # (release time, scan)
 
     def __len__(self) -> int:
         return len(self._queue)
 
-    def push(self, item: Any, arrival: float) -> None:
-        self._queue.append((arrival, item))
+    def push(self, item: Any, arrival: float, delayed: bool = True) -> None:
+        self._queue.append((arrival + self.delay_s if delayed else arrival, item))
 
     def release(self, now: float) -> list[Any]:
         out = []
-        while self._queue and self._queue[0][0] + self.delay_s <= now:
+        while self._queue and self._queue[0][0] <= now:
             out.append(self._queue.popleft()[1])
         return out
 

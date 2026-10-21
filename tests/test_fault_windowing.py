@@ -51,7 +51,9 @@ def test_property_5_faults_apply_only_inside_their_window(kind, start, length, s
         s = scan(k)
         out = p.on_scan(s, dispatch + t)
         released_by_tick.extend(p.on_tick(dispatch + t + 0.05))
-        if not (start <= t < end):
+        if not (start <= (dispatch + t) - dispatch < end):  # the elapsed time the pipeline computes
+            if kind == "latency" and out == [] and t >= end:
+                continue  # held, unmodified, behind scans still queued from the window (released below)
             assert len(out) == 1 and out[0] is s
             last_outside = s
             continue
@@ -70,9 +72,12 @@ def test_property_5_faults_apply_only_inside_their_window(kind, start, length, s
             assert not np.array_equal(np.asarray(out[0].ranges), np.asarray(s.ranges))
             assert out[0] is not s and out[0].stamp == s.stamp
     if kind == "latency":
-        inside = [k for k in range(120) if start <= k * 0.1 < end]
+        inside = [k for k in range(120) if start <= (dispatch + k * 0.1) - dispatch < end]
         assert [r.stamp for r in released_by_tick][:len(inside)] == inside[:len(released_by_tick)]
         assert len(released_by_tick) >= len(inside) - 3  # the last few may still be queued at the end
+        stamps = [r.stamp for r in released_by_tick]
+        assert stamps == sorted(stamps)
+        assert all(r.ranges == scan(r.stamp).ranges for r in released_by_tick)  # delayed, never modified
 
 
 def test_faults_apply_in_scenario_order_with_independent_rngs():
@@ -97,6 +102,20 @@ def test_latency_queue_drains_after_the_window():
     assert p.on_tick(0.79) == [] and [s.stamp for s in p.on_tick(0.8)] == [0]
     s = scan(1)
     assert p.on_scan(s, 1.5) == [s]
+
+
+def test_latency_releases_in_order_when_the_window_closes():
+    # Scans queued in the window's last 300 ms are still held when the window closes; a scan arriving then
+    # waits behind them, unmodified, instead of overtaking them, and passthrough resumes once they are out.
+    p = FaultPipeline([fault("latency", 0.0, 1.0)], seed=1)
+    p.set_dispatch(0.0)
+    published = []
+    for k in range(16):  # 10 Hz from 0.0 s to 1.5 s, the 200 Hz timer approximated by a tick after each scan
+        published += p.on_scan(scan(k), k * 0.1)
+        published += p.on_tick(k * 0.1 + 0.05)
+    assert [s.stamp for s in published] == sorted(s.stamp for s in published)
+    after = scan(99)
+    assert p.on_scan(after, 1.6) == [after]
 
 
 @pytest.mark.ros
