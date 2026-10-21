@@ -21,7 +21,8 @@ def junit(condition: str, cases: dict[str, str | None]) -> str:
     """A JUnit file in harness/reporting/junit.py's format; a case maps to None (passed) or a failure."""
     parts = [f'<testsuite name="experiment.{condition}" tests="{len(cases)}">']
     for scenario, failure in cases.items():
-        parts.append(f'<testcase classname="ath.experiment.{condition}" name="{scenario}[{condition}]">')
+        name = scenario if condition == "none" else f"{scenario}[{condition}]"  # junit.case_name
+        parts.append(f'<testcase classname="ath.experiment.{condition}" name="{name}">')
         nav2 = "SUCCEEDED"
         if failure == "error":
             parts.append('<error message="errored: launch">no clock</error>')
@@ -74,9 +75,10 @@ def test_errored_runs_count_as_not_passed_and_scenarios_must_match(junit_dir):
     write_file(junit_dir, "freeze.xml", junit("freeze", {"s-0": None}))
     with pytest.raises(ValueError, match="same Scenarios"):
         analysis.analyze(junit_dir, ["none", "freeze"], WINDOWS)
-    write_file(junit_dir, "freeze.xml", '<testsuite><testcase name="no-condition"/></testsuite>')
-    with pytest.raises(ValueError, match="is not <scenario>"):
-        analysis.read_junit(junit_dir / "freeze.xml")
+    write_file(junit_dir, "freeze.xml", '<testsuite><testcase name="s-0[latency]"/></testsuite>')
+    with pytest.raises(ValueError, match="not a Scenario of condition freeze"):
+        analysis.read_junit(junit_dir / "freeze.xml", "freeze")
+    assert analysis.read_junit(junit_dir / "none.xml", "none")[0]["scenario_id"] == "s-0"
 
 
 def test_script_writes_stamped_analysis(junit_dir, tmp_path, load_script, monkeypatch):

@@ -18,25 +18,25 @@ from typing import Any
 
 from harness.experiment.stats import mcnemar_exact
 
-CASE = re.compile(r"^(?P<scenario>.+)\[(?P<condition>\w+)\]$")
+CASE = re.compile(r"^(?P<scenario>[^\[\]]+)(?:\[(?P<condition>\w+)\])?$")  # harness.reporting.junit.case_name
 NAV2 = re.compile(r"nav2_result=(\w+)")
 DISTANCE = re.compile(r"(\d+(?:\.\d+)?) m from goal")
 CLEARANCE = re.compile(r"min clearance (-?\d+(?:\.\d+)?) m")
 
 
-def read_junit(path: Path) -> list[dict[str, Any]]:
-    """One entry per test case: Scenario, condition, passed, reason, detail, and Nav2's reported result."""
+def read_junit(path: Path, condition: str) -> list[dict[str, Any]]:
+    """One entry per test case of ``condition``: Scenario, passed, reason, detail, and Nav2's reported result."""
     runs = []
     for case in ET.parse(path).getroot().iter("testcase"):
         name = case.get("name", "")
         match = CASE.match(name)
-        if not match:
-            raise ValueError(f"{path}: test case name {name!r} is not <scenario>[<condition>]")
+        if not match or (match["condition"] or "none") != condition:
+            raise ValueError(f"{path}: test case name {name!r} is not a Scenario of condition {condition}")
         problem = case.find("failure")
         if problem is None:
             problem = case.find("error")
         nav2 = NAV2.search(case.findtext("system-out") or "")
-        runs.append({"scenario_id": match["scenario"], "condition": match["condition"], "passed": problem is None,
+        runs.append({"scenario_id": match["scenario"], "passed": problem is None,
                      "reason": "" if problem is None else problem.get("message", ""),
                      "detail": "" if problem is None else problem.text or "",
                      "nav2_result": nav2.group(1) if nav2 else None})
@@ -51,7 +51,7 @@ def _number(pattern: re.Pattern, text: str) -> float | None:
 def analyze(junit_dir: Path, conditions: list[str], fault_windows: dict[str, Any],
             baseline: str = "none") -> dict[str, Any]:
     """Per-condition paired counts against ``baseline``, the false successes, and the collisions."""
-    runs = {name: read_junit(Path(junit_dir) / f"{name}.xml") for name in conditions}
+    runs = {name: read_junit(Path(junit_dir) / f"{name}.xml", name) for name in conditions}
     base = {r["scenario_id"]: r["passed"] for r in runs[baseline]}
     rows, false_successes, collisions = [], [], []
     for name in conditions:
