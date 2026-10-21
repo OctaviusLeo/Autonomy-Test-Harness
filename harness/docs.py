@@ -26,17 +26,64 @@ def load(repo: Path, rel: str) -> Any:
     return json.loads(text) if rel.endswith(".json") else text
 
 
+SHARED_DIR = re.compile(r"/home/[^/\s`]+/ath-shared")
+
+
 def stamp_line(stamp: dict[str, Any]) -> str:
-    return f"Command `{stamp['command']}`, seed {stamp['seed']}, commit `{stamp['commit']}`."
+    # A stamped command names the host's shared directory; the README shows it as $ATH_SHARED.
+    command = SHARED_DIR.sub("$ATH_SHARED", stamp["command"])
+    return f"Command `{command}`, seed {stamp['seed']}, commit `{stamp['commit']}`."
 
 
-def experiment_table(report: dict[str, Any]) -> str:
-    lines = ["| Condition | Runs | Passed | Pass rate | 95% Wilson interval | Errored after retry |",
-             "| --- | --- | --- | --- | --- | --- |"]
+def experiment_table(report: dict[str, Any], analysis: dict[str, Any]) -> str:
+    paired = {row["condition"]: row for row in analysis["conditions"]}
+    lines = [f"| Condition | Fault window (s after dispatch) | Passed | 95% Wilson interval | "
+             f"Lost / gained vs. {analysis['baseline']} | Exact McNemar p | Errored after retry |",
+             "| --- | --- | --- | --- | --- | --- | --- |"]
     for row in report["conditions"]:
-        lines.append(f"| {row['condition']} | {row['n']} | {row['passes']} | {row['pass_rate']} | "
-                     f"[{row['ci95']['low']}, {row['ci95']['high']}] | {row['errored_after_retry']} |")
+        p = paired[row["condition"]]
+        window = "-" if p["window_s"] is None else f"{p['window_s'][0]}-{p['window_s'][1]}"
+        versus = "-" if p["mcnemar_p"] is None else f"{p['lost']} / {p['gained']}"
+        mcnemar = "-" if p["mcnemar_p"] is None else p["mcnemar_p"]
+        lines.append(f"| {row['condition']} | {window} | {row['passes']} of {row['n']} ({p['pass_pct']}%) | "
+                     f"[{row['ci95']['low']}, {row['ci95']['high']}] | {versus} | {mcnemar} | "
+                     f"{row['errored_after_retry']} |")
     return "\n".join(lines)
+
+
+def fault_windows(analysis: dict[str, Any]) -> str:
+    """E.g. "Each fault starts 5.0 s after the goal is sent and lasts 10.0 s (freeze) or 60.0 s (latency)."."""
+    by_start: dict[float, dict[float, list[str]]] = {}
+    for row in analysis["conditions"]:
+        if row["window_s"] is not None:
+            by_start.setdefault(row["window_s"][0], {}).setdefault(row["window_length_s"], []).append(row["condition"])
+    clauses = [f"starts {start} s after the goal is sent and lasts "
+               + " or ".join(f"{length} s ({', '.join(names)})" for length, names in sorted(lengths.items()))
+               for start, lengths in sorted(by_start.items())]
+    return "Each fault " + "; or ".join(clauses) + "."
+
+
+def false_successes(analysis: dict[str, Any]) -> str:
+    runs = analysis["false_successes"]
+    listed = ", ".join(f"`{r['scenario_id']}` under {r['condition']} ({r['final_distance_m']} m)" for r in runs)
+    runs_word = "run" if len(runs) == 1 else "runs"
+    return (f"In {len(runs)} {runs_word} Nav2 reported `SUCCEEDED` but the robot's true final position was outside "
+            f"the Oracle's {analysis['oracle_goal_position_tol_m']} m tolerance: {listed}. Nav2's goal checker "
+            f"accepts {analysis['nav2_xy_goal_tolerance_m']} m, measured on its own (AMCL) pose estimate.")
+
+
+def collisions(analysis: dict[str, Any]) -> str:
+    runs = analysis["collisions"]
+    listed = ", ".join(f"`{r['scenario_id']}` under {r['condition']} (minimum clearance {r['min_clearance_m']} m)"
+                       for r in runs)
+    subject = "collision is a small overlap" if len(runs) == 1 else "collisions are small overlaps"
+    return f"The recorded {subject} of the disc footprint with an obstacle: {listed}."
+
+
+def analysis_stamp(analysis: dict[str, Any]) -> str:
+    return (f"Paired counts, McNemar p-values, false successes and collisions: "
+            f"`results/experiment/paired_analysis.json`, generated from the committed JUnit files. "
+            f"{stamp_line(analysis['stamp'])}")
 
 
 def experiment_details(report: dict[str, Any]) -> str:
@@ -56,7 +103,7 @@ def experiment_details(report: dict[str, Any]) -> str:
         t = settings["thresholds"]
         lines += ["", f"Oracle: footprint radius {t['footprint_radius_m']} m, collision below "
                       f"{t['collision_threshold_m']} m clearance, goal within {t['goal_position_tol_m']} m and "
-                      f"{t['goal_orientation_tol_rad']} rad of the goal, judged from Ground_Truth only."]
+                      f"{t['goal_orientation_tol_rad']} rad of the goal, judged from ground truth only."]
     return "\n".join(lines)
 
 
@@ -68,8 +115,8 @@ def experiment_stamp(report: dict[str, Any]) -> str:
 def m2_summary(summary: dict[str, Any], smoke_ids: Any) -> str:
     repeats = ", ".join(f"repeat {r['repeat']}: {r['passes']} of {r['runs']}" for r in summary["per_repeat"])
     changed = summary["outcome_changed"]
-    selection = ("the Smoke_Suite is every `fixed10` Scenario" if smoke_ids == "all"
-                 else f"the Smoke_Suite is {', '.join(smoke_ids)}")
+    selection = ("the smoke suite is every `fixed10` Scenario" if smoke_ids == "all"
+                 else f"the smoke suite is {', '.join(smoke_ids)}")
     return (f"The {len(summary['per_scenario'])} fixed Scenarios, {summary['repeats']} times with no Fault: {repeats} "
             f"passed; outcome changed between repeats for {len(changed)} Scenario(s){': ' + ', '.join(changed) if changed else ''}. "
             f"So {selection} (`config/smoke_suite.yaml`). `results/m2_fixed10/summary.json`. {stamp_line(summary['stamp'])}")
@@ -107,9 +154,14 @@ def render_summary(text: str) -> str:
 
 def values(repo: Path) -> dict[str, str]:
     report = load(repo, "results/experiment/experiment.json")
+    analysis = load(repo, "results/experiment/paired_analysis.json")
     smoke = yaml.safe_load(load(repo, "config/smoke_suite.yaml")).get("ids", "all")
     return {
-        "EXPERIMENT_TABLE": experiment_table(report),
+        "EXPERIMENT_TABLE": experiment_table(report, analysis),
+        "FAULT_WINDOWS": fault_windows(analysis),
+        "FALSE_SUCCESSES": false_successes(analysis),
+        "COLLISIONS": collisions(analysis),
+        "ANALYSIS_STAMP": analysis_stamp(analysis),
         "EXPERIMENT_DETAILS": experiment_details(report),
         "EXPERIMENT_STAMP": experiment_stamp(report),
         "M2_SUMMARY": m2_summary(load(repo, "results/m2_fixed10/summary.json"), smoke),

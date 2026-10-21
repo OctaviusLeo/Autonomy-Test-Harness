@@ -22,7 +22,14 @@ def test_build_fills_every_placeholder_from_results(repo, load_script):
     assert script.main(["--repo", str(repo)]) == 0
     readme = (repo / "README.md").read_text()
     assert "{{" not in readme
-    assert "| none | 30 | 27 | 0.9 | [0.7438, 0.9654] | 0 |" in readme
+    assert "| none | - | 27 of 30 (90.0%) | [0.7438, 0.9654] | - | - | 0 |" in readme
+    assert "| latency | 5.0-65.0 | 15 of 30 (50.0%) | [0.3315, 0.6685] | 13 / 1 | 0.00183 | 0 |" in readme
+    assert "Each fault starts 5.0 s after the goal is sent and lasts 60.0 s (latency)." in readme
+    assert "In 1 run Nav2 reported `SUCCEEDED`" in readme and "`exp30-013` under latency (0.331 m)" in readme
+    assert "Oracle's 0.3 m tolerance" in readme and "goal checker accepts 0.25 m" in readme
+    assert "`exp30-008` under latency (minimum clearance -0.005 m)" in readme
+    assert "`python scripts/paired_analysis.py`, seed 303" in readme
+    assert "--out $ATH_SHARED/runs/m2`" in readme and "/home/u/" not in readme
     assert "Total run time: 9876.5 s (2.74 h) over 1 segment(s)" in readme
     assert f"commit `{HASH}`" in readme and "set seed 303" in readme
     assert "`latency` (latency_ms 300.0; window 5.0-65.0 s after dispatch)" in readme
@@ -56,7 +63,7 @@ def test_number_extraction_skips_urls_versions_and_ids():
 
 def test_selection_and_missing_inputs(repo):
     write(repo, "config/smoke_suite.yaml", "ids: [fixed10-001, fixed10-002]\n")
-    assert "the Smoke_Suite is fixed10-001, fixed10-002" in docs.build(repo)
+    assert "the smoke suite is fixed10-001, fixed10-002" in docs.build(repo)
     write(repo, "results/headless_render_check.txt", "garbled\n")
     with pytest.raises(ValueError, match="expected format"):
         docs.build(repo)

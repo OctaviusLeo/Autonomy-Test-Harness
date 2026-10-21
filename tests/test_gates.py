@@ -281,7 +281,7 @@ def _fake_runner(path, out_dir, run_index, condition, render_mode="egl"):
 
 
 @pytest.fixture
-def m5_repo(docs_repo, tmp_path, repo_root, monkeypatch) -> tuple[Path, Path]:
+def m5_repo(docs_repo, tmp_path, repo_root, monkeypatch, load_script) -> tuple[Path, Path]:
     from harness import docs
     from harness.experiment import paired
 
@@ -295,6 +295,10 @@ def m5_repo(docs_repo, tmp_path, repo_root, monkeypatch) -> tuple[Path, Path]:
     assert paired.main(["--out", str(run_dir)], runner=_fake_runner) == 0
     shutil.copy(run_dir / "experiment.json", repo / "results" / "experiment" / "experiment.json")
     shutil.copy(run_dir / "summary.md", repo / "results" / "summary.md")
+    # The paired analysis is generated from the experiment's JUnit files, as scripts/paired_analysis.py does.
+    shutil.copytree(run_dir / "junit", repo / "results" / "experiment" / "junit")
+    shutil.copy(repo_root / "config" / "nav2_params_ath.yaml", repo / "config" / "nav2_params_ath.yaml")
+    assert load_script("paired_analysis").main(["--repo", str(repo)]) == 0
     log = repo / "ci" / "jenkins_run_log"
     _write(repo, "ci/jenkins_run_log/verification.json", json.dumps({
         "green": {"build": 7, "commit": "c" * 40, "result": "SUCCESS", "failed_tests": ""},

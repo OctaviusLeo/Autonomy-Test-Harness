@@ -56,12 +56,25 @@ def docs_repo(tmp_path) -> Path:
                                     "goal_position_tol_m": 0.3, "goal_orientation_tol_rad": 0.3,
                                     "startup_timeout_s": 180.0, "settle_s": 2.0}},
         "stamp": {"command": "bash scripts/run_experiment.sh", "seed": 303, "commit": DOCS_HASH}})
+    paired = [{"condition": "none", "n": 30, "passes": 27, "pass_pct": 90.0, "window_s": None, "window_length_s": None,
+               "both_passed": 27, "both_failed": 3, "lost": 0, "gained": 0, "mcnemar_p": None},
+              {"condition": "latency", "n": 30, "passes": 15, "pass_pct": 50.0, "window_s": [5.0, 65.0],
+               "window_length_s": 60.0, "both_passed": 14, "both_failed": 2, "lost": 13, "gained": 1,
+               "mcnemar_p": 0.00183}]
+    write_file(r, "results/experiment/paired_analysis.json", {
+        "baseline": "none", "conditions": paired,
+        "false_successes": [{"scenario_id": "exp30-013", "condition": "latency", "reason": "timeout",
+                             "final_distance_m": 0.331}],
+        "collisions": [{"scenario_id": "exp30-008", "condition": "latency", "min_clearance_m": -0.005}],
+        "oracle_goal_position_tol_m": 0.3, "nav2_xy_goal_tolerance_m": 0.25,
+        "stamp": {"command": "python scripts/paired_analysis.py", "seed": 303, "commit": DOCS_HASH}})
     write_file(r, "results/summary.md", "# Paired_Experiment summary\n\n95% Wilson | none | 30 | 27 | 0.9 |\n"
                                         "Total run time: 9876.5 s (2.74 h)\n")
     write_file(r, "results/m2_fixed10/summary.json", {
         "repeats": 3, "per_repeat": [{"repeat": k, "runs": 10, "passes": 10} for k in (1, 2, 3)],
         "per_scenario": [{"scenario_id": f"fixed10-00{i}"} for i in range(10)], "outcome_changed": [],
-        "stamp": {"command": "bash scripts/run_suite.sh smoke --repeat 3", "seed": 0, "commit": DOCS_HASH}})
+        "stamp": {"command": "bash scripts/run_suite.sh smoke --repeat 3 --out /home/u/ath-shared/runs/m2", "seed": 0,
+                  "commit": DOCS_HASH}})
     write_file(r, "results/m3_fault_check.json", {
         "faults": [{"fault": "latency", "confined_to_window": True, "verdict": {"passed": True}, "measured_delay_s": 0.302},
                    {"fault": "freeze", "confined_to_window": True, "verdict": {"passed": False}}],
