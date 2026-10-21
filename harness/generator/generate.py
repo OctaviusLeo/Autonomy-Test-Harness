@@ -102,7 +102,7 @@ class GeneratorConfig(BaseModel):
     time_limit_s: float = Field(gt=0)
 
     @model_validator(mode="after")
-    def _positive_sizes(self) -> "GeneratorConfig":
+    def _check_bounds(self) -> "GeneratorConfig":
         a = arena(self.world)
         for axis in (self.sample_bounds.x, self.sample_bounds.y):
             if axis.min <= -a.interior_half_m or axis.max >= a.interior_half_m:
