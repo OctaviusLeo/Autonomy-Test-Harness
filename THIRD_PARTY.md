@@ -10,7 +10,9 @@ kept as the evidence for the parameter diff) and `config/nav2_params_ath.yaml` (
 from it by changing four topic names). Images and packages are fetched at build time.
 
 This repository's own code is under the MIT License (`LICENSE`); the third-party components below keep their
-own licenses and none of them is redistributed here. There is no packaging or release.
+own licenses and, apart from the two parameter files above, none of them is redistributed here. Those two
+files come from `nav2_bringup` (Apache-2.0, <https://www.apache.org/licenses/LICENSE-2.0>) and keep that
+license; the derived file states at its top how it was changed. There is no packaging or release.
 
 ## Docker images
 
