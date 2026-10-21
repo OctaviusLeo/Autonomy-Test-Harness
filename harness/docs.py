@@ -36,9 +36,13 @@ def experiment_table(report: dict[str, Any]) -> str:
     for row in report["conditions"]:
         lines.append(f"| {row['condition']} | {row['n']} | {row['passes']} | {row['pass_rate']} | "
                      f"[{row['ci95']['low']}, {row['ci95']['high']}] | {row['errored_after_retry']} |")
-    lines += ["", f"Total run time: {report['total_run_time_s']} s ({report['total_run_time_h']} h) over {report['segments']} "
-                  f"segment(s), the sum of every run's wall-clock duration plus report generation. "
-                  f"Base set `{report['base_set']}`, set seed {report['set_seed']}."]
+    return "\n".join(lines)
+
+
+def experiment_details(report: dict[str, Any]) -> str:
+    lines = [f"Total run time: {report['total_run_time_s']} s ({report['total_run_time_h']} h) over {report['segments']} "
+             f"segment(s), the sum of every run's wall-clock duration plus report generation. "
+             f"Base set `{report['base_set']}`, set seed {report['set_seed']}."]
     settings = report.get("settings") or {}
     if settings.get("faults"):
         parts = []
@@ -106,6 +110,7 @@ def values(repo: Path) -> dict[str, str]:
     smoke = yaml.safe_load(load(repo, "config/smoke_suite.yaml")).get("ids", "all")
     return {
         "EXPERIMENT_TABLE": experiment_table(report),
+        "EXPERIMENT_DETAILS": experiment_details(report),
         "EXPERIMENT_STAMP": experiment_stamp(report),
         "M2_SUMMARY": m2_summary(load(repo, "results/m2_fixed10/summary.json"), smoke),
         "M3_SUMMARY": m3_summary(load(repo, "results/m3_fault_check.json")),
