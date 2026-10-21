@@ -97,6 +97,7 @@ def test_verify_gate_script(m0_repo, load_script, monkeypatch, capsys):
     assert "FAIL" in capsys.readouterr().err
 
 
+@pytest.mark.ros  # reads Nav2's installed share directory through ament_index_python
 def test_real_regeneration_matches_committed_files(repo_root, tmp_path):
     gates.regenerate_m0_files(repo_root, tmp_path)
     for rel in ("worlds/empty_10x10.sdf", "maps/empty_10x10.pgm", "config/nav2_params_ath.yaml"):
