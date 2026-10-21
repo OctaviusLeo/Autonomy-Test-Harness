@@ -166,6 +166,8 @@ Kiro runs every task on the owner's Windows 11 desktop. Git and `gh` run on Wind
 
 The repository remote is `https://github.com/OctaviusLeo/Autonomy-Test-Harness.git` (private; no public license, packaging, or releases, per the portfolio rules).
 
+> **Owner decision, 2026-10-21:** the repository was released publicly under the MIT License.
+
 ```
 Autonomy-Test-Harness/
 ├── harness/                      # Python package, installed editable in the image at /opt/ath
