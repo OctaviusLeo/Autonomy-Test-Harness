@@ -31,3 +31,16 @@ def wilson_interval(passes: int, n: int, z: float = Z95) -> tuple[float, float]:
     low = min(max(0.0, center - half), p)
     high = max(min(1.0, center + half), p)
     return low, high
+
+
+def mcnemar_exact(b: int, c: int) -> float:
+    """Exact two-sided McNemar p-value for ``b`` and ``c`` discordant pairs.
+
+    Under no effect each discordant pair is equally likely to go either way, so min(b, c) is Binomial(b + c, 1/2):
+    p = min(1, 2 * P(X <= min(b, c))). No discordant pair gives p = 1.
+    """
+    if b < 0 or c < 0:
+        raise ValueError(f"discordant counts must be non-negative, got {b} and {c}")
+    n = b + c
+    tail = sum(math.comb(n, k) for k in range(min(b, c) + 1)) / 2 ** n
+    return min(1.0, 2 * tail)
