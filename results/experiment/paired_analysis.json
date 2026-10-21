@@ -1,0 +1,170 @@
+{
+  "baseline": "none",
+  "conditions": [
+    {
+      "condition": "none",
+      "n": 30,
+      "passes": 30,
+      "pass_pct": 100.0,
+      "window_s": null,
+      "window_length_s": null,
+      "both_passed": 30,
+      "both_failed": 0,
+      "lost": 0,
+      "gained": 0,
+      "mcnemar_p": null
+    },
+    {
+      "condition": "range_noise",
+      "n": 30,
+      "passes": 29,
+      "pass_pct": 96.7,
+      "window_s": [
+        5.0,
+        65.0
+      ],
+      "window_length_s": 60.0,
+      "both_passed": 29,
+      "both_failed": 0,
+      "lost": 1,
+      "gained": 0,
+      "mcnemar_p": 1.0
+    },
+    {
+      "condition": "ray_dropout",
+      "n": 30,
+      "passes": 30,
+      "pass_pct": 100.0,
+      "window_s": [
+        5.0,
+        65.0
+      ],
+      "window_length_s": 60.0,
+      "both_passed": 30,
+      "both_failed": 0,
+      "lost": 0,
+      "gained": 0,
+      "mcnemar_p": 1.0
+    },
+    {
+      "condition": "scan_dropout",
+      "n": 30,
+      "passes": 0,
+      "pass_pct": 0.0,
+      "window_s": [
+        5.0,
+        15.0
+      ],
+      "window_length_s": 10.0,
+      "both_passed": 0,
+      "both_failed": 0,
+      "lost": 30,
+      "gained": 0,
+      "mcnemar_p": 1.86e-09
+    },
+    {
+      "condition": "latency",
+      "n": 30,
+      "passes": 29,
+      "pass_pct": 96.7,
+      "window_s": [
+        5.0,
+        65.0
+      ],
+      "window_length_s": 60.0,
+      "both_passed": 29,
+      "both_failed": 0,
+      "lost": 1,
+      "gained": 0,
+      "mcnemar_p": 1.0
+    },
+    {
+      "condition": "freeze",
+      "n": 30,
+      "passes": 0,
+      "pass_pct": 0.0,
+      "window_s": [
+        5.0,
+        15.0
+      ],
+      "window_length_s": 10.0,
+      "both_passed": 0,
+      "both_failed": 0,
+      "lost": 30,
+      "gained": 0,
+      "mcnemar_p": 1.86e-09
+    },
+    {
+      "condition": "sector_blackout",
+      "n": 30,
+      "passes": 24,
+      "pass_pct": 80.0,
+      "window_s": [
+        5.0,
+        65.0
+      ],
+      "window_length_s": 60.0,
+      "both_passed": 24,
+      "both_failed": 0,
+      "lost": 6,
+      "gained": 0,
+      "mcnemar_p": 0.0312
+    }
+  ],
+  "false_successes": [
+    {
+      "scenario_id": "exp30-013",
+      "condition": "range_noise",
+      "reason": "timeout",
+      "final_distance_m": 0.331
+    },
+    {
+      "scenario_id": "exp30-004",
+      "condition": "sector_blackout",
+      "reason": "timeout",
+      "final_distance_m": 0.336
+    },
+    {
+      "scenario_id": "exp30-009",
+      "condition": "sector_blackout",
+      "reason": "timeout",
+      "final_distance_m": 0.317
+    },
+    {
+      "scenario_id": "exp30-010",
+      "condition": "sector_blackout",
+      "reason": "timeout",
+      "final_distance_m": 0.313
+    },
+    {
+      "scenario_id": "exp30-016",
+      "condition": "sector_blackout",
+      "reason": "timeout",
+      "final_distance_m": 0.402
+    }
+  ],
+  "collisions": [
+    {
+      "scenario_id": "exp30-008",
+      "condition": "sector_blackout",
+      "min_clearance_m": -0.005
+    },
+    {
+      "scenario_id": "exp30-011",
+      "condition": "sector_blackout",
+      "min_clearance_m": -0.006
+    }
+  ],
+  "oracle_goal_position_tol_m": 0.3,
+  "nav2_xy_goal_tolerance_m": 0.25,
+  "experiment_stamp": {
+    "command": "bash scripts/run_experiment.sh",
+    "seed": 303,
+    "commit": "4849ce0e6aa64c9da66078c9eaddeb5043d76320"
+  },
+  "stamp": {
+    "command": "python scripts/paired_analysis.py",
+    "seed": 303,
+    "commit": "eb50bf52c80a97f6dc01760f7cdf1ccdc24e59ef"
+  }
+}
