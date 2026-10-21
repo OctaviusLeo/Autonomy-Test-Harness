@@ -46,11 +46,14 @@ def test_property_5_faults_apply_only_inside_their_window(kind, start, length, s
     p.set_dispatch(dispatch)
     last_outside = before
     released_by_tick = []
+    published = [before]  # everything sent to Nav2, in publish order: each scan's own output, then the tick's
     for k in range(120):  # 10 Hz for 12 s of simulation time
         t = k * 0.1
         s = scan(k)
         out = p.on_scan(s, dispatch + t)
-        released_by_tick.extend(p.on_tick(dispatch + t + 0.05))
+        released = p.on_tick(dispatch + t + 0.05)
+        released_by_tick.extend(released)
+        published += out + released
         if not (start <= (dispatch + t) - dispatch < end):  # the elapsed time the pipeline computes
             if kind == "latency" and out == [] and t >= end:
                 continue  # held, unmodified, behind scans still queued from the window (released below)
@@ -71,12 +74,13 @@ def test_property_5_faults_apply_only_inside_their_window(kind, start, length, s
         else:  # range_noise or ray_dropout changes the ranges
             assert not np.array_equal(np.asarray(out[0].ranges), np.asarray(s.ranges))
             assert out[0] is not s and out[0].stamp == s.stamp
+    # Nav2 never receives a scan older than one it already has (a frozen scan repeats the same stamp).
+    stamps = [scan_out.stamp for scan_out in published]
+    assert all(a <= b for a, b in zip(stamps, stamps[1:]))
     if kind == "latency":
         inside = [k for k in range(120) if start <= (dispatch + k * 0.1) - dispatch < end]
         assert [r.stamp for r in released_by_tick][:len(inside)] == inside[:len(released_by_tick)]
         assert len(released_by_tick) >= len(inside) - 3  # the last few may still be queued at the end
-        stamps = [r.stamp for r in released_by_tick]
-        assert stamps == sorted(stamps)
         assert all(r.ranges == scan(r.stamp).ranges for r in released_by_tick)  # delayed, never modified
 
 
