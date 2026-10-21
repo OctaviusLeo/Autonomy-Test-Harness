@@ -1,9 +1,10 @@
 """Markdown Summary_Report (Requirements 7.2-7.5).
 
 It states the pass rate per Fault type (``none`` for no Fault), lists every failed or errored run with its
-reason and detail, links each one's ROS_Bag, and gives the exact ``scripts/rerun_one.sh`` command with
-the Scenario's seed. It ends with the stamp (command, seed, commit). Bag links are host paths, or, when
-``bag_link_base`` is given (Jenkins), that base followed by the bag's path relative to the run directory.
+reason and detail, names each one's ROS_Bag, and gives the exact ``scripts/rerun_one.sh`` command with
+the Scenario's seed. It ends with the stamp (command, seed, commit). A bag is named by its host path as plain
+text (bags stay on the host and are never committed), or, when ``bag_link_base`` is given (Jenkins), linked as
+that base followed by the bag's path relative to the run directory.
 The file is generated, never hand-edited; inputs are validated first and the file is written atomically.
 """
 
@@ -26,8 +27,8 @@ def rerun_command(record: dict[str, Any]) -> str:
 def bag_link(record: dict[str, Any], bag_link_base: str | None = None, run_root: str | None = None) -> str:
     bag = str(record.get("bag_path") or "")
     if bag_link_base and run_root and bag.startswith(run_root.rstrip("/") + "/"):
-        bag = bag_link_base.rstrip("/") + "/" + bag[len(run_root.rstrip("/")) + 1:]
-    return f"[bag]({bag})"
+        return f"[bag]({bag_link_base.rstrip('/')}/{bag[len(run_root.rstrip('/')) + 1:]})"
+    return f"`{bag}` (bags not committed)"
 
 
 def pass_rates(records: list[dict[str, Any]]) -> list[tuple[str, int, int, float]]:

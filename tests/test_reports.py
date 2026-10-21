@@ -74,7 +74,7 @@ def test_property_15_summary_links_bag_and_rerun_for_every_failure(records):
         row = next(line for line in text.splitlines() if line.startswith(f"| {r['scenario_id']} |"))
         reason = f"errored: {r['failing_step']}" if r["status"] == "errored" else r["verdict"]["reason"]
         assert f"| {reason} |" in row
-        assert f"[bag]({r['bag_path']})" in row
+        assert f"`{r['bag_path']}` (bags not committed)" in row
         assert f"--seed {r['seed']}" in row and "bash scripts/rerun_one.sh --config" in row
         if r["fault_condition"] != "none":
             assert f"--condition {r['fault_condition']}" in row
