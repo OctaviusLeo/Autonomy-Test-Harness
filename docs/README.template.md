@@ -1,5 +1,8 @@
 # Autonomy Test Harness
 
+[![tests](https://github.com/OctaviusLeo/Autonomy-Test-Harness/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/OctaviusLeo/Autonomy-Test-Harness/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A scenario-based test system for robot navigation. It drives **Nav2** with its minimal TurtleBot 4
 simulation (ROS 2 Jazzy, Gazebo Harmonic) through randomized, versioned scenarios, injects scheduled lidar
 faults between the simulated sensor and Nav2, judges every run from simulator ground truth (never from the
@@ -52,7 +55,7 @@ commit that produced it ([details below](#experiment-details)).
   intervals, resumable runs, JUnit XML with one test case per scenario, and a Markdown summary.
 - **CI**: a Jenkins controller configured entirely as code (`ci/jenkins/`, `ci/Jenkinsfile`) that builds the
   image per commit, runs the unit and property tests, and runs the smoke suite on change and the full suite
-  nightly. A GitHub Actions workflow runs the tests that need neither ROS 2 nor the simulator.
+  nightly. A GitHub Actions workflow runs the tests that need neither ROS 2 nor the simulator, and a Ruff lint.
 
 ## Architecture
 
@@ -100,6 +103,9 @@ diff -r -x generation.json scenarios/fixed10 /tmp/fixed10 && echo identical
 ```
 
 Tests marked `ros` need `rclpy` and run in the `ath-sim` image; tests marked `sim` need the running simulator.
+
+[CONTRIBUTING.md](CONTRIBUTING.md) lists the checks to run before a commit and how the README and results
+are regenerated.
 
 ## Run the full harness
 
@@ -163,7 +169,8 @@ bash scripts/run_suite.sh smoke
 ```
 
 On GitHub, [.github/workflows/tests.yml](.github/workflows/tests.yml) runs the tests that need neither ROS 2
-nor the simulator on a hosted runner for every push and pull request.
+nor the simulator on a hosted runner for every push and pull request, and lints the repository with Ruff
+(rules in [ruff.toml](ruff.toml)).
 
 ## Repository layout
 
