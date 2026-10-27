@@ -43,6 +43,9 @@ def validate_records(records: Iterable[Any], sources: Iterable[str] | None = Non
     sources = list(sources) if sources is not None else [f"record {i}" for i in range(len(records))]
     if not records:
         raise ReportInputError("no RunRecords to report")
+    if len(sources) != len(records):
+        # zip() would silently drop the unmatched records, and with them runs from the report.
+        raise ReportInputError(f"{len(records)} RunRecords but {len(sources)} sources")
     return [validate_record(r, s) for r, s in zip(records, sources)]
 
 

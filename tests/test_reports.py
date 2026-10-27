@@ -146,6 +146,9 @@ def test_reports_written_atomically_and_bag_links(tmp_path):
         load_records([])
     with pytest.raises(ReportInputError, match="not a JSON object"):
         validate_record([], "x")
+    # A source list that does not match the records is rejected rather than truncating the report.
+    with pytest.raises(ReportInputError, match="2 RunRecords but 1 sources"):
+        junit.junit_xml([good, passing], "t", sources=["a.json"])
 
 
 def test_text_sanitizers():
