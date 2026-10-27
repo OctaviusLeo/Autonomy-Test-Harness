@@ -72,7 +72,7 @@ def main(argv: list[str] | None = None) -> int:
     summary, entries = summarize(args.run)
     if args.out.exists():
         shutil.rmtree(args.out)
-    for path, record in entries:
+    for path, _ in entries:
         dest = args.out / Path(rel_of(args.run, path)).parent
         dest.mkdir(parents=True, exist_ok=True)
         shutil.copy(path, dest / "run_record.json")

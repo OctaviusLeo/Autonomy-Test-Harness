@@ -1,0 +1,8 @@
+# Lint rules for `ruff check`, which CI runs (.github/workflows/tests.yml). Ruff's default rule set
+# changes between releases, so the rules are named here: pyflakes (F), pycodestyle's error classes
+# (E4, E7, E9) and bugbear (B).
+[lint]
+select = ["E4", "E7", "E9", "F", "B"]
+# zip(strict=) is not required: each zip here pairs sequences built from one another or fixed-length
+# constants, and validate_records checks its two inputs' lengths itself.
+ignore = ["B905"]
