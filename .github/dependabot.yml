@@ -1,0 +1,13 @@
+# Weekly pull requests that move the SHA-pinned actions in .github/workflows/ to new releases, keeping
+# the version comment next to each SHA in step. A release is proposed only after 14 days, so a bad or
+# compromised release has time to be found and pulled first.
+# The Python dependencies are not included: they are pinned to match the ath-sim image (numpy to
+# Ubuntu 24.04's python3-numpy) and recorded with evidence in docs/ENVIRONMENT.md, so they change by hand.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
