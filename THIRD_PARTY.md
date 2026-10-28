@@ -80,6 +80,17 @@ and does not link against it.
 | colorama (Windows-only dependency of pytest; not installed in the image) | 0.4.6 | BSD-3-Clause (PyPI metadata for 0.4.6: BSD License classifier) |
 | setuptools (build backend for the editable install) | 84.0.0 | MIT (PyPI metadata for 84.0.0: License-Expression MIT) |
 
+## GitHub Actions (CI only, `.github/workflows/tests.yml`)
+
+These run on GitHub's hosted runners for the quick check and the lint; none of them is installed in
+the image or on the host. Licenses were read from each repository's `LICENSE` and from PyPI.
+
+| Name | Version | License |
+| --- | --- | --- |
+| actions/checkout | v7.0.1 (`3d3c42e5aac5ba805825da76410c181273ba90b1`) | MIT (github.com/actions/checkout LICENSE) |
+| astral-sh/setup-uv | v10.3.0 (`1c37ad07a6a961277cf70c0d37d6f313000f5884`) | MIT (github.com/astral-sh/setup-uv LICENSE) |
+| Ruff (run as `uvx ruff@0.17.1`; also the lint command in `CONTRIBUTING.md`) | 0.17.1 | MIT (PyPI metadata for 0.17.1: License-Expression MIT) |
+
 ## Jenkins and plugins
 
 The controller image `ath-jenkins:local` is built from these and is not distributed. Plugin licenses are
